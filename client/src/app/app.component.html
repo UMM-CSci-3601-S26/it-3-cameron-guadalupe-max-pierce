@@ -11,6 +11,13 @@
         Home
       </a>
 
+      <!-- Unused, currently just goes back home. -->
+      <a mat-list-item routerLink="/" routerLinkActive="drawer-list-item-active"
+        #routerLinkActiveInstance="routerLinkActive" [routerLinkActiveOptions]="{exact: true}" (click)="drawer.close()">
+        <mat-icon matListItemIcon>shopping_cart</mat-icon>
+        Shopping List
+      </a>
+
       <a mat-list-item routerLink="/inventory" routerLinkActive="drawer-list-item-active" (click)="drawer.close()">
         <mat-icon matListItemIcon>shopping_basket</mat-icon>
         Inventory
@@ -18,13 +25,21 @@
 
       <a mat-list-item routerLink="/users" routerLinkActive="drawer-list-item-active" (click)="drawer.close()">
         <mat-icon matListItemIcon>people</mat-icon>
-        Users
+        Students
       </a>
 
       <a mat-list-item routerLink="/companies" routerLinkActive="drawer-list-item-active" (click)="drawer.close()">
         <mat-icon matListItemIcon>business</mat-icon>
         Schools
       </a>
+
+      <!-- Unused, currently just goes back home. -->
+      <a mat-list-item routerLink="/" routerLinkActive="drawer-list-item-active"
+        #routerLinkActiveInstance="routerLinkActive" [routerLinkActiveOptions]="{exact: true}" (click)="drawer.close()">
+        <mat-icon matListItemIcon>check_circle_outline</mat-icon>
+        Grade Requirements
+      </a>
+
     </mat-nav-list>
   </mat-sidenav>
   <mat-sidenav-content>

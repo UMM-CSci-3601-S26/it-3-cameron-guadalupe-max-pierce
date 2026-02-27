@@ -29,7 +29,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
  * makes the most sense to do the filtering.
  */
 @Component({
-  selector: 'app-user-list-component',
+  selector: 'app-inventory-list-component',
   templateUrl: 'inventory_list.component.html',
   styleUrls: ['./inventory_list.component.scss'],
   providers: [],
