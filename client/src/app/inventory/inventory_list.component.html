@@ -31,13 +31,24 @@
             <!-- <mat-label>Desc</mat-label> -->
             <mat-select placeholder="Any Type" [(ngModel)]="itemType" data-test="itemDescSelect">
               <mat-option>Any Type</mat-option> <!--No Value, does not display normally w/out placeholder -->
+              <!-- Remember to update add_inventory_item.component when adding types to stay consistent! -->
               <mat-option value="pencil">Pencils</mat-option>
               <mat-option value="colored_pencil">Colored Pencils</mat-option>
+              <mat-option value="sharpener">Sharpeners</mat-option>
+              <mat-option value="marker">Markers</mat-option>
+              <mat-option value="highlighter">Highlighters</mat-option>
+              <mat-option value="dry_erase_marker">Dry-Erase Markers</mat-option>
               <mat-option value="crayon">Crayons</mat-option>
               <mat-option value="pen">Pens</mat-option>
               <mat-option value="eraser">Erasers</mat-option>
               <mat-option value="folder">Folders</mat-option>
-              <mat-option value="sharpener">Sharpeners</mat-option>
+              <mat-option value="binder">Binders</mat-option>
+              <mat-option value="notebook">Notebooks</mat-option>
+              <mat-option value="glue">Glue</mat-option>
+              <mat-option value="ruler">Rulers</mat-option>
+              <mat-option value="scissors">Scissors</mat-option>
+              <mat-option value="headphones">Headphones</mat-option>
+              <mat-option value="backpack">Backpacks</mat-option>
               <mat-option value="box">Boxes</mat-option>
               <mat-option value="other">Other</mat-option>
             </mat-select>

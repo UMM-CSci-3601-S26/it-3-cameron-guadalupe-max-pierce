@@ -2,11 +2,13 @@ package umm3601.inventory_items;
 
 //import static com.mongodb.client.model.Filters.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-//import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 //import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-//import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+//import static org.mockito.ArgumentMatchers.eq;
+import static com.mongodb.client.model.Filters.eq;
 //import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,6 +57,9 @@ import io.javalin.json.JavalinJackson;
 //import io.javalin.validation.ValidationError;
 //import io.javalin.validation.ValidationException;
 //import io.javalin.validation.Validator;
+import io.javalin.validation.BodyValidator;
+import io.javalin.validation.ValidationException;
+//import umm3601.user.UserController;
 
 @SuppressWarnings({"MagicNumber"})
 class InventoryItemControllerSpec {
@@ -200,45 +205,112 @@ class InventoryItemControllerSpec {
       assertEquals("The requested item was not found", exception.getMessage());
     }
 
-    //The controller is no longer responsible for filtering things by stock. Filtering is done client side.
-    // @Test
-    // void canGetInventoryItemWith100Stocked() throws IOException {
-    //     Integer targetStocked = 100;
-    //     String targetStockedStr = targetStocked.toString();
+    @Test
+  void addItem() throws IOException {
+    // Create a new item to add
+    InventoryItem newItem = new InventoryItem();
+    newItem.name = "Test Item";
+    newItem.stocked = 25;
+    newItem.desc = "This is a test";
+    newItem.location = "located here";
+    newItem.type = "test";
 
-    //     Map<String, List<String>> queryParams = new HashMap<>();
+    // Use `javalinJackson` to convert the `User` object to a JSON string representing that user.
+    // This would be equivalent to:
+    //   String testNewUser = """
+    //       {
+    //         "name": "Test User",
+    //         "age": 25,
+    //         "company": "testers",
+    //         "email": "test@example.com",
+    //         "role": "viewer"
+    //       }
+    //       """;
+    // but using `javalinJackson` to generate the JSON avoids repeating all the field values,
+    // which is then less error prone.
+    String newItemJson = javalinJackson.toJsonString(newItem, InventoryItem.class);
 
-    //     queryParams.put(inventoryItemController.STOCKED_KEY, Arrays.asList(new String[] {targetStockedStr}));
-    //     when(ctx.queryParamMap()).thenReturn(queryParams);
-    //     when(ctx.queryParam(inventoryItemController.STOCKED_KEY)).thenReturn(targetStockedStr);
+    // A `BodyValidator` needs
+    //   - The string (`newUserJson`) being validated
+    //   - The class (`User.class) it's trying to generate from that string
+    //   - A function (`() -> User`) which "shows" the validator how to convert
+    //     the JSON string to a `User` object. We'll again use `javalinJackson`,
+    //     but in the other direction.
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
 
-    //     // Validation validation = new Validation();
+    inventoryItemController.addNewItem(ctx);
+    verify(ctx).json(mapCaptor.capture());
 
-    //     // Validator<Integer> validator = validation.validator(
-    //     //    inventoryItemController.STOCKED_KEY,
-    //     //    Integer.class,
-    //     //    targetStockedStr
-    //     //   );
+    // Our status should be 201, i.e., our new user was successfully created.
+    verify(ctx).status(HttpStatus.CREATED);
 
-    //     // when(ctx.queryParamAsClass(inventoryItemController.STOCKED_KEY, Integer.class))
-    //     //         .thenReturn(validator);
+    // Verify that the user was added to the database with the correct ID
+    Document addedItem = testDatabase.getCollection("inventory_items")
+        .find(eq("_id", new ObjectId(mapCaptor.getValue().get("id")))).first();
 
-    //     inventoryItemController.getItems(ctx);
+    // Successfully adding the user should return the newly generated, non-empty
+    // MongoDB ID for that user.
+    assertNotEquals("", addedItem.get("_id"));
+    // The new user in the database (`addedUser`) should have the same
+    // field values as the user we asked it to add (`newUser`).
+    assertEquals(newItem.name, addedItem.get("name"));
+    assertEquals(newItem.stocked, addedItem.get(InventoryItemController.STOCKED_KEY));
+    assertEquals(newItem.type, addedItem.get(InventoryItemController.TYPE_KEY));
+    assertEquals(newItem.desc, addedItem.get("desc"));
+    assertEquals(newItem.location, addedItem.get(InventoryItemController.LOCATION_KEY));
+  }
 
-    //     verify(ctx).json(inventoryItemArrayCaptor.capture());
-    //     verify(ctx).status(HttpStatus.OK);
+  @Test
+  void addInvalidNameItem() throws IOException {
+    // Create a new user JSON string to add.
+    // Note that it has an invalid string for the email address, which is
+    // why we're using a `String` here instead of a `User` object
+    // like we did in the previous tests.
+    String newItemJson = """
+      {
+        "name": "no",
+        "stocked": 25,
+        "desc": "This should fail!",
+        "location": "Over there",
+        "type": "test"
+      }
+      """;
 
-    //     assertEquals(2, inventoryItemArrayCaptor.getValue().size());
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
 
-    //     for (InventoryItem item : inventoryItemArrayCaptor.getValue()) {
-    //         assertTrue(item.stocked >= targetStocked); //Any value over 100 should be returned.
-    //     }
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+    assertTrue(exceptionMessage.contains("no"));
+  }
 
-    //     List<String> itemNames = inventoryItemArrayCaptor.getValue().stream()
-    //         .map(item -> item.name)
-    //         .collect(Collectors.toList());
+  @Test
+  void addInvalidStockItem() throws IOException {
+    String newItemJson = """
+      {
+        "name": "This is a Test",
+        "stocked": "This is not a number!",
+        "desc": "This should fail!",
+        "location": "Over there",
+        "type": "test"
+      }
+      """;
 
-    //     assertTrue(itemNames.contains("Pencil"));
-    //     assertTrue(itemNames.contains("Eraser"));
-    // }
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+        .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                      () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("This is not a number!"));
+  }
 }

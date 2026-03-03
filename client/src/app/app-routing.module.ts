@@ -6,6 +6,7 @@ import { UserListComponent } from './users/user-list.component';
 import { UserProfileComponent } from './users/user-profile.component';
 import { CompanyListComponent } from './company-list/company-list.component';
 import { InventoryListComponent } from './inventory/inventory_list.component';
+import { AddItemComponent } from './inventory/add_inventory_item.component';
 
 // Note that the 'users/new' route needs to come before 'users/:id'.
 // If 'users/:id' came first, it would accidentally catch requests to
@@ -16,6 +17,7 @@ const routes: Routes = [
   {path: 'users/new', component: AddUserComponent, title: 'Add User'},
   {path: 'users/:id', component: UserProfileComponent, title: 'User Profile'},
   {path: 'inventory', component: InventoryListComponent, title: 'Inventory'},
+  {path: 'inventory/new', component: AddItemComponent, title: 'Add Item'},
   //TODO, we want each item in the list to have its own page for modifying stuff?
   //{path: 'inventory_items/:id', component: UserProfileComponent, title: 'Item Profile'},
   {path: 'companies', component: CompanyListComponent, title: 'Companies'}

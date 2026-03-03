@@ -9,7 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-//import java.util.Map;
+import java.util.Map;
 import java.util.Objects;
 //import java.util.regex.Pattern;
 
@@ -33,6 +33,7 @@ import umm3601.Controller;
 /**
  * Controller that manages requests for info about users.
  */
+@SuppressWarnings({"MagicNumber"})
 public class InventoryItemController implements Controller {
 
   private static final String API_INVENTORY = "/api/inventory";
@@ -190,51 +191,33 @@ public class InventoryItemController implements Controller {
    * @param ctx a Javalin HTTP context that provides the user info
    *  in the JSON body of the request
    */
-  // public void addNewItem(Context ctx) {
-  //   /*
-  //    * The follow chain of statements uses the Javalin validator system
-  //    * to verify that instance of `User` provided in this context is
-  //    * a "legal" user. It checks the following things (in order):
-  //    *    - The user has a value for the name (`usr.name != null`)
-  //    *    - The user name is not blank (`usr.name.length > 0`)
-  //    *    - The provided email is valid (matches EMAIL_REGEX)
-  //    *    - The provided age is > 0
-  //    *    - The provided age is < REASONABLE_AGE_LIMIT
-  //    *    - The provided role is valid (one of "admin", "editor", or "viewer")
-  //    *    - A non-blank company is provided
-  //    * If any of these checks fail, the Javalin system will throw a
-  //    * `BadRequestResponse` with an appropriate error message.
-  //    */
-  //   //String body = ctx.body();
-  //   InventoryItem newItem = ctx.bodyValidator(InventoryItem.class)
-  //     // .check(usr -> usr.name != null && usr.name.length() > 0,
-  //     //   "User must have a non-empty user name; body was " + body)
-  //     // .check(usr -> usr.email.matches(EMAIL_REGEX),
-  //     //   "User must have a legal email; body was " + body)
-  //     // .check(usr -> usr.age > 0,
-  //     //   "User's age must be greater than zero; body was " + body)
-  //     // .check(usr -> usr.age < REASONABLE_AGE_LIMIT,
-  //     //   "User's age must be less than " + REASONABLE_AGE_LIMIT + "; body was " + body)
-  //     // .check(usr -> usr.role.matches(ROLE_REGEX),
-  //     //   "User must have a legal user role; body was " + body)
-  //     // .check(usr -> usr.company != null && usr.company.length() > 0,
-  //     //   "User must have a non-empty company name; body was " + body)
-  //     .get();
+  public void addNewItem(Context ctx) {
+    String body = ctx.body();
+    InventoryItem newItem = ctx.bodyValidator(InventoryItem.class)
+      .check(itm -> itm.name != null && itm.name.length() >= 4,
+        "Item must have a non-empty name; body was " + body)
+      .check(itm -> itm.stocked >= 0,
+        "Stocked value must be greater than or equal to zero; body was " + body)
+      .check(itm -> itm.type != null && itm.type.length() > 0,
+        "Item must have a non-empty type; body was " + body)
+      .check(itm -> itm.location != null && itm.location.length() > 0,
+        "Item must have a non-empty location; body was " + body)
+      .get();
 
-  //   // Add the new user to the database
-  //   inventoryCollection.insertOne(newItem);
+    // Add the new item to the database
+    inventoryCollection.insertOne(newItem);
 
-  //   // Set the JSON response to be the `_id` of the newly created user.
-  //   // This gives the client the opportunity to know the ID of the new user,
-  //   // which it can then use to perform further operations (e.g., a GET request
-  //   // to get and display the details of the new user).
-  //   ctx.json(Map.of("id", newItem._id));
-  //   // 201 (`HttpStatus.CREATED`) is the HTTP code for when we successfully
-  //   // create a new resource (a user in this case).
-  //   // See, e.g., https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-  //   // for a description of the various response codes.
-  //   ctx.status(HttpStatus.CREATED);
-  // }
+    // Set the JSON response to be the `_id` of the newly created user.
+    // This gives the client the opportunity to know the ID of the new user,
+    // which it can then use to perform further operations (e.g., a GET request
+    // to get and display the details of the new user).
+    ctx.json(Map.of("id", newItem._id));
+    // 201 (`HttpStatus.CREATED`) is the HTTP code for when we successfully
+    // create a new resource (a user in this case).
+    // See, e.g., https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+    // for a description of the various response codes.
+    ctx.status(HttpStatus.CREATED);
+  }
 
   /**
    * Delete the user specified by the `id` parameter in the request.
@@ -301,18 +284,18 @@ public class InventoryItemController implements Controller {
    */
   @Override
   public void addRoutes(Javalin server) {
-    // Get the specified user
+    // Get the specified item
     server.get(API_INVENTORY_BY_ID, this::getItem);
 
-    // List users, filtered using query parameters
+    // List items, filtered using query parameters
     server.get(API_INVENTORY, this::getItems);
 
     // Get the users, possibly filtered, grouped by company
     // server.get("/api/usersByCompany", this::getUsersGroupedByCompany);
 
-    // Add new user with the user info being in the JSON body
+    // Add new item with the user info being in the JSON body
     // of the HTTP request
-    // server.post(API_USERS, this::addNewUser);
+    server.post(API_INVENTORY, this::addNewItem);
 
     // Delete the specified user
     // server.delete(API_USER_BY_ID, this::deleteUser);
