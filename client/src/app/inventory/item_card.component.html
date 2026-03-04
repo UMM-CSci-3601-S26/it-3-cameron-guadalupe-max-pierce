@@ -1,0 +1,45 @@
+@if (item()) {
+  <mat-card class="item-card">
+    <mat-card-header>
+      <!-- @if (item().avatar) {
+        <img mat-card-avatar [src]="user().avatar" alt="Avatar for {{user().name}}" class="user-avatar">
+      } -->
+      <mat-card-title class="item-card-name">{{ item().name }}</mat-card-title>
+      <mat-card-subtitle class="item-card-desc">{{ item().desc }}</mat-card-subtitle>
+    </mat-card-header>
+    @if (!simple()) {
+      <mat-card-content>
+        <mat-list>
+          <mat-list-item>
+            <mat-icon matListItemIcon>dataset</mat-icon>
+            <p matListItemTitle>Type</p>
+            <p matListItemLine class="item-card-type">{{ item().type }}</p>
+          </mat-list-item>
+          <mat-divider [inset]=true></mat-divider>
+          <mat-list-item>
+            <!-- <mat-icon matListItemIcon>schedule</mat-icon> -->
+            <p matListItemTitle>Stocked</p>
+            <p matListItemLine class="item-card-stocked">x{{ item().stocked }}</p>
+          </mat-list-item>
+          <mat-divider [inset]=true></mat-divider>
+            <mat-list-item>
+            <!-- <mat-icon matListItemIcon>dataset</mat-icon> -->
+            <p matListItemTitle>Location</p>
+            <p matListItemLine class="item-card-location">{{ item().location }}</p>
+          </mat-list-item>
+           <mat-divider [inset]=true></mat-divider>
+            <mat-list-item>
+            <!-- <mat-icon matListItemIcon>dataset</mat-icon> -->
+            <p matListItemTitle>Description</p>
+            <p matListItemLine class="item-card-desc">{{ item().desc }}</p>
+          </mat-list-item>
+        </mat-list>
+      </mat-card-content>
+    }
+    @if (simple()) {
+      <mat-card-actions>
+        <button mat-button data-test="viewProfileButton" [routerLink]="['/inventory', item()._id]">View Profile</button>
+      </mat-card-actions>
+    }
+  </mat-card>
+}

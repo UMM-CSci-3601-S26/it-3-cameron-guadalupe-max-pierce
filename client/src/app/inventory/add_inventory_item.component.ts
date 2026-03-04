@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { InventoryService } from './inventory.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
@@ -15,12 +16,13 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
   selector: 'app-add-inventory-item',
   templateUrl: './add_inventory_item.component.html',
   styleUrls: ['./add_inventory_item.component.scss'],
-  imports: [FormsModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatAutocompleteModule]
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatAutocompleteModule]
 })
 export class AddItemComponent {
   private inventoryService = inject(InventoryService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
+  private finished = false;
 
   typeInput = signal<string>('');
 
@@ -74,7 +76,6 @@ export class AddItemComponent {
     location: new FormControl('', Validators.compose([
       Validators.required,
     ])),
-
   });
 
 
@@ -120,37 +121,45 @@ export class AddItemComponent {
   }
 
   submitForm() {
-    this.inventoryService.addItem(this.addInventoryForm.value).subscribe({
-      next: () => { //newId
-        this.snackBar.open(
-          `Added x${this.addInventoryForm.value.stocked} ${this.addInventoryForm.value.name}`,
-          null,
-          { duration: 2000 }
-        );
-        this.router.navigate(['/inventory']);
-      },
-      error: err => {
-        if (err.status === 400) {
+    if (this.finished) { //Ensures form is only submitted once!
+      this.snackBar.open(
+        `Loading. Hold your horses!`,
+        null,
+        { duration: 2000 }
+      );
+    } else {
+      this.finished = true;
+      this.inventoryService.addItem(this.addInventoryForm.value).subscribe({
+        next: () => { //newId
           this.snackBar.open(
-            `Tried to add an illegal new item – Error Code: ${err.status}\nMessage: ${err.message}`,
-            'OK',
-            { duration: 5000 }
+            `Added x${this.addInventoryForm.value.stocked} ${this.addInventoryForm.value.name}`,
+            null,
+            { duration: 2000 }
           );
-        } else if (err.status === 500) {
-          this.snackBar.open(
-            `The server failed to process your request to add a new item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
-            'OK',
-            { duration: 5000 }
-          );
-        } else {
-          this.snackBar.open(
-            `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
-            'OK',
-            { duration: 5000 }
-          );
-        }
-      },
-    });
+          this.router.navigate(['/inventory']);
+        },
+        error: err => {
+          if (err.status === 400) {
+            this.snackBar.open(
+              `Tried to add an illegal new item – Error Code: ${err.status}\nMessage: ${err.message}`,
+              'OK',
+              { duration: 5000 }
+            );
+          } else if (err.status === 500) {
+            this.snackBar.open(
+              `The server failed to process your request to add a new item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
+              'OK',
+              { duration: 5000 }
+            );
+          } else {
+            this.snackBar.open(
+              `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
+              'OK',
+              { duration: 5000 }
+            );
+          }
+        },
+      });
+    }
   }
-
 }

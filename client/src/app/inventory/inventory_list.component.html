@@ -88,6 +88,9 @@
               } -->
               <span matListItemTitle mat-line class="item-list-name"> x{{item.stocked}} ~ {{item.name}}</span>
               <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
+              <!-- <span>
+                <button mat-button data-test="viewProfileButton" [routerLink]="['/inventory', item._id]">Modify</button>
+              </span> -->
             </a>
             }
           </mat-nav-list>
@@ -98,10 +101,10 @@
   } @else {
   <div class="flex-1" class="item-error">
     <mat-error>
-      There was a problem loading the items. Try checking your network; otherwise, the server may be down.
+      Loading items...
     </mat-error>
     <mat-error>
-      Please wait a bit and try again.
+      If items aren't loading, check your network and server.
     </mat-error>
   </div>
   }

@@ -21,7 +21,7 @@ import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
-//import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.DeleteResult;
 
 import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
@@ -224,19 +224,19 @@ public class InventoryItemController implements Controller {
    *
    * @param ctx a Javalin HTTP context
    */
-  // public void deleteItem(Context ctx) {
-  //   String id = ctx.pathParam("id");
-  //   DeleteResult deleteResult = inventoryCollection.deleteOne(eq("_id", new ObjectId(id)));
-  //   // We should have deleted 1 or 0 users, depending on whether `id` is a valid user ID.
-  //   if (deleteResult.getDeletedCount() != 1) {
-  //     ctx.status(HttpStatus.NOT_FOUND);
-  //     throw new NotFoundResponse(
-  //       "Was unable to delete ID "
-  //         + id
-  //         + "; perhaps illegal ID or an ID for an item not in the system?");
-  //   }
-  //   ctx.status(HttpStatus.OK);
-  // }
+  public void deleteItem(Context ctx) {
+    String id = ctx.pathParam("id");
+    DeleteResult deleteResult = inventoryCollection.deleteOne(eq("_id", new ObjectId(id)));
+    // We should have deleted 1 or 0 users, depending on whether `id` is a valid user ID.
+    if (deleteResult.getDeletedCount() != 1) {
+      ctx.status(HttpStatus.NOT_FOUND);
+      throw new NotFoundResponse(
+        "Was unable to delete ID "
+          + id
+          + "; perhaps illegal ID or an ID for an item not in the system?");
+    }
+    ctx.status(HttpStatus.OK);
+  }
 
   /**
    * Utility function to generate the md5 hash for a given string
@@ -297,7 +297,7 @@ public class InventoryItemController implements Controller {
     // of the HTTP request
     server.post(API_INVENTORY, this::addNewItem);
 
-    // Delete the specified user
-    // server.delete(API_USER_BY_ID, this::deleteUser);
+    // Delete the specified item
+     server.delete(API_INVENTORY_BY_ID, this::deleteItem);
   }
 }
