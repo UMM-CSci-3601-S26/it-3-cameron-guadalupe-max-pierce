@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { InventoryService } from './inventory.service';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
@@ -15,7 +16,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
   selector: 'app-add-inventory-item',
   templateUrl: './add_inventory_item.component.html',
   styleUrls: ['./add_inventory_item.component.scss'],
-  imports: [FormsModule, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatAutocompleteModule]
+  imports: [FormsModule, ReactiveFormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatAutocompleteModule]
 })
 export class AddItemComponent {
   private inventoryService = inject(InventoryService);

@@ -78,17 +78,6 @@
           <button
             mat-raised-button
             type="button"
-            color="warn_dark"
-            [disabled]="false"
-            type="back"
-            routerLink="/inventory"
-            data-test="backToInventoryButton"
-            >
-            Back to Inventory
-          </button>
-          <button
-            mat-raised-button
-            type="button"
             color="accent"
             [disabled]="!addInventoryForm.valid"
             type="submit"
@@ -99,5 +88,17 @@
         </mat-card-actions>
       </mat-card>
     </form>
+    <mat-card-actions align="start">
+    <button
+      mat-raised-button
+      type="button"
+      color="warn-dark"
+      type="back"
+      routerLink="/inventory"
+      data-test="backToInventoryButton"
+      >
+      Back to Inventory
+    </button>
+    </mat-card-actions>
   </div>
 </div>

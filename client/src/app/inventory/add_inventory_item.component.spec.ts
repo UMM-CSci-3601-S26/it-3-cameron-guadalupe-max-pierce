@@ -1,12 +1,14 @@
 import { Location } from '@angular/common';
 import { provideHttpClientTesting, HttpTestingController, } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, waitForAsync} from '@angular/core/testing'; //fakeAsync, flush, tick,
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing'; //fakeAsync, flush, tick,
 import { AbstractControl, FormGroup } from '@angular/forms';
 import { provideRouter, Router } from '@angular/router';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import {throwError, } from 'rxjs'; //of
 import { MockInventoryService } from 'src/testing/inventory.service.mock';
 import { AddItemComponent } from './add_inventory_item.component';
+import { ActivatedRoute } from '@angular/router'; //ParamMap
+import { ActivatedRouteStub } from '../../testing/activated-route-stub'; //No idea wtf this does
 //import { UserProfileComponent } from './user-profile.component';
 import { InventoryService } from './inventory.service';
 import { provideHttpClient } from '@angular/common/http';
@@ -16,6 +18,12 @@ describe('AddItemComponent', () => {
   let addItemComponent: AddItemComponent;
   let addItemForm: FormGroup;
   let fixture: ComponentFixture<AddItemComponent>;
+  const pencilId = 'pencil_id';
+  const activatedRoute: ActivatedRouteStub = new ActivatedRouteStub({
+    // Using the constructor here lets us try that branch in `activated-route-stub.ts`
+    // and then we can choose a new parameter map in the tests if we choose
+    id: pencilId,
+  });
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
@@ -26,7 +34,9 @@ describe('AddItemComponent', () => {
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: InventoryService, useClass: MockInventoryService }
+        { provide: InventoryService, useClass: MockInventoryService },
+        { provide: ActivatedRoute, useValue: activatedRoute }
+        //For some reason necessary if ANY button has a router link? What does this even do?!
       ]
     }).compileComponents().catch(error => {
       expect(error).toBeNull();
