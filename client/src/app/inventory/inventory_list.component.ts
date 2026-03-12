@@ -129,20 +129,25 @@ export class InventoryListComponent {
   typeFilteredItems = computed(() => {
     const currentItems = this.serverFilteredItems();
     const typedArray: { header: string, items: InventoryItem[] }[] = [];
-
+    let matchingItems = [];
     for (let i = 0; i < this.inventoryService.typeOptions.length - 1; i++) {
-      typedArray.push({
-        header: this.inventoryService.typeOptions[i].label,
-        items: this.inventoryService.filterItems(currentItems, {
-          name: this.itemName(),
-          type: this.inventoryService.typeOptions[i].value,
-          stocked: this.itemStock(),
-          desc: this.itemDesc(),
-          location: this.itemLocation(),
-          sortBy: this.sortBy()
-        })
+      matchingItems = this.inventoryService.filterItems(currentItems, {
+        name: this.itemName(),
+        type: this.inventoryService.typeOptions[i].value,
+        stocked: this.itemStock(),
+        desc: this.itemDesc(),
+        location: this.itemLocation(),
+        sortBy: this.sortBy()
       })
+      //Only sections that have matching items are shown.
+      if (matchingItems.length > 0) {
+        typedArray.push({
+          header: this.inventoryService.typeOptions[i].label,
+          items: matchingItems
+        })
+      }
     }
+
 
     return typedArray;
   })

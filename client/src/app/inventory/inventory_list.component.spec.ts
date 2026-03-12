@@ -45,6 +45,12 @@ describe('User list', () => {
     expect(Array.isArray(items)).toBe(true);
   });
 
+  it('should initialize with typeFilteredItems available', () => {
+    const typedItems = inventoryList.typeFilteredItems();
+    expect(typedItems).toBeDefined();
+    expect(Array.isArray(typedItems)).toBe(true);
+  });
+
   it('should call getItems() when itemName signal changes', () => {
     const spy = spyOn(inventoryService, 'getItems').and.callThrough();
     inventoryList.itemName.set('test');
@@ -71,7 +77,7 @@ describe('User list', () => {
  * testing. Here we set up the mock UserService (userServiceStub) so that
  * _always_ fails (throws an exception) when you request a set of users.
  */
-describe('Misbehaving User List', () => {
+describe('Misbehaving Item List', () => {
   let itemList: InventoryListComponent;
   let fixture: ComponentFixture<InventoryListComponent>;
 

@@ -83,6 +83,7 @@
           @if (sortBy() === "type") { <!-- Special sectioned list for type -->
             <mat-nav-list class="item-nav-list" color="accent">
               @for (collection of typeFilteredItems(); track collection.items) {
+
                 <h2 matSubheader>{{ collection.header }}</h2>
                 <!--Sublist for each item type-->
                 @for (item of collection.items; track item._id) {
