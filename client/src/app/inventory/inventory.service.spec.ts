@@ -66,21 +66,12 @@ describe('InventoryService', () => {
       // it just returns our test data.
       const mockedMethod = spyOn(httpClient, 'get').and.returnValue(of(testItems));
 
-      // Call `userService.getUsers()` and confirm that the correct call has
-      // been made with the correct arguments.
-      //
-      // We have to `subscribe()` to the `Observable` returned by `getUsers()`.
-      // The `users` argument in the function is the array of Users returned by
-      // the call to `getUsers()`.
       inventoryService.getItems().subscribe(() => {
         // The mocked method (`httpClient.get()`) should have been called
         // exactly one time.
         expect(mockedMethod)
           .withContext('one call')
           .toHaveBeenCalledTimes(1);
-        // The mocked method should have been called with two arguments:
-        //   * the appropriate URL ('/api/users' defined in the `UserService`)
-        //   * An options object containing an empty `HttpParams`
         expect(mockedMethod)
           .withContext('talks to the correct endpoint')
           .toHaveBeenCalledWith(inventoryService.inventoryUrl, { params: new HttpParams() });
@@ -150,7 +141,7 @@ describe('InventoryService', () => {
   });
 
   describe('When getItemById() is given an ID', () => {
-    it('calls api/users/id with the correct ID', waitForAsync(() => {
+    it('calls api/inventory/id with the correct ID', waitForAsync(() => {
       // We're just picking a Item "at random" from our little
       // set of Items up at the top.
       const targetUser: InventoryItem = testItems[1];
@@ -159,8 +150,6 @@ describe('InventoryService', () => {
       const mockedMethod = spyOn(httpClient, 'get').and.returnValue(of(targetUser));
 
       inventoryService.getItemById(targetId).subscribe(() => {
-        // The `User` returned by `getUserById()` should be targetUser, but
-        // we don't bother with an `expect` here since we don't care what was returned.
         expect(mockedMethod)
           .withContext('one call')
           .toHaveBeenCalledTimes(1);
@@ -287,5 +276,94 @@ describe('InventoryService', () => {
     expect(filteredItems[2].name).toBe("2-inch Eraser");
     expect(filteredItems[1].name).toBe("Red Plastic Folder");
     expect(filteredItems[0].name).toBe("Yellow Pencils");
+  });
+
+  describe('When deleteItem() is called', () => {
+    it('talks to correct Endpoint', waitForAsync(() => {
+      // Checking whether the item was actually deleted should happen in E2E probably
+      const targetItem: InventoryItem = testItems[1];
+      const targetId: string = targetItem._id;
+
+      const mockedMethod = spyOn(httpClient, 'delete').and.returnValue(of(targetItem));
+
+      inventoryService.deleteItem(targetId).subscribe(() => {
+        expect(mockedMethod)
+          .withContext('one call')
+          .toHaveBeenCalledTimes(1);
+        expect(mockedMethod)
+          .withContext('talks to the correct endpoint')
+          .toHaveBeenCalledWith(`${inventoryService.inventoryUrl}/${targetId}`);
+      });
+    }));
+  });
+
+  describe('When addItem() is called', () => {
+    it('talks to correct Endpoint', waitForAsync(() => {
+      // Checking whether the item was actually deleted should happen in E2E probably
+      const targetItem: InventoryItem = testItems[1]; //This will be a duplicate
+
+      const mockedMethod = spyOn(httpClient, 'post').and.returnValue(of(targetItem));
+
+      inventoryService.addItem(targetItem).subscribe(() => {
+        expect(mockedMethod)
+          .withContext('one call')
+          .toHaveBeenCalledTimes(1);
+        expect(mockedMethod)
+          .withContext('talks to the correct endpoint')
+          .toHaveBeenCalledWith(`${inventoryService.inventoryUrl}`, targetItem );
+      });
+    }));
+  });
+
+  describe('When modifyMass() is called', () => {
+    let copiedItems = [];
+    let emptyItem: InventoryItem = {
+      _id: undefined,
+      name: undefined,
+      type: undefined,
+      location: undefined,
+      stocked: undefined,
+      desc: undefined
+    }
+
+    beforeEach(() => {
+      //Create a new array to compare to the actual testItems after each modification
+      copiedItems = [];
+      for (let i = 0; i < testItems.length - 1; i++) {
+        copiedItems.push(testItems[i]);
+      }
+      //Reset empty item properties.
+      emptyItem = {
+        _id: undefined,
+        name: undefined,
+        type: undefined,
+        location: undefined,
+        stocked: undefined,
+        desc: undefined
+      }
+    });
+
+    //Accepts a normal array, so thankfully easy to test?
+    it('talks to correct Endpoints', waitForAsync(() => {
+      // Checking whether the item was actually deleted should happen in E2E probably
+      const targetItem: InventoryItem = testItems[1]; //This will be a duplicate
+
+      const mockedAdd = spyOn(httpClient, 'post').and.returnValue(of(targetItem));
+      const mockedDelete = spyOn(httpClient, 'delete').and.returnValue(of(targetItem));
+
+
+      inventoryService.modifyMass(emptyItem,copiedItems);
+
+      expect(mockedAdd)
+        .withContext('calls add')
+        .toHaveBeenCalledTimes(1);
+
+      expect(mockedDelete)
+        .withContext('calls delete')
+        .toHaveBeenCalledTimes(1);
+
+      //Obviously we could do more testing here...
+      // but it at least gets us to coverage, and it works for now.
+    }));
   });
 });

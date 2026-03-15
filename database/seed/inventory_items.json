@@ -58,5 +58,15 @@
     "desc":"Plastic pencil box, any color, 8*5 inches, Crayola",
     "location":"Tote #5",
     "stocked":10
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87215"
+    },
+    "name": "Paper Folders",
+    "type": "folders",
+    "desc":"Paper manilla folders, any brand",
+    "location":"N/A",
+    "stocked":24
   }
 ]

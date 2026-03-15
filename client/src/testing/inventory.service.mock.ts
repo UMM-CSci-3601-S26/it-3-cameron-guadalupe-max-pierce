@@ -12,7 +12,7 @@ import { InventoryService } from 'src/app/inventory/inventory.service';
 @Injectable({
   providedIn: AppComponent
 })
-export class MockInventoryService implements Pick<InventoryService, 'getItems' | 'filterItems' | 'addItem' | 'deleteItem'> {
+export class MockInventoryService implements Pick<InventoryService, 'getItems' | 'filterItems' | 'addItem' | 'deleteItem' | 'modifyMass' > {
   //'getUsers' | 'getUserById' | 'addUser' | 'filterUsers'
   static testItems: InventoryItem[] = [
     {
@@ -88,6 +88,10 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
     // Send post request to add a new item with the item data as the body.
     // `res.id` should be the MongoDB ID of the newly added `Item`.
     return of(MockInventoryService.emptyItem);
+  }
+
+  modifyMass(newProps:InventoryItem,oldItems:InventoryItem[]) {
+    //Doesn't return anything; just modifies database.
   }
 
   filterItems(items: InventoryItem[], filters: {

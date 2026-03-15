@@ -2,9 +2,17 @@
   <div class="flex-1">
     <mat-card class="search-card">
       <mat-card-header>
-        <mat-card-title class="inventory-list-title">INVENTORY</mat-card-title>
+        <mat-card-title class="inventory-list-title"><strong>INVENTORY</strong></mat-card-title>
       </mat-card-header>
       <mat-card-content>
+      <mat-card class="search-card">
+        <p>
+          This page lists the organization's current inventory, including both stocked and desired items.
+          <br>Click on any item to modify its properties or remove it from inventory. Click the <strong>'Add Item'</strong> button to add new items to the inventory.
+          <br>The inventory can be sorted by various properties. Use the <strong>'Sort By'</strong> section to change the order of items. When by type, items will be subdivided by category.
+          <br>When restocking, use the <strong>'Reset Locations'</strong> button to remove locations from all items. (This CANNOT be undone!)
+        </p>
+      </mat-card>
 
         <div class="flex-row gap-8 flex-wrap">
           <!-- Examples of filtering in Angular -->
@@ -44,6 +52,31 @@
             </mat-autocomplete>
             <mat-hint>Search by type</mat-hint>
           </mat-form-field>
+          <button
+            mat-raised-button
+            type="button"
+            color="accent"
+            type="back"
+            [style.height.px]=55
+            (click)="revealReset()"
+            data-test="resetLocationButton"
+            >
+            Location Reset
+          </button>
+          @if (resetVisible()) {
+              <button
+              mat-raised-button
+              type="button"
+              color="warn"
+              type="back"
+              [style.height.px]=55
+              data-test="resetLocationButton"
+              (click)="resetLocations()"
+              >
+            Clear All Locations
+            </button>
+          }
+
         </div>
 
         <div class="flex-row gap-8 flex-wrap">
@@ -89,13 +122,18 @@
                 @for (item of collection.items; track item._id) {
                   @if (item.stocked > 0) {
                     <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
-                    <span matListItemTitle mat-line class="item-list-name"> x{{item.stocked}} ~ {{item.name}}</span>
-                    <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
+                    <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.stocked}}</strong> ~ {{item.name}}</span>
+                    @if (item.location === "N/A") {
+                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not provided</span>
+                    }
+                    @else {
+                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
+                    }
                     </a>
                   } @else {
                     <a mat-list-item disabled="true" [routerLink]="['/inventory', item._id]" class="item-list-item">
-                    <span matListItemTitle mat-line class="item-list-name"> Unstocked ~ {{item.name}}</span>
-                    <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
+                    <span matListItemTitle mat-line class="item-list-name"> <strong>Unstocked</strong> ~ {{item.name}}</span>
+                    <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not available</span>
                     </a>
                   }
                 }
@@ -107,13 +145,18 @@
               @for (item of filteredItems(); track item._id) {
                 @if (item.stocked > 0) {
                   <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
-                  <span matListItemTitle mat-line class="item-list-name"> x{{item.stocked}} ~ {{item.name}}</span>
-                  <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.stocked}}</strong> ~ {{item.name}}</span>
+                  @if (item.location === "N/A") {
+                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not provided</span>
+                    }
+                    @else {
+                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
+                    }
                   </a>
                 } @else {
                   <a mat-list-item disabled="true" [routerLink]="['/inventory', item._id]" class="item-list-item">
-                  <span matListItemTitle mat-line class="item-list-name"> Unstocked ~ {{item.name}}</span>
-                  <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>Unstocked</strong> ~ {{item.name}}</span>
+                  <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not availible</span>
                   </a>
                 }
               }
@@ -126,7 +169,7 @@
   } @else {
   <div class="flex-1" class="item-error">
     <mat-error>
-      Loading items...
+      <strong>Loading items...</strong>
     </mat-error>
     <mat-error>
       If items aren't loading, check your network and server.

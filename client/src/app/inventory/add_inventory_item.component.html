@@ -23,7 +23,7 @@
             <mat-form-field>
               <mat-label>Location</mat-label>
               <input matInput formControlName="location"
-                required>
+                required [ngModel]='"N/A"'>
               @if (formControlHasError('location')) {
                 <mat-error data-test="locationError">
                   {{getErrorMessage('location')}}

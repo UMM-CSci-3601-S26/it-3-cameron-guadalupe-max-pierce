@@ -9,7 +9,7 @@ import { InventoryService } from './inventory.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-describe('User list', () => {
+describe('Inventory list', () => {
   let inventoryList: InventoryListComponent;
   let fixture: ComponentFixture<InventoryListComponent>;
   let inventoryService: InventoryService;
@@ -68,6 +68,30 @@ describe('User list', () => {
 
   it('should not show error message on successful load', () => {
     expect(inventoryList.errMsg()).toBeUndefined();
+  });
+
+  it("correctly handles the 'Location Reset' button", () => {
+    expect(inventoryList.resetVisible()).toEqual(false);
+    inventoryList.revealReset();
+    expect(inventoryList.resetVisible()).toEqual(true);
+  });
+
+  it("calls the service with correct parameters for location reset", () => {
+    const spy = spyOn(inventoryService, 'modifyMass').and.callThrough();
+    const originalItems = inventoryList.filteredItems();
+    inventoryList.resetLocations();
+    fixture.detectChanges();
+    expect(spy).toHaveBeenCalledOnceWith(
+      {
+        _id:undefined,
+        location:"N/A",
+        stocked:undefined,
+        name:undefined,
+        type:undefined,
+        desc:undefined
+      },
+      originalItems
+    );
   });
 });
 
