@@ -17,7 +17,7 @@ describe('Item list', () => {
   });
 
   it('Should show items in list view', () => {
-    page.getItemListItems().should('have.length', 6);
+    page.getItemListItems().should('have.length', 7);
     page.getItemCards().should('not.exist');
   });
 
@@ -34,7 +34,7 @@ describe('Item list', () => {
 
     page.getItemListItems().should('have.length', 1);
 
-    page.getItemListItems().first().find('.item-list-desc').should('contain.text', 'Tote #1');
+    page.getItemListItems().first().find('.item-list-desc').should('contain.text', 'Yellow #2 Ticonderoga pencils');
   });
 
   it('Should type partial in the type filter and return pencil items', () => {
@@ -50,13 +50,14 @@ describe('Item list', () => {
   it('Should type something in the stocked filter and return items with stock 3 or more', () => {
     cy.get('[data-test=itemStockInput]').clear().type('3');
 
-    page.getItemListItems().should('have.length', 4);
+    page.getItemListItems().should('have.length', 5);
 
     page.getItemListItems().find('.item-list-name')
       .should('contain.text', 'Red Folders')
       .should('contain.text', 'Green Folders')
       .should('contain.text', 'Colored Pencils 16-Pack')
       .should('contain.text', 'Pencil Box')
+      .should('contain.text', 'Paper Folders')
       .should('not.contain.text', 'Erasers 6-Pack')
       .should('not.contain.text', 'Yellow Pencils 12-Pack');
   });

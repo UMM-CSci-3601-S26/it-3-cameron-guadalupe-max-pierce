@@ -13,20 +13,16 @@ describe('Add item', () => {
   });
 
   it('Should enable and disable the add item button', () => {
-    // ADD Item button should be disabled until all the necessary fields
-    // are filled. Once the last field is filled, then the button should
-    // become enabled.
+    // ADD Item button should be disabled until name, stocked, and type are filled.
+    // (location has a default value of "N/A")
     page.addItemButton().should('be.disabled');
     page.getFormField('name').type('Yellow Pencils 12-Pack', { delay: 10 });
     cy.wait(100);
     page.addItemButton().should('be.disabled');
-    page.getFormField('stocked').type('0', { delay: 10 });
+    page.getFormField('stocked').type('5', { delay: 10 });
     cy.wait(100);
     page.addItemButton().should('be.disabled');
     page.getFormField('type').type('pencils', { delay: 10 });
-    cy.wait(100);
-    page.addItemButton().should('be.disabled');
-    page.getFormField('location').type('tote #1', { delay: 10 });
     cy.wait(100);
     page.addItemButton().should('be.enabled');
   });
@@ -112,8 +108,8 @@ describe('Add item', () => {
       page.getFormField('desc').type(item.desc, { delay: 10 });
       cy.wait(100);
 
-      // Button should be disabled because location is required
-      page.addItemButton().should('be.disabled');
+      // Button should be enabled even without location
+      page.addItemButton().should('be.enabled');
 
       // We should have stayed on the new item page
       cy.url().should('match', /\/inventory\/new$/);
