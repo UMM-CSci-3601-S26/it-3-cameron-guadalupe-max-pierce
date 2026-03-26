@@ -10,10 +10,44 @@
 
         ],
         "kindergarten": [
-
+          {
+            "name": "Colored Pencils 16-Pack",
+            "type": "colored_pencils",
+            "desc":"Crayola colored pencils, sharpened. Comes in packs of 16.",
+            "required":12
+          },
+          {
+            "name": "Plastic Kazoo",
+            "type": "other",
+            "desc":"Small plastic kazoo, as loud as possible",
+            "required":1
+          },
+          {
+            "name": "Super Smash Bros Ultimate",
+            "type": "other",
+            "desc":"Copy of the classic nintendo fighting game, collector's edition.",
+            "required":1
+          }
         ],
         "1": [
-
+          {
+            "name": "Colored Pencils 16-Pack",
+            "type": "colored_pencils",
+            "desc":"Crayola colored pencils, sharpened. Comes in packs of 16.",
+            "required":12
+          },
+          {
+            "name": "Plastic Kazoo",
+            "type": "other",
+            "desc":"Small plastic kazoo, as loud as possible",
+            "required":1
+          },
+          {
+            "name": "Final Fantasy IV",
+            "type": "other",
+            "desc":"Square Ennix classic, absolute must.",
+            "required":1
+          }
         ],
         "2": [
 
