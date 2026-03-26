@@ -353,7 +353,7 @@ class FamilyControllerSpec {
   }
 
   @Test
-  void tryToDeleteNotFoundUser() throws IOException {
+  void tryToDeleteNotFoundFamily() throws IOException {
     String testID = testItemId1.toHexString();
     when(ctx.pathParam("id")).thenReturn(testID);
 

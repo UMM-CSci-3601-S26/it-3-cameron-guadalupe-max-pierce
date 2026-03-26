@@ -303,4 +303,39 @@ class RequiredItemControllerSpec {
 
     assertTrue(exceptionMessage.contains("This is not a number!"));
   }
+
+  @Test
+  void deleteFoundItem() throws IOException { //Don't delete found family! That's the best family!
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    // User exists before deletion
+    assertEquals(1, testDatabase.getCollection("required_items").countDocuments(eq("_id", new ObjectId(testID))));
+
+    requiredItemController.deleteItem(ctx);
+
+    verify(ctx).status(HttpStatus.OK);
+
+    // User is no longer in the database
+    assertEquals(0, testDatabase.getCollection("required_items").countDocuments(eq("_id", new ObjectId(testID))));
+  }
+
+  @Test
+  void tryToDeleteNotFoundItem() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    requiredItemController.deleteItem(ctx);
+    // Family is no longer in the database
+    assertEquals(0, testDatabase.getCollection("required_items").countDocuments(eq("_id", new ObjectId(testID))));
+
+    assertThrows(NotFoundResponse.class, () -> {
+      requiredItemController.deleteItem(ctx);
+    });
+
+    verify(ctx).status(HttpStatus.NOT_FOUND);
+
+    // Family is still not in the database (Again, if this fails, something's gone horribly wrong)
+    assertEquals(0, testDatabase.getCollection("required_items").countDocuments(eq("_id", new ObjectId(testID))));
+  }
 }
