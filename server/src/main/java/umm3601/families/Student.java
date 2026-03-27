@@ -18,6 +18,11 @@ public class Student {
   //Tracked as a string to account for kindergarten and preschool.
 
   @Override
+  public int hashCode() {
+    return _id.hashCode();
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if (!(obj instanceof Student)) {
       return false;

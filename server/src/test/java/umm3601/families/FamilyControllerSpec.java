@@ -248,7 +248,9 @@ class FamilyControllerSpec {
     student2.grade = "2";
     student2.backpack = true;
 
-    Student[] newStudents = {student1,student2}; //Why are java arrays like this???
+    List<Student> newStudents = new ArrayList<Student>(); //Why are java arrays like this???
+    newStudents.add(student1);
+    newStudents.add(student2);
 
     newFamily.name = "Hendrixes";
     newFamily.time = 250;
