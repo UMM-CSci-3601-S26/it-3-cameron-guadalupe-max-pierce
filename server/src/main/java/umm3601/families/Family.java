@@ -1,5 +1,6 @@
 package umm3601.families;
 
+import java.util.List;
 import org.mongojack.Id;
 import org.mongojack.ObjectId;
 
@@ -15,7 +16,8 @@ public class Family {
   public String _id;
 
   public String name; //Last name
-  public Student[] students; //Array of students in family
+  //public Student[] students; //Array of students in family
+  public List<Student> students; //Parseable string of data
   public int time; //Time of appointment
   public String email;
 

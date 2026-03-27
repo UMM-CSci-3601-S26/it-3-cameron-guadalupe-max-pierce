@@ -198,7 +198,7 @@ public class FamilyController implements Controller {
     Family newFamily = ctx.bodyValidator(Family.class)
       .check(itm -> itm.name != null && itm.name.length() >= 4,
         "Family must have a non-empty name; body was " + body)
-      .check(itm -> itm.students.length >= 0, //TODO, is this the correct way to do this?
+      .check(itm -> itm.students.size() >= 0, //TODO, is this the correct way to do this?
         "Family must have at least one student; body was " + body)
       .check(itm -> itm.time != 0,
         "Family must have valid appointment time; body was " + body)

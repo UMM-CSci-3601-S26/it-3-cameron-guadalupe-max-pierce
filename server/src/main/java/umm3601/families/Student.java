@@ -14,6 +14,7 @@ public class Student {
 
   public boolean backpack; //If true, student also needs a backpack.
   public String grade; //Just need grade, not name.
+  public String school;
   //Tracked as a string to account for kindergarten and preschool.
 
   @Override

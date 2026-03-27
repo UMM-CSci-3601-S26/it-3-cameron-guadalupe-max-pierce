@@ -5,7 +5,18 @@
     },
     "name": "Richards",
     "time":1200,
-    "students":"example_string"
+    "students":[
+      {
+        "grade":"P",
+        "school":"MAES",
+        "backpack":true
+      },
+      {
+        "grade":"3",
+        "school":"MAES",
+        "backpack":false
+      }
+    ]
   },
   {
     "_id": {
@@ -13,6 +24,12 @@
     },
     "name": "Smith",
     "time":100,
-    "students":"example_string"
+    "students":[
+      {
+        "grade":"2",
+        "school":"Hancock",
+        "backpack":false
+      }
+    ]
   }
 ]
