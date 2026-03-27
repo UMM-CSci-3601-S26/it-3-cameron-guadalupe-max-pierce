@@ -1,4 +1,4 @@
-package umm3601.inventory_items;
+package umm3601.grade_list;
 
 //import static com.mongodb.client.model.Filters.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,11 +60,14 @@ import io.javalin.json.JavalinJackson;
 import io.javalin.validation.BodyValidator;
 import io.javalin.validation.ValidationException;
 //import umm3601.user.UserController;
+//import umm3601.inventory_items.InventoryItem;
+//import umm3601.grade_list.requiredItemController;
+//import umm3601.inventory_items.InventoryItem;
 
 @SuppressWarnings({"MagicNumber"})
-class InventoryItemControllerSpec {
+class RequiredItemControllerSpec {
 
-    private InventoryItemController inventoryItemController;
+    private RequiredItemController requiredItemController;
 
     private ObjectId testItemId1;
 
@@ -77,10 +80,10 @@ class InventoryItemControllerSpec {
     private Context ctx;
 
     @Captor
-    private ArgumentCaptor<ArrayList<InventoryItem>> inventoryItemArrayCaptor;
+    private ArgumentCaptor<ArrayList<RequiredItem>> requiredItemArrayCaptor;
 
     @Captor
-    private ArgumentCaptor<InventoryItem> inventoryItemCaptor;
+    private ArgumentCaptor<RequiredItem> requiredItemCaptor;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> mapCaptor;
@@ -107,7 +110,7 @@ class InventoryItemControllerSpec {
     void setupEach() throws IOException {
         MockitoAnnotations.openMocks(this);
 
-        MongoCollection<Document> inventoryItemDocuments = testDatabase.getCollection("inventory_items");
+        MongoCollection<Document> inventoryItemDocuments = testDatabase.getCollection("required_items");
         inventoryItemDocuments.drop();
         List<Document> testInventoryItems = new ArrayList<>();
         testInventoryItems.add(
@@ -115,22 +118,25 @@ class InventoryItemControllerSpec {
                 .append("name", "Pencil")
                 .append("type", "pencil")
                 .append("desc", "A wooden pencil with a graphite core.")
-                .append("location", "Aisle 3, Shelf B")
-                .append("stocked", 100));
+                .append("grade", "1")
+                .append("school", "MAES")
+                .append("required", 100));
         testInventoryItems.add(
             new Document()
                 .append("name", "Notebook")
                 .append("type", "notebook")
                 .append("desc", "A spiral-bound notebook with lined paper.")
-                .append("location", "Aisle 3, Shelf C")
-                .append("stocked", 50));
+                .append("grade", "2")
+                .append("school", "MAES")
+                .append("required", 50));
         testInventoryItems.add(
             new Document()
                 .append("name", "Eraser")
                 .append("type", "eraser")
                 .append("desc", "A pink eraser for removing pencil marks.")
-                .append("location", "Aisle 3, Shelf B")
-                .append("stocked", 120));
+                .append("grade", "3")
+                .append("school", "Hancock")
+                .append("required", 120));
 
         testItemId1 = new ObjectId();
         Document marker = new Document()
@@ -138,19 +144,20 @@ class InventoryItemControllerSpec {
             .append("name", "Marker")
             .append("type", "marker")
             .append("desc", "A black permanent marker.")
-            .append("location", "Aisle 3, Shelf D")
-            .append("stocked", 30);
+            .append("grade", "K")
+            .append("school", "Hancock")
+            .append("required", 30);
 
         inventoryItemDocuments.insertMany(testInventoryItems);
         inventoryItemDocuments.insertOne(marker);
 
-        inventoryItemController = new InventoryItemController(testDatabase);
+        requiredItemController = new RequiredItemController(testDatabase);
     }
 
     @Test
     void addsRoutes() {
         Javalin mockServer = mock(Javalin.class);
-        inventoryItemController.addRoutes(mockServer);
+        requiredItemController.addRoutes(mockServer);
         verify(mockServer, Mockito.atLeast(2)).get(any(), any()); //getItem, get Items
         // verify(mockServer, Mockito.atLeastOnce()).post(any(), any());
         // verify(mockServer, Mockito.atLeastOnce()).delete(any(), any());
@@ -159,13 +166,13 @@ class InventoryItemControllerSpec {
     @Test
     void canGetAllInventoryItems() throws IOException {
         when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
-        inventoryItemController.getItems(ctx);
-        verify(ctx).json(inventoryItemArrayCaptor.capture());
+        requiredItemController.getItems(ctx);
+        verify(ctx).json(requiredItemArrayCaptor.capture());
         verify(ctx).status(HttpStatus.OK);
 
         assertEquals(
-            testDatabase.getCollection("inventory_items").countDocuments(),
-            inventoryItemArrayCaptor.getValue().size());
+            testDatabase.getCollection("required_items").countDocuments(),
+            requiredItemArrayCaptor.getValue().size());
     }
 
     @Test
@@ -173,12 +180,12 @@ class InventoryItemControllerSpec {
       String id = testItemId1.toHexString();
       when(ctx.pathParam("id")).thenReturn(id);
 
-      inventoryItemController.getItem(ctx);
+      requiredItemController.getItem(ctx);
 
-      verify(ctx).json(inventoryItemCaptor.capture());
+      verify(ctx).json(requiredItemCaptor.capture());
       verify(ctx).status(HttpStatus.OK);
-      assertEquals("Marker", inventoryItemCaptor.getValue().name);
-      assertEquals(testItemId1.toHexString(), inventoryItemCaptor.getValue()._id);
+      assertEquals("Marker", requiredItemCaptor.getValue().name);
+      assertEquals(testItemId1.toHexString(), requiredItemCaptor.getValue()._id);
     }
 
   @Test
@@ -186,7 +193,7 @@ class InventoryItemControllerSpec {
     when(ctx.pathParam("id")).thenReturn("bad! bad id!");
 
     Throwable exception = assertThrows(BadRequestResponse.class, () -> {
-      inventoryItemController.getItem(ctx);
+      requiredItemController.getItem(ctx);
     });
 
     assertEquals("The requested item id wasn't a legal Mongo Object ID.", exception.getMessage());
@@ -199,7 +206,7 @@ class InventoryItemControllerSpec {
       when(ctx.pathParam("id")).thenReturn(id);
 
       Throwable exception = assertThrows(NotFoundResponse.class, () -> {
-        inventoryItemController.getItem(ctx);
+        requiredItemController.getItem(ctx);
       });
 
       assertEquals("The requested item was not found", exception.getMessage());
@@ -208,58 +215,39 @@ class InventoryItemControllerSpec {
     @Test
   void addItem() throws IOException {
     // Create a new item to add
-    InventoryItem newItem = new InventoryItem();
+    RequiredItem newItem = new RequiredItem();
     newItem.name = "Test Item";
-    newItem.stocked = 25;
+    newItem.required = 25;
     newItem.desc = "This is a test";
-    newItem.location = "located here";
+    newItem.school = "Hogwarts";
+    newItem.grade = "K";
     newItem.type = "test";
 
-    // Use `javalinJackson` to convert the `User` object to a JSON string representing that user.
-    // This would be equivalent to:
-    //   String testNewUser = """
-    //       {
-    //         "name": "Test User",
-    //         "age": 25,
-    //         "company": "testers",
-    //         "email": "test@example.com",
-    //         "role": "viewer"
-    //       }
-    //       """;
-    // but using `javalinJackson` to generate the JSON avoids repeating all the field values,
-    // which is then less error prone.
-    String newItemJson = javalinJackson.toJsonString(newItem, InventoryItem.class);
+    String newItemJson = javalinJackson.toJsonString(newItem, RequiredItem.class);
 
-    // A `BodyValidator` needs
-    //   - The string (`newUserJson`) being validated
-    //   - The class (`User.class) it's trying to generate from that string
-    //   - A function (`() -> User`) which "shows" the validator how to convert
-    //     the JSON string to a `User` object. We'll again use `javalinJackson`,
-    //     but in the other direction.
-    when(ctx.bodyValidator(InventoryItem.class))
-      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
-                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+    when(ctx.bodyValidator(RequiredItem.class))
+      .thenReturn(new BodyValidator<RequiredItem>(newItemJson, RequiredItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, RequiredItem.class)));
 
-    inventoryItemController.addNewItem(ctx);
+    requiredItemController.addNewItem(ctx);
     verify(ctx).json(mapCaptor.capture());
 
     // Our status should be 201, i.e., our new user was successfully created.
     verify(ctx).status(HttpStatus.CREATED);
 
     // Verify that the user was added to the database with the correct ID
-    Document addedItem = testDatabase.getCollection("inventory_items")
+    Document addedItem = testDatabase.getCollection("required_items")
         .find(eq("_id", new ObjectId(mapCaptor.getValue().get("id")))).first();
 
     // Successfully adding the user should return the newly generated, non-empty
     // MongoDB ID for that user.
     assertNotEquals("", addedItem.get("_id"));
-    // The new user in the database (`addedUser`) should have the same
-    // field values as the user we asked it to add (`newUser`).
     assertEquals(newItem.name, addedItem.get("name"));
-    assertEquals(newItem.stocked, addedItem.get(InventoryItemController.STOCKED_KEY));
-    assertEquals(newItem.type, addedItem.get(InventoryItemController.TYPE_KEY));
+    assertEquals(newItem.required, addedItem.get("required"));
+    assertEquals(newItem.type, addedItem.get("type"));
     assertEquals(newItem.desc, addedItem.get("desc"));
-    assertEquals(newItem.location, addedItem.get(InventoryItemController.LOCATION_KEY));
+    assertEquals(newItem.grade, addedItem.get("grade"));
+    assertEquals(newItem.school, addedItem.get("school"));
   }
 
   @Test
@@ -271,20 +259,21 @@ class InventoryItemControllerSpec {
     String newItemJson = """
       {
         "name": "no",
-        "stocked": 25,
+        "required": 25,
         "desc": "This should fail!",
-        "location": "Over there",
+        "grade": "99",
+        "school": "Hogwarts",
         "type": "test"
       }
       """;
 
     when(ctx.body()).thenReturn(newItemJson);
-    when(ctx.bodyValidator(InventoryItem.class))
-      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
-                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+    when(ctx.bodyValidator(RequiredItem.class))
+      .thenReturn(new BodyValidator<RequiredItem>(newItemJson, RequiredItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, RequiredItem.class)));
 
     ValidationException exception = assertThrows(ValidationException.class, () -> {
-      inventoryItemController.addNewItem(ctx);
+      requiredItemController.addNewItem(ctx);
     });
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
     assertTrue(exceptionMessage.contains("no"));
@@ -295,19 +284,20 @@ class InventoryItemControllerSpec {
     String newItemJson = """
       {
         "name": "This is a Test",
-        "stocked": "This is not a number!",
+        "required": "This is not a number!",
         "desc": "This should fail!",
-        "location": "Over there",
-        "type": "test"
+        "school": "Over there",
+        "type": "test",
+        "grade": "2"
       }
       """;
 
     when(ctx.body()).thenReturn(newItemJson);
-    when(ctx.bodyValidator(InventoryItem.class))
-        .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
-                      () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+    when(ctx.bodyValidator(RequiredItem.class))
+        .thenReturn(new BodyValidator<RequiredItem>(newItemJson, RequiredItem.class,
+                      () -> javalinJackson.fromJsonString(newItemJson, RequiredItem.class)));
     ValidationException exception = assertThrows(ValidationException.class, () -> {
-      inventoryItemController.addNewItem(ctx);
+      requiredItemController.addNewItem(ctx);
     });
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
 
@@ -320,14 +310,14 @@ class InventoryItemControllerSpec {
     when(ctx.pathParam("id")).thenReturn(testID);
 
     // User exists before deletion
-    assertEquals(1, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+    assertEquals(1, testDatabase.getCollection("required_items").countDocuments(eq("_id", new ObjectId(testID))));
 
-    inventoryItemController.deleteItem(ctx);
+    requiredItemController.deleteItem(ctx);
 
     verify(ctx).status(HttpStatus.OK);
 
     // User is no longer in the database
-    assertEquals(0, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+    assertEquals(0, testDatabase.getCollection("required_items").countDocuments(eq("_id", new ObjectId(testID))));
   }
 
   @Test
@@ -335,17 +325,17 @@ class InventoryItemControllerSpec {
     String testID = testItemId1.toHexString();
     when(ctx.pathParam("id")).thenReturn(testID);
 
-    inventoryItemController.deleteItem(ctx);
+    requiredItemController.deleteItem(ctx);
     // Family is no longer in the database
-    assertEquals(0, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+    assertEquals(0, testDatabase.getCollection("required_items").countDocuments(eq("_id", new ObjectId(testID))));
 
     assertThrows(NotFoundResponse.class, () -> {
-      inventoryItemController.deleteItem(ctx);
+      requiredItemController.deleteItem(ctx);
     });
 
     verify(ctx).status(HttpStatus.NOT_FOUND);
 
     // Family is still not in the database (Again, if this fails, something's gone horribly wrong)
-    assertEquals(0, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+    assertEquals(0, testDatabase.getCollection("required_items").countDocuments(eq("_id", new ObjectId(testID))));
   }
 }

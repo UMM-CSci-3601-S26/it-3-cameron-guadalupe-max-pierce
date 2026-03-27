@@ -1,4 +1,4 @@
-package umm3601.inventory_items;
+package umm3601.grade_list;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
@@ -31,31 +31,31 @@ import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
 
 /**
- * Controller that manages requests for info about users.
+ * Controller that manages requests for info about required items.
  */
 @SuppressWarnings({"MagicNumber"})
-public class InventoryItemController implements Controller {
+public class RequiredItemController implements Controller {
 
-  private static final String API_INVENTORY = "/api/inventory";
-  private static final String API_INVENTORY_BY_ID = "/api/inventory/{id}";
+  private static final String API_GRADE_LIST = "/api/grade_list";
+  private static final String API_GRADE_LIST_BY_ID = "/api/grade_list/{id}";
   static final String NAME_KEY = "name";
   static final String TYPE_KEY = "type";
   static final String DESC_KEY = "desc";
   static final String LOCATION_KEY = "location";
   static final String STOCKED_KEY = "stocked";
 
-  private final JacksonMongoCollection<InventoryItem> inventoryCollection;
+  private final JacksonMongoCollection<RequiredItem> listCollection;
 
   /**
    * Construct a controller for users.
    *
    * @param database the database containing user data
    */
-  public InventoryItemController(MongoDatabase database) {
-    inventoryCollection = JacksonMongoCollection.builder().build(
+  public RequiredItemController(MongoDatabase database) {
+    listCollection = JacksonMongoCollection.builder().build(
         database,
-        "inventory_items",
-        InventoryItem.class,
+        "required_items",
+        RequiredItem.class,
         UuidRepresentation.STANDARD);
   }
 
@@ -67,10 +67,10 @@ public class InventoryItemController implements Controller {
    */
   public void getItem(Context ctx) {
     String id = ctx.pathParam("id");
-    InventoryItem item;
+    RequiredItem item;
 
     try {
-      item = inventoryCollection.find(eq("_id", new ObjectId(id))).first();
+      item = listCollection.find(eq("_id", new ObjectId(id))).first();
     } catch (IllegalArgumentException e) {
       throw new BadRequestResponse("The requested item id wasn't a legal Mongo Object ID.");
     }
@@ -92,7 +92,7 @@ public class InventoryItemController implements Controller {
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
 
-    ArrayList<InventoryItem> matchingItems = inventoryCollection
+    ArrayList<RequiredItem> matchingItems = listCollection
       .find(combinedFilter)
       .sort(sortingOrder)
       .into(new ArrayList<>());
@@ -193,19 +193,17 @@ public class InventoryItemController implements Controller {
    */
   public void addNewItem(Context ctx) {
     String body = ctx.body();
-    InventoryItem newItem = ctx.bodyValidator(InventoryItem.class)
+    RequiredItem newItem = ctx.bodyValidator(RequiredItem.class)
       .check(itm -> itm.name != null && itm.name.length() >= 4,
         "Item must have a non-empty name; body was " + body)
-      .check(itm -> itm.stocked >= 0,
+      .check(itm -> itm.required >= 0,
         "Stocked value must be greater than or equal to zero; body was " + body)
       .check(itm -> itm.type != null && itm.type.length() > 0,
         "Item must have a non-empty type; body was " + body)
-      .check(itm -> itm.location != null && itm.location.length() > 0,
-        "Item must have a non-empty location; body was " + body)
       .get();
 
     // Add the new item to the database
-    inventoryCollection.insertOne(newItem);
+    listCollection.insertOne(newItem);
 
     // Set the JSON response to be the `_id` of the newly created user.
     // This gives the client the opportunity to know the ID of the new user,
@@ -226,7 +224,7 @@ public class InventoryItemController implements Controller {
    */
   public void deleteItem(Context ctx) {
     String id = ctx.pathParam("id");
-    DeleteResult deleteResult = inventoryCollection.deleteOne(eq("_id", new ObjectId(id)));
+    DeleteResult deleteResult = listCollection.deleteOne(eq("_id", new ObjectId(id)));
     // We should have deleted 1 or 0 users, depending on whether `id` is a valid user ID.
     if (deleteResult.getDeletedCount() != 1) {
       ctx.status(HttpStatus.NOT_FOUND);
@@ -238,11 +236,11 @@ public class InventoryItemController implements Controller {
     ctx.status(HttpStatus.OK);
   }
 
-  // /**
-  //  * Utility function to generate the md5 hash for a given string
-  //  * ...Wtf is this for?
-  //  * @param str the string to generate a md5 for
-  //  */
+  /**
+   * Utility function to generate the md5 hash for a given string
+   * ...Wtf is this for?
+   * @param str the string to generate a md5 for
+   */
   // public String md5(String str) throws NoSuchAlgorithmException {
   //   MessageDigest md = MessageDigest.getInstance("MD5");
   //   byte[] hashInBytes = md.digest(str.toLowerCase().getBytes(StandardCharsets.UTF_8));
@@ -255,49 +253,24 @@ public class InventoryItemController implements Controller {
   // }
 
   /**
-   * Sets up routes for the `user` collection endpoints.
-   * A UserController instance handles the user endpoints,
-   * and the addRoutes method adds the routes to this controller.
-   *
-   * These endpoints are:
-   *   - `GET /api/users/:id`
-   *       - Get the specified user
-   *   - `GET /api/users?age=NUMBER&company=STRING&name=STRING`
-   *      - List users, filtered using query parameters
-   *      - `age`, `company`, and `name` are optional query parameters
-   *   - `GET /api/usersByCompany`
-   *     - Get user names and IDs, possibly filtered, grouped by company
-   *   - `DELETE /api/users/:id`
-   *      - Delete the specified user
-   *   - `POST /api/users`
-   *      - Create a new user
-   *      - The user info is in the JSON body of the HTTP request
-   *
-   * GROUPS SHOULD CREATE THEIR OWN CONTROLLERS THAT IMPLEMENT THE
-   * `Controller` INTERFACE FOR WHATEVER DATA THEY'RE WORKING WITH.
-   * You'll then implement the `addRoutes` method for that controller,
-   * which will set up the routes for that data. The `Server#setupRoutes`
-   * method will then call `addRoutes` for each controller, which will
-   * add the routes for that controller's data.
-   *
    * @param server The Javalin server instance
    */
   @Override
   public void addRoutes(Javalin server) {
     // Get the specified item
-    server.get(API_INVENTORY_BY_ID, this::getItem);
+    server.get(API_GRADE_LIST_BY_ID, this::getItem);
 
     // List items, filtered using query parameters
-    server.get(API_INVENTORY, this::getItems);
+    server.get(API_GRADE_LIST, this::getItems);
 
     // Get the users, possibly filtered, grouped by company
     // server.get("/api/usersByCompany", this::getUsersGroupedByCompany);
 
     // Add new item with the user info being in the JSON body
     // of the HTTP request
-    server.post(API_INVENTORY, this::addNewItem);
+    server.post(API_GRADE_LIST, this::addNewItem);
 
     // Delete the specified item
-     server.delete(API_INVENTORY_BY_ID, this::deleteItem);
+     server.delete(API_GRADE_LIST_BY_ID, this::deleteItem);
   }
 }

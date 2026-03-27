@@ -1,0 +1,79 @@
+[
+   {
+    "_id": {
+      "$oid": "588935f57546a2daea44de7c"
+    },
+    "name": "Yellow Pencils 12-Pack",
+    "type": "pencils",
+    "desc":"12 Yellow #2 Ticonderoga pencils, sharpened, comes in packs of 12",
+    "required":1,
+    "school":"MAES",
+    "grade":"K"
+  },
+  {
+    "_id": {
+      "$oid": "588935f5597715f06f3e8f6c"
+    },
+    "name": "Red Folders",
+    "type": "folders",
+    "desc":"Red plastic folders, GreatValue",
+    "required":1,
+    "school":"MAES",
+    "grade":"K"
+  },
+  {
+    "_id": {
+      "$oid": "588935f51c55b55c75a84848"
+    },
+    "name": "Erasers 6-Pack",
+    "type": "erasers",
+    "desc":"2-inch pink erasers, comes in packs of 6",
+    "required":1,
+    "school":"MAES",
+    "grade":"K"
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87212"
+    },
+    "name": "Colored Pencils 16-Pack",
+    "type": "colored_pencils",
+    "desc":"Crayola colored pencils, sharpened. Comes in packs of 16.",
+    "required":1,
+    "school":"MAES",
+    "grade":"1"
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87213"
+    },
+    "name": "Green Folders",
+    "type": "folders",
+    "desc":"Green plastic folders, GreatValue",
+    "required":1,
+    "school":"Hancock",
+    "grade":"3"
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87214"
+    },
+    "name": "Pencil Box",
+    "type": "boxes",
+    "desc":"Plastic pencil box, any color, 8*5 inches, Crayola",
+    "required":1,
+    "school":"Hancock",
+    "grade":"3"
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87215"
+    },
+    "name": "Paper Folders",
+    "type": "folders",
+    "desc":"Paper manilla folders, any brand",
+    "required":4,
+    "school":"MAES",
+    "grade":"1"
+  }
+]

@@ -1,0 +1,35 @@
+[
+  {
+    "_id": {
+      "$oid": "588935f57546a2daea44de7c"
+    },
+    "name": "Richards",
+    "time":1200,
+    "students":[
+      {
+        "grade":"P",
+        "school":"MAES",
+        "backpack":true
+      },
+      {
+        "grade":"3",
+        "school":"MAES",
+        "backpack":false
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "588935f5597715f06f3e8f6c"
+    },
+    "name": "Smith",
+    "time":100,
+    "students":[
+      {
+        "grade":"2",
+        "school":"Hancock",
+        "backpack":false
+      }
+    ]
+  }
+]

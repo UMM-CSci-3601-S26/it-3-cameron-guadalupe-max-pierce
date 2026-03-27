@@ -5,6 +5,8 @@ import com.mongodb.client.MongoDatabase;
 
 import umm3601.user.UserController;
 import umm3601.inventory_items.InventoryItemController;
+import umm3601.grade_list.RequiredItemController;
+import umm3601.families.FamilyController;
 
 public class Main {
 
@@ -62,7 +64,9 @@ public class Main {
       //
       // You can also remove this UserController once you don't need it.
       new UserController(database),
-      new InventoryItemController(database)
+      new InventoryItemController(database),
+      new FamilyController(database),
+      new RequiredItemController(database),
     };
     return controllers;
   }

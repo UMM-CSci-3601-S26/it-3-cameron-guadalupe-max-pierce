@@ -1,0 +1,23 @@
+[
+  {
+    "_id": {
+      "$oid": "588935f57546a2daea44de7c"
+    },
+    "name": "Morris Area Elementary School",
+    "display":"MAES"
+  },
+  {
+    "_id": {
+      "$oid": "588935f5597715f06f3e8f6c"
+    },
+    "name": "Hancock Elementary",
+    "display":"Hancock"
+  },
+  {
+    "_id": {
+      "$oid": "588935f5597715f06f3e8f6c"
+    },
+    "name": "Saint Mary's Elementary",
+    "display":"Saint Mary's"
+  }
+]

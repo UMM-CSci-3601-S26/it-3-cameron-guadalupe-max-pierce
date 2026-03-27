@@ -1,4 +1,4 @@
-package umm3601.inventory_items;
+package umm3601.families;
 
 //import static com.mongodb.client.model.Filters.eq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,11 +60,14 @@ import io.javalin.json.JavalinJackson;
 import io.javalin.validation.BodyValidator;
 import io.javalin.validation.ValidationException;
 //import umm3601.user.UserController;
+// import umm3601.families.Family;
+// import umm3601.families.FamilyController;
+// import umm3601.inventory_items.InventoryItem;
 
 @SuppressWarnings({"MagicNumber"})
-class InventoryItemControllerSpec {
+class FamilyControllerSpec {
 
-    private InventoryItemController inventoryItemController;
+    private FamilyController familyController;
 
     private ObjectId testItemId1;
 
@@ -77,10 +80,10 @@ class InventoryItemControllerSpec {
     private Context ctx;
 
     @Captor
-    private ArgumentCaptor<ArrayList<InventoryItem>> inventoryItemArrayCaptor;
+    private ArgumentCaptor<ArrayList<Family>> inventoryItemArrayCaptor;
 
     @Captor
-    private ArgumentCaptor<InventoryItem> inventoryItemCaptor;
+    private ArgumentCaptor<Family> familyCaptor;
 
     @Captor
     private ArgumentCaptor<Map<String, String>> mapCaptor;
@@ -107,86 +110,113 @@ class InventoryItemControllerSpec {
     void setupEach() throws IOException {
         MockitoAnnotations.openMocks(this);
 
-        MongoCollection<Document> inventoryItemDocuments = testDatabase.getCollection("inventory_items");
-        inventoryItemDocuments.drop();
-        List<Document> testInventoryItems = new ArrayList<>();
-        testInventoryItems.add(
+        MongoCollection<Document> familyDocuments = testDatabase.getCollection("families");
+        familyDocuments.drop();
+
+       //First batch of test students
+        List<Document> testStudents1 = new ArrayList<>();
+        testStudents1.add(
+          new Document()
+            .append("grade", "K")
+            .append("backpack", false));
+        testStudents1.add(
+          new Document()
+            .append("grade", "2")
+            .append("backpack", true));
+
+        //Second test student
+        List<Document> testStudents2 = new ArrayList<>();
+        testStudents2.add(
+        new Document()
+          .append("grade", "5")
+          .append("backpack", false));
+
+        //Last batch of test students
+        List<Document> testStudents3 = new ArrayList<>();
+        testStudents3.add(
+        new Document()
+          .append("grade", "P")
+          .append("backpack", false));
+        testStudents3.add(
+        new Document()
+          .append("grade", "2")
+          .append("backpack", false));
+        testStudents3.add(
+        new Document()
+          .append("grade", "6")
+          .append("backpack", false));
+
+        //Test families, using test students to supply student field.
+        List<Document> testFamilies = new ArrayList<>();
+        testFamilies.add(
             new Document()
-                .append("name", "Pencil")
-                .append("type", "pencil")
-                .append("desc", "A wooden pencil with a graphite core.")
-                .append("location", "Aisle 3, Shelf B")
-                .append("stocked", 100));
-        testInventoryItems.add(
+                .append("name", "Richards")
+                .append("time", 100)
+                .append("students",  testStudents1));
+        testFamilies.add(
             new Document()
-                .append("name", "Notebook")
-                .append("type", "notebook")
-                .append("desc", "A spiral-bound notebook with lined paper.")
-                .append("location", "Aisle 3, Shelf C")
-                .append("stocked", 50));
-        testInventoryItems.add(
+                .append("name", "Hendersons")
+                .append("time", 200)
+                .append("students",  testStudents2));
+        testFamilies.add(
             new Document()
-                .append("name", "Eraser")
-                .append("type", "eraser")
-                .append("desc", "A pink eraser for removing pencil marks.")
-                .append("location", "Aisle 3, Shelf B")
-                .append("stocked", 120));
+                .append("name", "Jones")
+                .append("time", 100)
+                .append("students",  testStudents3));
 
         testItemId1 = new ObjectId();
-        Document marker = new Document()
+        Document exampleFam = new Document()
             .append("_id", testItemId1)
-            .append("name", "Marker")
-            .append("type", "marker")
-            .append("desc", "A black permanent marker.")
-            .append("location", "Aisle 3, Shelf D")
-            .append("stocked", 30);
+            .append("name", "Obamas")
+            .append("time", 600)
+            .append("students",  testStudents3);
 
-        inventoryItemDocuments.insertMany(testInventoryItems);
-        inventoryItemDocuments.insertOne(marker);
+        familyDocuments.insertMany(testFamilies);
+        familyDocuments.insertOne(exampleFam);
 
-        inventoryItemController = new InventoryItemController(testDatabase);
+        familyController = new FamilyController(testDatabase);
     }
 
     @Test
     void addsRoutes() {
         Javalin mockServer = mock(Javalin.class);
-        inventoryItemController.addRoutes(mockServer);
+        familyController.addRoutes(mockServer);
         verify(mockServer, Mockito.atLeast(2)).get(any(), any()); //getItem, get Items
         // verify(mockServer, Mockito.atLeastOnce()).post(any(), any());
         // verify(mockServer, Mockito.atLeastOnce()).delete(any(), any());
     }
 
     @Test
-    void canGetAllInventoryItems() throws IOException {
+    void canGetAllFamilies() throws IOException {
         when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
-        inventoryItemController.getItems(ctx);
+        familyController.getFamilies(ctx);
         verify(ctx).json(inventoryItemArrayCaptor.capture());
         verify(ctx).status(HttpStatus.OK);
 
         assertEquals(
-            testDatabase.getCollection("inventory_items").countDocuments(),
+            testDatabase.getCollection("families").countDocuments(),
             inventoryItemArrayCaptor.getValue().size());
     }
 
     @Test
-    void getItemWithExistentId() throws IOException {
+    void getFamilyWithExistentId() throws IOException {
       String id = testItemId1.toHexString();
       when(ctx.pathParam("id")).thenReturn(id);
 
-      inventoryItemController.getItem(ctx);
+      familyController.getFamily(ctx);
 
-      verify(ctx).json(inventoryItemCaptor.capture());
+      verify(ctx).json(familyCaptor.capture());
       verify(ctx).status(HttpStatus.OK);
-      assertEquals("Marker", inventoryItemCaptor.getValue().name);
-      assertEquals(testItemId1.toHexString(), inventoryItemCaptor.getValue()._id);
+      assertEquals("Obamas", familyCaptor.getValue().name);
+      assertEquals(testItemId1.toHexString(), familyCaptor.getValue()._id);
     }
 
   @Test
-  void getItemWithBadId() throws IOException {
+  void getFamilyWithBadId() throws IOException {
     when(ctx.pathParam("id")).thenReturn("bad! bad id!");
 
     Throwable exception = assertThrows(BadRequestResponse.class, () -> {
-      inventoryItemController.getItem(ctx);
+      familyController.getFamily(ctx);
     });
 
     assertEquals("The requested item id wasn't a legal Mongo Object ID.", exception.getMessage());
@@ -194,41 +224,39 @@ class InventoryItemControllerSpec {
 
   //Not sure how often we're going to be getting single items, but might as well test it anyways.
   @Test
-    void getItemWithNonexistentId() throws IOException {
+    void getFamilyWithNonexistentId() throws IOException {
       String id = "588935f5c668650dc77df581";
       when(ctx.pathParam("id")).thenReturn(id);
 
       Throwable exception = assertThrows(NotFoundResponse.class, () -> {
-        inventoryItemController.getItem(ctx);
+        familyController.getFamily(ctx);
       });
 
-      assertEquals("The requested item was not found", exception.getMessage());
+      assertEquals("The requested family was not found", exception.getMessage());
     }
 
-    @Test
-  void addItem() throws IOException {
+  @Test
+  void addFamily() throws IOException {
     // Create a new item to add
-    InventoryItem newItem = new InventoryItem();
-    newItem.name = "Test Item";
-    newItem.stocked = 25;
-    newItem.desc = "This is a test";
-    newItem.location = "located here";
-    newItem.type = "test";
+    Family newFamily = new Family();
 
-    // Use `javalinJackson` to convert the `User` object to a JSON string representing that user.
-    // This would be equivalent to:
-    //   String testNewUser = """
-    //       {
-    //         "name": "Test User",
-    //         "age": 25,
-    //         "company": "testers",
-    //         "email": "test@example.com",
-    //         "role": "viewer"
-    //       }
-    //       """;
-    // but using `javalinJackson` to generate the JSON avoids repeating all the field values,
-    // which is then less error prone.
-    String newItemJson = javalinJackson.toJsonString(newItem, InventoryItem.class);
+    Student student1 = new Student();
+    student1.grade = "K";
+    student1.backpack = false;
+
+    Student student2 = new Student();
+    student2.grade = "2";
+    student2.backpack = true;
+
+    List<Student> newStudents = new ArrayList<Student>(); //Why are java arrays like this???
+    newStudents.add(student1);
+    newStudents.add(student2);
+
+    newFamily.name = "Hendrixes";
+    newFamily.time = 250;
+    newFamily.students = newStudents;
+
+    String newFamilyJson = javalinJackson.toJsonString(newFamily, Family.class);
 
     // A `BodyValidator` needs
     //   - The string (`newUserJson`) being validated
@@ -236,18 +264,18 @@ class InventoryItemControllerSpec {
     //   - A function (`() -> User`) which "shows" the validator how to convert
     //     the JSON string to a `User` object. We'll again use `javalinJackson`,
     //     but in the other direction.
-    when(ctx.bodyValidator(InventoryItem.class))
-      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
-                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+    when(ctx.bodyValidator(Family.class))
+      .thenReturn(new BodyValidator<Family>(newFamilyJson, Family.class,
+                    () -> javalinJackson.fromJsonString(newFamilyJson, Family.class)));
 
-    inventoryItemController.addNewItem(ctx);
+    familyController.addNewFamily(ctx);
     verify(ctx).json(mapCaptor.capture());
 
     // Our status should be 201, i.e., our new user was successfully created.
     verify(ctx).status(HttpStatus.CREATED);
 
     // Verify that the user was added to the database with the correct ID
-    Document addedItem = testDatabase.getCollection("inventory_items")
+    Document addedItem = testDatabase.getCollection("families")
         .find(eq("_id", new ObjectId(mapCaptor.getValue().get("id")))).first();
 
     // Successfully adding the user should return the newly generated, non-empty
@@ -255,59 +283,55 @@ class InventoryItemControllerSpec {
     assertNotEquals("", addedItem.get("_id"));
     // The new user in the database (`addedUser`) should have the same
     // field values as the user we asked it to add (`newUser`).
-    assertEquals(newItem.name, addedItem.get("name"));
-    assertEquals(newItem.stocked, addedItem.get(InventoryItemController.STOCKED_KEY));
-    assertEquals(newItem.type, addedItem.get(InventoryItemController.TYPE_KEY));
-    assertEquals(newItem.desc, addedItem.get("desc"));
-    assertEquals(newItem.location, addedItem.get(InventoryItemController.LOCATION_KEY));
+    assertEquals(newFamily.name, addedItem.get("name"));
+    assertEquals(newFamily.time, addedItem.get("time"));
+    //TODO, actually add some meaningful tests for student equality;
+    //An array of structs does not automatically equal a student.
+    //assertEquals(newFamily.students, addedItem.get("students")); //This is gonna be a troublemaker
   }
 
   @Test
-  void addInvalidNameItem() throws IOException {
+  void addInvalidNameFamily() throws IOException {
     // Create a new user JSON string to add.
     // Note that it has an invalid string for the email address, which is
     // why we're using a `String` here instead of a `User` object
     // like we did in the previous tests.
-    String newItemJson = """
+    String newFamilyJson = """
       {
         "name": "no",
-        "stocked": 25,
-        "desc": "This should fail!",
-        "location": "Over there",
-        "type": "test"
+        "time": 2,
+        "students":[]
       }
       """;
 
-    when(ctx.body()).thenReturn(newItemJson);
-    when(ctx.bodyValidator(InventoryItem.class))
-      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
-                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+    when(ctx.body()).thenReturn(newFamilyJson);
+    when(ctx.bodyValidator(Family.class))
+      .thenReturn(new BodyValidator<Family>(newFamilyJson, Family.class,
+                    () -> javalinJackson.fromJsonString(newFamilyJson, Family.class)));
 
     ValidationException exception = assertThrows(ValidationException.class, () -> {
-      inventoryItemController.addNewItem(ctx);
+      familyController.addNewFamily(ctx);
     });
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
     assertTrue(exceptionMessage.contains("no"));
   }
 
   @Test
-  void addInvalidStockItem() throws IOException {
-    String newItemJson = """
+  void addInvalidTimeFamily() throws IOException {
+    String newFamilyJson = """
       {
-        "name": "This is a Test",
+        "name": "Potters",
         "stocked": "This is not a number!",
-        "desc": "This should fail!",
-        "location": "Over there",
-        "type": "test"
+        "students":[]
       }
       """;
 
-    when(ctx.body()).thenReturn(newItemJson);
-    when(ctx.bodyValidator(InventoryItem.class))
-        .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
-                      () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+    when(ctx.body()).thenReturn(newFamilyJson);
+    when(ctx.bodyValidator(Family.class))
+        .thenReturn(new BodyValidator<Family>(newFamilyJson, Family.class,
+                      () -> javalinJackson.fromJsonString(newFamilyJson, Family.class)));
     ValidationException exception = assertThrows(ValidationException.class, () -> {
-      inventoryItemController.addNewItem(ctx);
+      familyController.addNewFamily(ctx);
     });
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
 
@@ -315,37 +339,37 @@ class InventoryItemControllerSpec {
   }
 
   @Test
-  void deleteFoundItem() throws IOException { //Don't delete found family! That's the best family!
+  void deleteFoundFamily() throws IOException { //Don't delete found family! That's the best family!
     String testID = testItemId1.toHexString();
     when(ctx.pathParam("id")).thenReturn(testID);
 
     // User exists before deletion
-    assertEquals(1, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+    assertEquals(1, testDatabase.getCollection("families").countDocuments(eq("_id", new ObjectId(testID))));
 
-    inventoryItemController.deleteItem(ctx);
+    familyController.deleteFamily(ctx);
 
     verify(ctx).status(HttpStatus.OK);
 
     // User is no longer in the database
-    assertEquals(0, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+    assertEquals(0, testDatabase.getCollection("families").countDocuments(eq("_id", new ObjectId(testID))));
   }
 
   @Test
-  void tryToDeleteNotFoundItem() throws IOException {
+  void tryToDeleteNotFoundFamily() throws IOException {
     String testID = testItemId1.toHexString();
     when(ctx.pathParam("id")).thenReturn(testID);
 
-    inventoryItemController.deleteItem(ctx);
+    familyController.deleteFamily(ctx);
     // Family is no longer in the database
-    assertEquals(0, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+    assertEquals(0, testDatabase.getCollection("families").countDocuments(eq("_id", new ObjectId(testID))));
 
     assertThrows(NotFoundResponse.class, () -> {
-      inventoryItemController.deleteItem(ctx);
+      familyController.deleteFamily(ctx);
     });
 
     verify(ctx).status(HttpStatus.NOT_FOUND);
 
-    // Family is still not in the database (Again, if this fails, something's gone horribly wrong)
-    assertEquals(0, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+    // Family is still not in the database (If this fails, something's gone horribly wrong)
+    assertEquals(0, testDatabase.getCollection("families").countDocuments(eq("_id", new ObjectId(testID))));
   }
 }
