@@ -106,6 +106,37 @@
   </div>
 </div>
 
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8 demo table" matSort (matSortChange)="annouceSortChange($event)">
+ // name column
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by name">Name</th>
+    <td mat-cell *matCellDef="let element">{{element.name}}</td>
+  </ng-container>
+  //type column
+  <ng-container matColumnDef="type">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by type">Type</th>
+    <td mat-cell *matCellDef="let element">{{element.type}}</td>
+  </ng-container>
+  // Desc Column
+  <ng-container matColumnDef="desc">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by desc">Desc</th>
+    <td mat-cell *matCellDef="let element">{{element.desc}}</td>
+  </ng-container>
+  // Location Column
+  <ng-container matColumnDef="location">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by location">Location</th>
+    <td mat-cell *matCellDef="let element">{{element.location}}</td>
+  </ng-container>
+  // stocked Column
+  <ng-container matColumnDef="stocked">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header sortActionDescription="Sort by stocked">Stocked</th>
+    <td mat-cell *matCellDef="let element">{{element.stocked}}</td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>
+
+
 <div class="flex-row">
   @if (serverFilteredItems()) {
   <div class="flex-1">

@@ -19,6 +19,9 @@ import { InventoryItem } from './inventory_item';
 import { InventoryService } from './inventory.service';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTable, MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 /**
  * A component that displays a list of users, either as a grid
@@ -57,6 +60,19 @@ export class InventoryListComponent {
   private inventoryService = inject(InventoryService);
   // snackBar the `MatSnackBar` used to display feedback
   private snackBar = inject(MatSnackBar);
+
+  private _liveAnnouncer = inject(LiveAnnouncer):
+
+    displayedColumns: string[] = ['name', 'type', 'desc', 'location', 'stocked'];
+    dataSource = new MatTableDataSource<InventoryItem>([]);
+
+    announceSortChange(sortState: Sort) {
+      if (sortState.direction) {
+        this._liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+      } else {
+        this._liveAnnouncer.announce('Sorting cleared');
+      }
+    }
 
   //dataSource = new MatTableDataSource<InventoryItem>([]);
   itemName = signal<string|undefined>(undefined);
@@ -190,4 +206,9 @@ export class InventoryListComponent {
       { duration: 6000 }
     );
   }
+
+
+
 }
+
+
