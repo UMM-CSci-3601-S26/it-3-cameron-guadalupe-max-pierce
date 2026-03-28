@@ -14,7 +14,7 @@ import { ModifyItemComponent } from './inventory/modify_inventory_item.component
 // 'users/new'; the router would just think that the string 'new' is a user ID.
 const routes: Routes = [
   {path: '', component: HomeComponent, title: 'Home'},
-  {path: 'families', component: FamilyListComponent, title: 'Users'},
+  {path: 'families', component: FamilyListComponent, title: 'Families'},
   // {path: 'families/new', component: AddUserComponent, title: 'Add User'},
   // {path: 'families/:id', component: UserProfileComponent, title: 'User Profile'},
   {path: 'inventory', component: InventoryListComponent, title: 'Inventory'},

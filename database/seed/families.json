@@ -31,5 +31,29 @@
         "backpack":false
       }
     ]
+  },
+  {
+    "_id": {
+      "$oid": "588935f51c55b55c75a84848"
+    },
+    "name": "Baudelaires",
+    "time":"9:00am",
+    "students":[
+      {
+        "grade":"P",
+        "school":"MAES",
+        "backpack":false
+      },
+       {
+        "grade":"6",
+        "school":"MAES",
+        "backpack":true
+      },
+       {
+        "grade":"10",
+        "school":"MAES",
+        "backpack":false
+      }
+    ]
   }
 ]
