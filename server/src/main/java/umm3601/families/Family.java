@@ -18,7 +18,7 @@ public class Family {
   public String name; //Last name
   //public Student[] students; //Array of students in family
   public List<Student> students; //Parseable string of data
-  public int time; //Time of appointment
+  public String time; //Time of appointment
   public String email;
 
   @Override

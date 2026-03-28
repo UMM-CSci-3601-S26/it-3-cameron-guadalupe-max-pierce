@@ -4,7 +4,7 @@
       "$oid": "588935f57546a2daea44de7c"
     },
     "name": "Richards",
-    "time":1200,
+    "time":"12:00pm",
     "students":[
       {
         "grade":"P",
@@ -23,7 +23,7 @@
       "$oid": "588935f5597715f06f3e8f6c"
     },
     "name": "Smith",
-    "time":100,
+    "time":"1:00pm",
     "students":[
       {
         "grade":"2",
