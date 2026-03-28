@@ -12,7 +12,9 @@ import { FamilyService } from 'src/app/families/family.service';
 @Injectable({
   providedIn: AppComponent
 })
-export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'| 'modifyMass'> {
+
+//'modifyMass'
+export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'> {
   savedFamilyName = ''; //Per-session saved value for name search bar.
   savedFamilySchool = '';
   savedFamilyGrade = '';
@@ -134,9 +136,9 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'f
     return of(MockFamilyService.emptyFamily);
   }
 
-  modifyMass(newProps:Family,oldItems:Family[]) {
-    //Doesn't return anything; just modifies database.
-  }
+  // modifyMass(newProps:Family,oldItems:Family[]) {
+  //   //Doesn't return anything; just modifies database.
+  // }
 
   filterFamilies(items: Family[], filters: {
     name?: string;

@@ -109,7 +109,54 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
   }
 
   modifyMass(newProps:InventoryItem,oldItems:InventoryItem[]) {
-    //Doesn't return anything; just modifies database.
+    //Copied from Inventory Service for testing purposes.
+    const newItems: InventoryItem[] = [];
+    for (let i = 0; i < oldItems.length -1; i ++) {
+      //Location is probably the only one this will be used for, but you never know.
+      //id is never overwritten; necessary to delete and replace.
+      const baseItem: InventoryItem = {
+        _id:undefined,
+        name:undefined,
+        location:undefined,
+        desc:undefined,
+        stocked:undefined,
+        type:undefined
+      }
+      //Create a new array of items, initialized as empty.
+      newItems.push(baseItem);
+
+      if (newProps.name != undefined) {
+        newItems[i].name = newProps.name;
+      } else {
+        newItems[i].name = oldItems[i].name;
+      }
+
+      if (newProps.stocked != undefined) {
+        newItems[i].stocked = newProps.stocked;
+      } else {
+        newItems[i].stocked = oldItems[i].stocked;
+      }
+
+      if (newProps.location != undefined) {
+        newItems[i].location = newProps.location;
+      } else {
+        newItems[i].location = oldItems[i].location;
+      }
+
+      if (newProps.desc != undefined) {
+        newItems[i].desc = newProps.desc;
+      } else {
+        newItems[i].desc = oldItems[i].desc;
+      }
+
+      if (newProps.type != undefined) {
+        newItems[i].type = newProps.type;
+      } else {
+        newItems[i].type = oldItems[i].type;
+      }
+      this.addItem(newItems[i]).subscribe(); //Need to subscribe for changes to take effect
+      this.deleteItem(oldItems[i]._id).subscribe();
+    }
   }
 
   filterItems(items: InventoryItem[], filters: {

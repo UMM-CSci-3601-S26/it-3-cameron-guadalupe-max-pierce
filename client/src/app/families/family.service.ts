@@ -222,39 +222,39 @@ export class FamilyService {
     return this.httpClient.delete<Family>(`${this.familyUrl}/${id}`);
   }
 
-  modifyMass(newProps:Family,oldItems:Family[]) {
-    //Same as inventory items. Not sure when we'd ever need to use this, but it's here.
-    const newItems: Family[] = [];
-    for (let i = 0; i < oldItems.length -1; i ++) {
-      const baseItem: Family = {
-        _id:undefined,
-        name:undefined,
-        students:undefined,
-        time:undefined
-      }
-      //Create a new array of items, initialized as empty.
-      newItems.push(baseItem);
+  // modifyMass(newProps:Family,oldItems:Family[]) {
+  //   //Same as inventory items. Not sure when we'd ever need to use this, but it's here.
+  //   const newItems: Family[] = [];
+  //   for (let i = 0; i < oldItems.length -1; i ++) {
+  //     const baseItem: Family = {
+  //       _id:undefined,
+  //       name:undefined,
+  //       students:undefined,
+  //       time:undefined
+  //     }
+  //     //Create a new array of items, initialized as empty.
+  //     newItems.push(baseItem);
 
-      if (newProps.name != undefined) {
-        newItems[i].name = newProps.name;
-      } else {
-        newItems[i].name = oldItems[i].name;
-      }
+  //     if (newProps.name != undefined) {
+  //       newItems[i].name = newProps.name;
+  //     } else {
+  //       newItems[i].name = oldItems[i].name;
+  //     }
 
-      if (newProps.students != undefined) {
-        newItems[i].students = newProps.students;
-      } else {
-        newItems[i].students = oldItems[i].students;
-      }
+  //     if (newProps.students != undefined) {
+  //       newItems[i].students = newProps.students;
+  //     } else {
+  //       newItems[i].students = oldItems[i].students;
+  //     }
 
-      if (newProps.time != undefined) {
-        newItems[i].time = newProps.time;
-      } else {
-        newItems[i].time = oldItems[i].time;
-      }
+  //     if (newProps.time != undefined) {
+  //       newItems[i].time = newProps.time;
+  //     } else {
+  //       newItems[i].time = oldItems[i].time;
+  //     }
 
-      this.addFamily(newItems[i]).subscribe(); //Need to subscribe for changes to take effect
-      this.deleteFamily(oldItems[i]._id).subscribe();
-    }
-  }
+  //     this.addFamily(newItems[i]).subscribe(); //Need to subscribe for changes to take effect
+  //     this.deleteFamily(oldItems[i]._id).subscribe();
+  //   }
+  // }
 }

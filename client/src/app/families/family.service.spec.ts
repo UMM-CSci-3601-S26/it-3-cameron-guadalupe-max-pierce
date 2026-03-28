@@ -370,51 +370,51 @@ describe('FamilyService', () => {
     }));
   });
 
-  describe('When modifyMass() is called', () => {
-    let copiedItems = [];
-    let emptyItem: Family = {
-      _id: undefined,
-      name: undefined,
-      time: undefined,
-      students: undefined
-    }
+  // describe('When modifyMass() is called', () => {
+  //   let copiedItems = [];
+  //   let emptyItem: Family = {
+  //     _id: undefined,
+  //     name: undefined,
+  //     time: undefined,
+  //     students: undefined
+  //   }
 
-    beforeEach(() => {
-      //Create a new array to compare to the actual testFamilies after each modification
-      copiedItems = [];
-      for (let i = 0; i < testFamilies.length - 1; i++) {
-        copiedItems.push(testFamilies[i]);
-      }
-      //Reset empty item properties.
-      emptyItem = {
-        _id: undefined,
-        name: undefined,
-        time: undefined,
-        students: undefined
-      }
-    });
+  //   beforeEach(() => {
+  //     //Create a new array to compare to the actual testFamilies after each modification
+  //     copiedItems = [];
+  //     for (let i = 0; i < testFamilies.length - 1; i++) {
+  //       copiedItems.push(testFamilies[i]);
+  //     }
+  //     //Reset empty item properties.
+  //     emptyItem = {
+  //       _id: undefined,
+  //       name: undefined,
+  //       time: undefined,
+  //       students: undefined
+  //     }
+  //   });
 
-    //Accepts a normal array, so thankfully easy to test?
-    it('talks to correct Endpoints', waitForAsync(() => {
-      // Checking whether the item was actually deleted should happen in E2E probably
-      const targetItem: Family = testFamilies[1]; //This will be a duplicate
+  //   //Accepts a normal array, so thankfully easy to test?
+  //   it('talks to correct Endpoints', waitForAsync(() => {
+  //     // Checking whether the item was actually deleted should happen in E2E probably
+  //     const targetItem: Family = testFamilies[1]; //This will be a duplicate
 
-      const mockedAdd = spyOn(httpClient, 'post').and.returnValue(of(targetItem));
-      const mockedDelete = spyOn(httpClient, 'delete').and.returnValue(of(targetItem));
+  //     const mockedAdd = spyOn(httpClient, 'post').and.returnValue(of(targetItem));
+  //     const mockedDelete = spyOn(httpClient, 'delete').and.returnValue(of(targetItem));
 
 
-      familyService.modifyMass(emptyItem,copiedItems);
+  //     familyService.modifyMass(emptyItem,copiedItems);
 
-      expect(mockedAdd)
-        .withContext('calls add')
-        .toHaveBeenCalledTimes(1);
+  //     expect(mockedAdd)
+  //       .withContext('calls add')
+  //       .toHaveBeenCalledTimes(1);
 
-      expect(mockedDelete)
-        .withContext('calls delete')
-        .toHaveBeenCalledTimes(1);
+  //     expect(mockedDelete)
+  //       .withContext('calls delete')
+  //       .toHaveBeenCalledTimes(1);
 
-      //Obviously we could do more testing here...
-      // but it at least gets us to coverage, and it works for now.
-    }));
-  });
+  //     //Obviously we could do more testing here...
+  //     // but it at least gets us to coverage, and it works for now.
+  //   }));
+  // });
 });
