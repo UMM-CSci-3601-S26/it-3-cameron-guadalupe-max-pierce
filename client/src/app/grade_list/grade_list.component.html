@@ -114,7 +114,7 @@
 <div class="flex-row">
   @if (serverFilteredItems()) {
   <div class="flex-1">
-    <!-- The actual inventory list -->
+    <!-- The actual grade requirement list -->
     <div>
           @if (sortBy() === "school") {
             <mat-nav-list class="item-nav-list" color="accent">
@@ -122,13 +122,13 @@
                 <mat-card class="section-card">
                 <mat-card-content>
                 <h2 matSubheader>{{ school.school_header }}</h2>
-                <!--Sublist for each item type-->
+                <!--Sublist for each grade-->
                 @for (grade of school.grades; track grade.grade_header) {
                     <mat-card class="sub-section-card">
                     <mat-card-content>
                     <h3 matSubheader>{{ grade.grade_header }}</h3>
                     @for (item of grade.items; track item._id) {
-                      <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
+                      <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
                       <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
                       <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
                       </a>
@@ -149,7 +149,7 @@
                 <h2 matSubheader>{{ collection.header }}</h2>
                 <!--Sublist for each item type-->
                 @for (item of collection.items; track item._id) {
-                    <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
+                    <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
                     <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
                     <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
                     </a>
@@ -164,7 +164,7 @@
             <mat-card-content>
             <mat-nav-list class="item-nav-list" color="accent">
               @for (item of filteredItems(); track item._id) {
-                  <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
+                  <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
                   <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.required}}</strong> ~ {{item.name}}</span>
                   <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
                   </a>

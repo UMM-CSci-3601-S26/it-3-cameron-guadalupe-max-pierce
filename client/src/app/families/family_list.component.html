@@ -24,7 +24,7 @@
 
           <mat-form-field class="input-field">
             <input matInput data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
-            <mat-hint>TODO Search by school</mat-hint>
+            <mat-hint>Search by school</mat-hint>
           </mat-form-field>
 
           <mat-form-field [style.width.px]=100 class="input-field">
@@ -70,7 +70,7 @@
               color="warn"
               type="back"
               [style.height.px]=55
-              data-test="resetLocationButton"
+              data-test="resetAllFamiliesButton"
               >
             TODO Clear All
             </button>
@@ -87,9 +87,11 @@
           <mat-form-field [style.width.px]=250 class="input-field">
             <!-- <mat-label>Desc</mat-label> -->
             <mat-select placeholder="Sort by Name" [(ngModel)]="sortBy" data-test="sortBySelect">
+              <mat-option value="grade_school">Sort by Grade & School</mat-option>
+              <mat-option value="grade">Sort by Grade</mat-option>
+              <mat-option value="school">Sort by School</mat-option>
               <mat-option value="name">Sort by Name</mat-option>
               <mat-option value="name_des">Sort by Name (Des)</mat-option>
-               <mat-option value="grade">Sort by Grade</mat-option>
               <mat-option value="time">Sort by Time</mat-option>
               <mat-option value="time_des">Sort by Time (Des)</mat-option>
               <mat-option value="students">Sort by Students</mat-option>
@@ -107,25 +109,69 @@
 <div class="flex-row">
   @if (serverFilteredItems()) {
   <div class="flex-1">
-    <!-- The actual inventory list -->
+    <!-- The actual family list -->
     <div>
-      <mat-card>
-        <mat-card-content>
-          @if (sortBy() === "grade") { <!-- Special sectioned list for grade -->
+          @if (sortBy() === "grade_school") {
             <mat-nav-list class="item-nav-list" color="accent">
-              @for (collection of gradeFilteredFamilies(); track collection.items) {
-
-                <h2 matSubheader>{{ collection.header }}</h2>
-                <!--Sublist for each item grade-->
-                @for (item of collection.items; track item._id) {
-                  <a mat-list-item [routerLink]="['/families', item._id]" class="family-list-family">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{item.name}}</strong></span>
+              @for (school of gradeAndSchoolFilteredFamilies(); track school.grades) {
+                <mat-card class="section-card">
+                <mat-card-content>
+                <h2 matSubheader>{{ school.school_header }}</h2>
+                <!--Sublist for each grade-->
+                @for (grade of school.grades; track grade.grade_header) {
+                    <mat-card class="sub-section-card">
+                    <mat-card-content>
+                    <h3 matSubheader>{{ grade.grade_header }}</h3>
+                    @for (family of grade.families; track family._id) {
+                      <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
+                      <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
+                      </a>
+                    }
+                    </mat-card-content>
+                    </mat-card>
+                }
+                </mat-card-content>
+                </mat-card>
+              }
+            </mat-nav-list>
+          }
+          @else if (sortBy() === "grade") { <!-- Special sectioned list for grade -->
+            <mat-nav-list class="item-nav-list" color="accent">
+              @for (grade of gradeFilteredFamilies(); track grade.families) {
+                <mat-card class = "section-card">
+                <mat-card-content>
+                <h2 matSubheader>{{ grade.header }}</h2>
+                <!--Sublist for each grade-->
+                @for (family of grade.families; track family._id) {
+                  <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
                   </a>
                 }
+                </mat-card-content>
+                </mat-card>
+              }
+            </mat-nav-list>
+          }
+          @else if (sortBy() === "school") { <!-- Special sectioned list for grade -->
+            <mat-nav-list class="item-nav-list" color="accent">
+              @for (school of schoolFilteredFamilies(); track school.families) {
+                <mat-card class = "section-card">
+                <mat-card-content>
+                <h2 matSubheader>{{ school.header }}</h2>
+                <!--Sublist for each item grade-->
+                @for (family of school.families; track family._id) {
+                  <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
+                  </a>
+                }
+                </mat-card-content>
+                </mat-card>
               }
             </mat-nav-list>
           }
           @else { <!--Regular, untyped sorting-->
+            <mat-card>
+            <mat-card-content>
             <mat-nav-list class="item-nav-list" color="accent">
               @for (item of filteredFamilies(); track item._id) {
                   <a mat-list-item [routerLink]="['/families', item._id]" class="item-list-item">
@@ -133,9 +179,9 @@
                   </a>
               }
             </mat-nav-list>
+            </mat-card-content>
+            </mat-card>
           }
-        </mat-card-content>
-      </mat-card>
     </div>
   </div>
   } @else {

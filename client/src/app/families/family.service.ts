@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Family } from './family';
+import { School } from '../grade_list/school';
 //import { Company } from '../company-list/company';
 //import { Signal } from '@angular/core/rxjs-interop';
 
@@ -26,6 +27,7 @@ export class FamilyService {
 
   // The URL for the users part of the server API.
   readonly familyUrl: string = `${environment.apiUrl}families`;
+  readonly schoolUrl: string = `${environment.apiUrl}schools`;
   //readonly usersByCompanyUrl: string = `${environment.apiUrl}usersByCompany`;
 
   private readonly schoolKey = 'school'; //school filtering
@@ -120,6 +122,11 @@ export class FamilyService {
     });
   }
 
+  //Helper function
+  getSchools(): Observable<School[]> {
+    return this.httpClient.get<School[]>(this.schoolUrl);
+  }
+
   /**
    * Get the `Family` with the specified ID.
    *
@@ -156,15 +163,12 @@ export class FamilyService {
     }
 
     if (filters.grade) {
-      //TODO, how should this filter?
-      //filters.grade = filters.grade.toLowerCase();
-      //filteredFamilies = filteredFamilies.filter(item => item.grade.toLowerCase().indexOf(filters.grade) !== -1);
+      //Inclusive- if a family has any students in this grade, they show up in the filter.
+      filteredFamilies = filteredFamilies.filter(item => item.students.some(student => student.grade == filters.grade));
     }
 
     if (filters.school) {
-      //TODO
-      // filters.location = filters.location.toLowerCase();
-      // filteredFamilies = filteredFamilies.filter(item => item.location.toLowerCase().indexOf(filters.location) !== -1);
+      filteredFamilies = filteredFamilies.filter(item => item.students.some(student => student.school == filters.school));
     }
 
     if (filters.students) {

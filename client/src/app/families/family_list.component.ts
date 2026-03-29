@@ -14,6 +14,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { Family } from './family';
+import { School } from '../grade_list/school';
 //import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 //import { InventoryCardComponent } from './inventory_card.component';
 import { FamilyService } from './family.service';
@@ -113,6 +114,27 @@ export class FamilyListComponent {
       )
     );
 
+  serverFilteredSchools =
+    toSignal(
+      //Not actually doing any filtering on the server, just need to get Items.
+      combineLatest([this.itemSchool$]).pipe(
+        switchMap(() =>
+          this.familyService.getSchools() //If we decide to filter on server, args go her
+        ),
+        catchError((err) => {
+          if (!(err.error instanceof ErrorEvent)) {
+            this.errMsg.set(
+              `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
+            );
+          }
+          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
+          return of<School[]>([]);
+        }),
+        tap(() => {
+        })
+      )
+    );
+
 
   filteredFamilies = computed(() => {
     const currentItems = this.serverFilteredItems();
@@ -138,10 +160,10 @@ export class FamilyListComponent {
 
   gradeFilteredFamilies = computed(() => {
     const currentItems = this.serverFilteredItems();
-    const typedArray: { header: string, items: Family[] }[] = [];
-    let matchingItems = [];
+    const typedArray: { header: string, families: Family[] }[] = [];
+    let matchingFamilies = [];
     for (let i = 0; i < this.familyService.gradeOptions.length - 1; i++) {
-      matchingItems = this.familyService.filterFamilies(currentItems, {
+      matchingFamilies = this.familyService.filterFamilies(currentItems, {
         name: this.itemName(),
         grade: this.familyService.gradeOptions[i].value,
         school: this.itemSchool(),
@@ -150,14 +172,82 @@ export class FamilyListComponent {
         sortBy: this.sortBy()
       })
       //Only sections that have matching items are shown.
-      if (matchingItems.length > 0) {
+      if (matchingFamilies.length > 0) {
         typedArray.push({
           header: this.familyService.gradeOptions[i].label,
-          items: matchingItems
+          families: matchingFamilies
         })
       }
     }
     return typedArray;
+  })
+
+  schoolFilteredFamilies = computed(() => {
+    const currentItems = this.serverFilteredItems();
+    const typedArray: { header: string, families: Family[] }[] = [];
+    let matchingFamilies = [];
+    for (let i = 0; i < this.serverFilteredSchools().length - 1; i++) {
+      matchingFamilies = this.familyService.filterFamilies(currentItems, {
+        name: this.itemName(),
+        grade: this.itemGrade(),
+        school: this.serverFilteredSchools()[i].label, //still dumb, see grade_list
+        students: this.itemStudents(),
+        time: this.itemTime(),
+        sortBy: this.sortBy()
+      })
+      //Only sections that have matching items are shown.
+      if (matchingFamilies.length > 0) {
+        typedArray.push({
+          header: this.serverFilteredSchools()[i].value,
+          families: matchingFamilies
+        })
+      }
+    }
+    return typedArray;
+  })
+
+  gradeAndSchoolFilteredFamilies = computed(() => {
+    const currentItems = this.serverFilteredItems();
+    const schooledArray: {
+          school_header: string,
+          grades: {
+            grade_header:string,
+            families:Family[]
+          }[];
+        }[] = [];
+    const matchingGrades = [];
+    let matchingFamilies = [];
+
+    for (let s = 0; s < this.serverFilteredSchools().length - 1; s ++) {
+      //Inner loop handles grades per school.
+      for (let g = 0; g < this.familyService.gradeOptions.length - 1; g ++) {
+        //Only grades that have matching items are shown.
+        //This step sorts by both the current school, and the current grade.
+        //Annoyingly, it needs to go through all the items each time; even for grades with no items. (.ie, 12th)
+        //If we really wanted to optimized, we probably want to first parition this into schools.
+        matchingFamilies = this.familyService.filterFamilies(currentItems, {
+          name: this.itemName(),
+          time: this.itemTime(),
+          grade: this.familyService.gradeOptions[g].value,
+          school: this.serverFilteredSchools()[s].label, //Yes I know this is poor syntax;  label should really be the longer one...
+          sortBy: this.sortBy()
+        })
+        if (matchingFamilies.length > 0) {
+          matchingGrades.push({
+            grade_header: this.familyService.gradeOptions[g].label,
+            families: matchingFamilies
+          })
+        }
+      }
+      //Only schools that have matching items are shown.
+      if (matchingGrades.length > 0) {
+        schooledArray.push({
+          school_header: this.serverFilteredSchools()[s].value,
+          grades: matchingGrades
+        })
+      }
+    }
+    return schooledArray;
   })
 
   revealReset() {
