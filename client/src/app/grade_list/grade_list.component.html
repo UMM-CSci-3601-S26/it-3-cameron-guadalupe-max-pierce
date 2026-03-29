@@ -2,7 +2,7 @@
   <div class="flex-1">
     <mat-card class="search-card">
       <mat-card-header>
-        <mat-card-title class="inventory-list-title"><strong>INVENTORY</strong></mat-card-title>
+        <mat-card-title class="inventory-list-title"><strong>GRADE REQUIREMENTS</strong></mat-card-title>
       </mat-card-header>
       <mat-card-content>
       <mat-card class="search-card">
@@ -118,29 +118,33 @@
     <div>
       <mat-card>
         <mat-card-content>
-          @if (sortBy() === "type") { <!-- Special sectioned list for type -->
+          @if (sortBy() === "school") {
+            <mat-nav-list class="item-nav-list" color="accent">
+              @for (school of schoolFilteredItems(); track school.grades) {
+                <h2 matSubheader>{{ school.school_header }}</h2>
+                <!--Sublist for each item type-->
+                @for (grade of school.grades; track grade.grade_header) {
+                    <h3 matSubheader>{{ grade.grade_header }}</h3>
+                    @for (item of grade.items; track item._id) {
+                      <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
+                      <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
+                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
+                      </a>
+                    }
+                }
+              }
+            </mat-nav-list>
+          }
+          @else if (sortBy() === "type") { <!-- Special sectioned list for type -->
             <mat-nav-list class="item-nav-list" color="accent">
               @for (collection of typeFilteredItems(); track collection.items) {
-
                 <h2 matSubheader>{{ collection.header }}</h2>
                 <!--Sublist for each item type-->
                 @for (item of collection.items; track item._id) {
-                  @if (item.stocked > 0) {
                     <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
-                    <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.stocked}}</strong> ~ {{item.name}}</span>
-                    @if (item.location === "N/A") {
-                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not provided</span>
-                    }
-                    @else {
-                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
-                    }
+                    <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
+                    <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
                     </a>
-                  } @else {
-                    <a mat-list-item disabled="true" [routerLink]="['/inventory', item._id]" class="item-list-item">
-                    <span matListItemTitle mat-line class="item-list-name"> <strong>Unstocked</strong> ~ {{item.name}}</span>
-                    <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not available</span>
-                    </a>
-                  }
                 }
               }
             </mat-nav-list>
@@ -148,22 +152,10 @@
           @else { <!--Regular, untyped sorting-->
             <mat-nav-list class="item-nav-list" color="accent">
               @for (item of filteredItems(); track item._id) {
-                @if (item.stocked > 0) {
                   <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.stocked}}</strong> ~ {{item.name}}</span>
-                  @if (item.location === "N/A") {
-                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not provided</span>
-                    }
-                    @else {
-                      <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
-                    }
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.required}}</strong> ~ {{item.name}}</span>
+                  <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
                   </a>
-                } @else {
-                  <a mat-list-item disabled="true" [routerLink]="['/inventory', item._id]" class="item-list-item">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>Unstocked</strong> ~ {{item.name}}</span>
-                  <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not availible</span>
-                  </a>
-                }
               }
             </mat-nav-list>
           }
@@ -184,7 +176,7 @@
 
 </div>
 
-<button mat-fab class="add-item-fab" matTooltip="Add Item" matTooltipPosition="left" routerLink="/inventory/new"
+<button mat-fab class="add-item-fab" matTooltip="Add Item" matTooltipPosition="left" routerLink="/grade_list/new"
   data-test="addItemButton">
   <mat-icon class="md-24" aria-label="Add Item">add</mat-icon>
 </button>

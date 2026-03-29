@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 
 import { FamilyListComponent } from './families/family_list.component';
+import { GradeListComponent } from './grade_list/grade_list.component';
 
 //import { CompanyListComponent } from './company-list/company-list.component';
 import { InventoryListComponent } from './inventory/inventory_list.component';
@@ -15,6 +16,7 @@ import { ModifyItemComponent } from './inventory/modify_inventory_item.component
 const routes: Routes = [
   {path: '', component: HomeComponent, title: 'Home'},
   {path: 'families', component: FamilyListComponent, title: 'Families'},
+  {path: 'grade_list', component: GradeListComponent, title: 'Requirements'},
   // {path: 'families/new', component: AddUserComponent, title: 'Add User'},
   // {path: 'families/:id', component: UserProfileComponent, title: 'User Profile'},
   {path: 'inventory', component: InventoryListComponent, title: 'Inventory'},

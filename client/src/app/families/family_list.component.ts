@@ -58,12 +58,12 @@ export class FamilyListComponent {
   // snackBar the `MatSnackBar` used to display feedback
   private snackBar = inject(MatSnackBar);
 
-  itemName = signal<string|undefined>(undefined);
-  itemGrade = signal<string|undefined>(undefined);
-  itemSchool = signal<string|undefined>(undefined);
-  itemStudents = signal<number|undefined>(undefined);
-  itemTime = signal<string|undefined>(undefined);
-  sortBy = signal<string|undefined>(undefined); //When undefined, sorts by name.
+  itemName = signal<string|undefined>(this.familyService.savedFamilyName);
+  itemGrade = signal<string|undefined>(this.familyService.savedFamilyGrade);
+  itemSchool = signal<string|undefined>(this.familyService.savedFamilySchool);
+  itemStudents = signal<number|undefined>(this.familyService.savedFamilyStudents);
+  itemTime = signal<string|undefined>(this.familyService.savedFamilyTime);
+  sortBy = signal<string|undefined>(this.familyService.savedFamilySortBy); //When undefined, sorts by name.
   resetVisible = signal<boolean|undefined>(false);//Reset button is initially hidden.
 
   filteredGradeOptions = computed(() => {

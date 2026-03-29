@@ -45,7 +45,7 @@ export class GradeListService {
   savedGradeListDesc = ''; //Per-session saved value for description search bar.
   savedGradeListGrade = ''; //Per-session saved value for description search bar.
   savedGradeListSchool = ''; //Per-session saved value for description search bar.
-  savedGradeListSortBy = ''; //Per-session saved value for sort-order search bar. TODO, Default to school?
+  savedGradeListSortBy = 'school'; //Per-session saved value for sort-order search bar. School is probably the most useful default.
 
   //TODO - is this the correct way to do this? Better than copying the type lists in multiple places?
   inventoryService = new InventoryService;

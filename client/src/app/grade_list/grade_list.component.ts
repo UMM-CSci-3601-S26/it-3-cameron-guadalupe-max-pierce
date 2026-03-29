@@ -54,19 +54,19 @@ import { School } from './school';
     MatIconModule
   ],
 })
-export class InventoryListComponent {
+export class GradeListComponent {
   private gradeListService = inject(GradeListService);
   // snackBar the `MatSnackBar` used to display feedback
   private snackBar = inject(MatSnackBar);
 
   //dataSource = new MatTableDataSource<InventoryItem>([]);
-  itemName = signal<string|undefined>(undefined);
-  itemRequired= signal<number|undefined>(undefined);
-  itemDesc = signal<string|undefined>(undefined);
-  itemGrade = signal<string|undefined>(undefined);
-  itemSchool = signal<string|undefined>(undefined);
-  itemType = signal<string|undefined>(undefined);
-  sortBy = signal<string|undefined>(undefined); //When undefined, sorts by name.
+  itemName = signal<string|undefined>(this.gradeListService.savedGradeListName);
+  itemRequired = signal<number|undefined>(this.gradeListService.savedGradeListRequired);
+  itemDesc = signal<string|undefined>(this.gradeListService.savedGradeListDesc);
+  itemGrade = signal<string|undefined>(this.gradeListService.savedGradeListGrade);
+  itemSchool = signal<string|undefined>(this.gradeListService.savedGradeListSchool);
+  itemType = signal<string|undefined>(this.gradeListService.savedGradeListType);
+  sortBy = signal<string|undefined>(this.gradeListService.savedGradeListSortBy);
   resetVisible = signal<boolean|undefined>(false);//Reset button is initially hidden.
 
   filteredTypeOptions = computed(() => {
@@ -213,7 +213,7 @@ export class InventoryListComponent {
       school_header: string,
       grades: {
         grade_header:string,
-        items:[RequiredItem[]]
+        items:RequiredItem[]
       }[];
     }[] = [];
 
@@ -233,7 +233,7 @@ export class InventoryListComponent {
           required: this.itemRequired(),
           desc: this.itemDesc(),
           grade: this.gradeListService.gradeOptions[g].value,
-          school: this.serverFilteredSchools()[s].value,
+          school: this.serverFilteredSchools()[s].label, //Yes I know this is poor syntax;  label should really be the longer one...
           sortBy: this.sortBy()
         })
         if (matchingItems.length > 0) {
