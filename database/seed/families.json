@@ -55,5 +55,48 @@
         "backpack":false
       }
     ]
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87212"
+    },
+    "name": "Turnpikes",
+    "time":"2:00am",
+    "students":[
+      {
+        "grade":"5",
+        "school":"Saint Mary's",
+        "backpack":true
+      },
+      {
+        "grade":"5",
+        "school":"Saint Mary's",
+        "backpack":false
+      },
+      {
+        "grade":"5",
+        "school":"Saint Mary's",
+        "backpack":false
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87213"
+    },
+    "name": "Jacksons",
+    "time":"7:00am",
+    "students":[
+      {
+        "grade":"1",
+        "school":"Saint Mary's",
+        "backpack":true
+      },
+      {
+        "grade":"12",
+        "school":"MAES",
+        "backpack":false
+      }
+    ]
   }
 ]

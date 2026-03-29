@@ -141,7 +141,7 @@ export class InventoryListComponent {
     const currentItems = this.serverFilteredItems();
     const typedArray: { header: string, items: InventoryItem[] }[] = [];
     let matchingItems = [];
-    for (let i = 0; i < this.inventoryService.typeOptions.length - 1; i++) {
+    for (let i = 0; i < this.inventoryService.typeOptions.length; i++) {
       matchingItems = this.inventoryService.filterItems(currentItems, {
         name: this.itemName(),
         type: this.inventoryService.typeOptions[i].value,

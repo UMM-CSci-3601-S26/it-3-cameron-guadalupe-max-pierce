@@ -47,7 +47,7 @@ export class FamilyService {
   savedFamilyGrade = '';
   savedFamilyStudents = 0;
   savedFamilyTime = '';
-  savedFamilySortBy = ''; //Per-session saved value for sort-order search bar.
+  savedFamilySortBy = 'grade_school'; //Per-session saved value for sort-order search bar. Defaults to grade and school
 
   gradeOptions = [
     { value: 'P', label: 'Pre-School' },

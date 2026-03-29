@@ -54,6 +54,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatIconModule
   ],
 })
+
 export class FamilyListComponent {
   private familyService = inject(FamilyService);
   // snackBar the `MatSnackBar` used to display feedback
@@ -160,21 +161,35 @@ export class FamilyListComponent {
 
   gradeFilteredFamilies = computed(() => {
     const currentItems = this.serverFilteredItems();
-    const typedArray: { header: string, families: Family[] }[] = [];
+    const typedArray: { header: string, grade_total: number, families: Family[] }[] = [];
     let matchingFamilies = [];
-    for (let i = 0; i < this.familyService.gradeOptions.length - 1; i++) {
+    let totalStudents = 0;
+    for (let g = 0; g < this.familyService.gradeOptions.length; g++) {
+      totalStudents = 0;
       matchingFamilies = this.familyService.filterFamilies(currentItems, {
         name: this.itemName(),
-        grade: this.familyService.gradeOptions[i].value,
+        grade: this.familyService.gradeOptions[g].value,
         school: this.itemSchool(),
         students: this.itemStudents(),
         time: this.itemTime(),
         sortBy: this.sortBy()
       })
+      //Count how many of each family's students are actually in the current grade
+      //This is necessary because a family is listed if ANY of their students match the grade.
+      //Otherwise, a family with multiple students in the same grade would only count as one.
+      for (let f = 0; f < matchingFamilies.length; f ++) {
+        for (let s = 0; s < matchingFamilies[f].students.length; s ++) {
+          if (matchingFamilies[f].students[s].grade == this.familyService.gradeOptions[g].value) {
+            totalStudents ++;
+          }
+        }
+      }
+
       //Only sections that have matching items are shown.
       if (matchingFamilies.length > 0) {
         typedArray.push({
-          header: this.familyService.gradeOptions[i].label,
+          header: this.familyService.gradeOptions[g].label,
+          grade_total: totalStudents,
           families: matchingFamilies
         })
       }
@@ -184,9 +199,11 @@ export class FamilyListComponent {
 
   schoolFilteredFamilies = computed(() => {
     const currentItems = this.serverFilteredItems();
-    const typedArray: { header: string, families: Family[] }[] = [];
+    const typedArray: { header: string, school_total: number, families: Family[] }[] = [];
     let matchingFamilies = [];
-    for (let i = 0; i < this.serverFilteredSchools().length - 1; i++) {
+    let totalStudents = 0;
+    for (let i = 0; i < this.serverFilteredSchools().length; i++) {
+      totalStudents = 0;
       matchingFamilies = this.familyService.filterFamilies(currentItems, {
         name: this.itemName(),
         grade: this.itemGrade(),
@@ -195,10 +212,21 @@ export class FamilyListComponent {
         time: this.itemTime(),
         sortBy: this.sortBy()
       })
+      //Count how many of each family's students are actually in the current school
+      //Same thing as above
+      for (let f = 0; f < matchingFamilies.length; f ++) {
+        for (let s = 0; s < matchingFamilies[f].students.length; s ++) {
+          if (matchingFamilies[f].students[s].school == this.serverFilteredSchools()[i].label) {
+            totalStudents ++;
+          }
+        }
+      }
+
       //Only sections that have matching items are shown.
       if (matchingFamilies.length > 0) {
         typedArray.push({
           header: this.serverFilteredSchools()[i].value,
+          school_total: totalStudents,
           families: matchingFamilies
         })
       }
@@ -210,18 +238,24 @@ export class FamilyListComponent {
     const currentItems = this.serverFilteredItems();
     const schooledArray: {
           school_header: string,
+          school_total:number,
           grades: {
+            grade_total:number,
             grade_header:string,
             families:Family[]
           }[];
         }[] = [];
-    const matchingGrades = [];
+    let  matchingGrades = [];
     let matchingFamilies = [];
+    let schoolTotal = 0;
+    let gradeTotal = 0;
 
-    for (let s = 0; s < this.serverFilteredSchools().length - 1; s ++) {
+    for (let s = 0; s < this.serverFilteredSchools().length; s ++) {
+      schoolTotal = 0;
+      matchingGrades = [];
       //Inner loop handles grades per school.
-      for (let g = 0; g < this.familyService.gradeOptions.length - 1; g ++) {
-        //Only grades that have matching items are shown.
+      for (let g = 0; g < this.familyService.gradeOptions.length; g ++) {
+        gradeTotal = 0;
         //This step sorts by both the current school, and the current grade.
         //Annoyingly, it needs to go through all the items each time; even for grades with no items. (.ie, 12th)
         //If we really wanted to optimized, we probably want to first parition this into schools.
@@ -232,17 +266,30 @@ export class FamilyListComponent {
           school: this.serverFilteredSchools()[s].label, //Yes I know this is poor syntax;  label should really be the longer one...
           sortBy: this.sortBy()
         })
-        if (matchingFamilies.length > 0) {
+        //Some families may match grade, but not school. Only students w/ both properties are counted.
+        for (let f = 0; f < matchingFamilies.length; f ++) {
+          for (let c = 0; c < matchingFamilies[f].students.length; c ++) {
+            if (matchingFamilies[f].students[c].school == this.serverFilteredSchools()[s].label
+            && matchingFamilies[f].students[c].grade == this.familyService.gradeOptions[g].value) {
+              gradeTotal ++;
+            }
+          }
+        }
+
+        if (gradeTotal > 0) {
+          schoolTotal += gradeTotal; //School total is the sum of all grades.
           matchingGrades.push({
             grade_header: this.familyService.gradeOptions[g].label,
+            grade_total: gradeTotal,
             families: matchingFamilies
           })
         }
       }
       //Only schools that have matching items are shown.
-      if (matchingGrades.length > 0) {
+      if (schoolTotal > 0) {
         schooledArray.push({
           school_header: this.serverFilteredSchools()[s].value,
+          school_total: schoolTotal,
           grades: matchingGrades
         })
       }

@@ -220,9 +220,9 @@ export class GradeListComponent {
     const matchingGrades = [];
     let matchingItems = [];
 
-    for (let s = 0; s < this.serverFilteredSchools().length - 1; s ++) {
+    for (let s = 0; s < this.serverFilteredSchools().length; s ++) {
       //Inner loop handles grades per school.
-      for (let g = 0; g < this.gradeListService.gradeOptions.length - 1; g ++) {
+      for (let g = 0; g < this.gradeListService.gradeOptions.length; g ++) {
         //Only grades that have matching items are shown.
         //This step sorts by both the current school, and the current grade.
         //Annoyingly, it needs to go through all the items each time; even for grades with no items. (.ie, 12th)
