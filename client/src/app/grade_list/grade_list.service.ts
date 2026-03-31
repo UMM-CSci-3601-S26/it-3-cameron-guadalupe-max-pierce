@@ -68,7 +68,7 @@ export class GradeListService {
     this.savedGradeListDesc = fields.desc;
     this.savedGradeListGrade = fields.grade;
     this.savedGradeListSchool = fields.school;
-    this.savedGradeListType = fields.grade;
+    this.savedGradeListType = fields.type;
     this.savedGradeListSortBy = fields.sortby;
   }
 

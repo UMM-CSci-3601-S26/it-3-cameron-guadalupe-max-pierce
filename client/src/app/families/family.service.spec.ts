@@ -96,7 +96,7 @@ describe('FamilyService', () => {
       expect(familyService.savedFamilySchool).toEqual('');
       expect(familyService.savedFamilyStudents).toEqual(0);
       expect(familyService.savedFamilyTime).toEqual('');
-      expect(familyService.savedFamilySortBy).toEqual('');
+      expect(familyService.savedFamilySortBy).toEqual('grade_school');
       //We test elsewhere that the list actually calls this correctly.
       familyService.updateSavedSearch({
         name:'Test',
