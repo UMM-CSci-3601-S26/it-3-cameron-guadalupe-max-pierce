@@ -218,10 +218,11 @@ export class GradeListComponent {
       }[];
     }[] = [];
 
-    const matchingGrades = [];
+    let matchingGrades = [];
     let matchingItems = [];
 
     for (let s = 0; s < this.serverFilteredSchools().length; s ++) {
+      matchingGrades = [];
       //Inner loop handles grades per school.
       for (let g = 0; g < this.gradeListService.gradeOptions.length; g ++) {
         //Only grades that have matching items are shown.
