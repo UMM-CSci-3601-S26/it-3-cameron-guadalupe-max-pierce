@@ -116,12 +116,16 @@
               @for (school of gradeAndSchoolFilteredFamilies(); track school.grades) {
                 <mat-card class="section-card">
                 <mat-card-content>
+                <mat-toolbar color="primary">
                 <h2 matSubheader><strong>{{ school.school_header }}</strong> - x{{school.school_total}} Students</h2>
+                </mat-toolbar>
                 <!--Sublist for each grade-->
                 @for (grade of school.grades; track grade.grade_header) {
                     <mat-card class="sub-section-card">
                     <mat-card-content>
+                    <mat-toolbar color="primary">
                     <h3 matSubheader><strong>{{ grade.grade_header }}</strong> - x{{grade.grade_total}} Students</h3>
+                    </mat-toolbar>
                     @for (family of grade.families; track family._id) {
                       <mat-card class="sub-sub-section-card">
                       <mat-card-content>
@@ -144,7 +148,9 @@
               @for (grade of gradeFilteredFamilies(); track grade.families) {
                 <mat-card class = "section-card">
                 <mat-card-content>
+                <mat-toolbar color="primary">
                 <h2 matSubheader><strong>{{ grade.header }}</strong> - x{{grade.grade_total}} Students</h2>
+                </mat-toolbar>
                 <!--Sublist for each grade-->
                 @for (family of grade.families; track family._id) {
                   <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
@@ -161,7 +167,9 @@
               @for (school of schoolFilteredFamilies(); track school.families) {
                 <mat-card class = "section-card">
                 <mat-card-content>
+                <mat-toolbar color="primary">
                 <h2 matSubheader><strong>{{ school.header }}</strong> - x{{school.school_total}} Students</h2>
+                </mat-toolbar>
                 <!--Sublist for each item grade-->
                 @for (family of school.families; track family._id) {
                   <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">

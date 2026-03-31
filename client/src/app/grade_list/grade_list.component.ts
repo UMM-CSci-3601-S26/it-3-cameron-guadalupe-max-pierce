@@ -20,6 +20,7 @@ import { GradeListService } from './grade_list.service';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { School } from './school';
+import { MatToolbar } from '@angular/material/toolbar';
 
 /**
  * A component that displays a list of users, either as a grid
@@ -45,6 +46,7 @@ import { School } from './school';
     MatAutocompleteModule,
     MatOptionModule,
     MatRadioModule,
+    MatToolbar,
     // MatTableModule,
     //InventoryCardComponent,
     MatListModule,

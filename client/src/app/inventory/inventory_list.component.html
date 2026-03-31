@@ -116,7 +116,9 @@
               @for (collection of typeFilteredItems(); track collection.items) {
                 <mat-card class = "section-card">
                 <mat-card-content>
+                <mat-toolbar color="primary">
                 <h2 matSubheader>{{ collection.header }}</h2>
+                </mat-toolbar>
                 <!--Sublist for each item type-->
                 @for (item of collection.items; track item._id) {
                   @if (item.stocked > 0) {
