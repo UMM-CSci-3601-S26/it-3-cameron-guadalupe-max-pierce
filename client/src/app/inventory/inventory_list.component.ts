@@ -59,12 +59,12 @@ export class InventoryListComponent {
   private snackBar = inject(MatSnackBar);
 
   //dataSource = new MatTableDataSource<InventoryItem>([]);
-  itemName = signal<string|undefined>(undefined);
-  itemStock = signal<number|undefined>(undefined);
-  itemDesc = signal<string|undefined>(undefined);
-  itemLocation = signal<string|undefined>(undefined);
-  itemType = signal<string|undefined>(undefined);
-  sortBy = signal<string|undefined>(undefined); //When undefined, sorts by name.
+  itemName = signal<string|undefined>(this.inventoryService.savedInventoryName);
+  itemStock = signal<number|undefined>(this.inventoryService.savedInventoryStocked);
+  itemDesc = signal<string|undefined>(this.inventoryService.savedInventoryDesc);
+  itemLocation = signal<string|undefined>(this.inventoryService.savedInventoryLocation);
+  itemType = signal<string|undefined>(this.inventoryService.savedInventoryType);
+  sortBy = signal<string|undefined>(this.inventoryService.savedInventorySortBy);
   resetVisible = signal<boolean|undefined>(false);//Reset button is initially hidden.
 
   filteredTypeOptions = computed(() => {
@@ -141,7 +141,7 @@ export class InventoryListComponent {
     const currentItems = this.serverFilteredItems();
     const typedArray: { header: string, items: InventoryItem[] }[] = [];
     let matchingItems = [];
-    for (let i = 0; i < this.inventoryService.typeOptions.length - 1; i++) {
+    for (let i = 0; i < this.inventoryService.typeOptions.length; i++) {
       matchingItems = this.inventoryService.filterItems(currentItems, {
         name: this.itemName(),
         type: this.inventoryService.typeOptions[i].value,

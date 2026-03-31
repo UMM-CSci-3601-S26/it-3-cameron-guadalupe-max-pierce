@@ -12,7 +12,8 @@ import { ActivatedRouteStub } from '../../testing/activated-route-stub'; //No id
 //import { UserProfileComponent } from './user-profile.component';
 import { InventoryService } from './inventory.service';
 import { provideHttpClient } from '@angular/common/http';
-import { InventoryItemProfileComponent } from './inventory_item_profile.component';
+import { ModifyItemComponent } from './modify_inventory_item.component';
+//import { InventoryItemProfileComponent } from './inventory_item_profile.component';
 
 describe('AddItemComponent', () => {
   let addItemComponent: AddItemComponent;
@@ -227,7 +228,7 @@ describe('AddItemComponent#submitForm()', () => {
         provideHttpClientTesting(),
         {provide: InventoryService, useClass: MockInventoryService }, // A (more-async-tests) - provide + use class of the mock
         provideRouter([
-          { path: 'inventory/1', component: InventoryItemProfileComponent }
+          { path: 'inventory/1', component: ModifyItemComponent }
         ])]
     }).compileComponents().catch(error => {
       expect(error).toBeNull();

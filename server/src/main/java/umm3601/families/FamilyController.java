@@ -200,7 +200,7 @@ public class FamilyController implements Controller {
         "Family must have a non-empty name; body was " + body)
       .check(itm -> itm.students.size() >= 0, //TODO, is this the correct way to do this?
         "Family must have at least one student; body was " + body)
-      .check(itm -> itm.time != 0,
+      .check(itm -> itm.time != "",
         "Family must have valid appointment time; body was " + body)
       .get();
 

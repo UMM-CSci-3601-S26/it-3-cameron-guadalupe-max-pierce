@@ -4,7 +4,7 @@
       "$oid": "588935f57546a2daea44de7c"
     },
     "name": "Richards",
-    "time":1200,
+    "time":"12:00pm",
     "students":[
       {
         "grade":"P",
@@ -23,11 +23,78 @@
       "$oid": "588935f5597715f06f3e8f6c"
     },
     "name": "Smith",
-    "time":100,
+    "time":"1:00pm",
     "students":[
       {
         "grade":"2",
         "school":"Hancock",
+        "backpack":false
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "588935f51c55b55c75a84848"
+    },
+    "name": "Baudelaires",
+    "time":"9:00am",
+    "students":[
+      {
+        "grade":"P",
+        "school":"MAES",
+        "backpack":false
+      },
+       {
+        "grade":"6",
+        "school":"MAES",
+        "backpack":true
+      },
+       {
+        "grade":"10",
+        "school":"MAES",
+        "backpack":false
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87212"
+    },
+    "name": "Turnpikes",
+    "time":"2:00am",
+    "students":[
+      {
+        "grade":"5",
+        "school":"Saint Mary's",
+        "backpack":true
+      },
+      {
+        "grade":"5",
+        "school":"Saint Mary's",
+        "backpack":false
+      },
+      {
+        "grade":"5",
+        "school":"Saint Mary's",
+        "backpack":false
+      }
+    ]
+  },
+  {
+    "_id": {
+      "$oid": "58af3a600343927e48e87213"
+    },
+    "name": "Jacksons",
+    "time":"7:00am",
+    "students":[
+      {
+        "grade":"1",
+        "school":"Saint Mary's",
+        "backpack":true
+      },
+      {
+        "grade":"12",
+        "school":"MAES",
         "backpack":false
       }
     ]

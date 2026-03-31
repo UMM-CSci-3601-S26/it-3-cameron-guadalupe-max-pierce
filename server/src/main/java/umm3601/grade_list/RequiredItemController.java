@@ -37,6 +37,7 @@ import umm3601.Controller;
 public class RequiredItemController implements Controller {
 
   private static final String API_GRADE_LIST = "/api/grade_list";
+  private static final String API_SCHOOL_LIST = "/api/schools";
   private static final String API_GRADE_LIST_BY_ID = "/api/grade_list/{id}";
   static final String NAME_KEY = "name";
   static final String TYPE_KEY = "type";
@@ -45,6 +46,7 @@ public class RequiredItemController implements Controller {
   static final String STOCKED_KEY = "stocked";
 
   private final JacksonMongoCollection<RequiredItem> listCollection;
+  private final JacksonMongoCollection<School> schoolCollection;
 
   /**
    * Construct a controller for users.
@@ -57,7 +59,14 @@ public class RequiredItemController implements Controller {
         "required_items",
         RequiredItem.class,
         UuidRepresentation.STANDARD);
+    //And another one...
+    schoolCollection = JacksonMongoCollection.builder().build(
+        database,
+        "schools",
+        School.class,
+        UuidRepresentation.STANDARD);
   }
+
 
   /**
    * Set the JSON body of the response to be the single user
@@ -83,7 +92,7 @@ public class RequiredItemController implements Controller {
   }
 
   /**
-   * Set the JSON body of the response to be a list of all the users returned from the database
+   * Set the JSON body of the response to be a list of all the items returned from the database
    * that match any requested filters and ordering
    *
    * @param ctx a Javalin HTTP context
@@ -95,6 +104,24 @@ public class RequiredItemController implements Controller {
     ArrayList<RequiredItem> matchingItems = listCollection
       .find(combinedFilter)
       .sort(sortingOrder)
+      .into(new ArrayList<>());
+
+    ctx.json(matchingItems);
+
+    // Explicitly set the context status to OK
+    ctx.status(HttpStatus.OK);
+  }
+
+  /**
+   * Set the JSON body of the response to be a list of all the users returned from the database
+   * that match any requested filters and ordering
+   *
+   * @param ctx a Javalin HTTP context
+   */
+  public void getSchools(Context ctx) {
+
+    ArrayList<School> matchingItems = schoolCollection
+      .find() //No sorting required
       .into(new ArrayList<>());
 
     ctx.json(matchingItems);
@@ -119,41 +146,12 @@ public class RequiredItemController implements Controller {
   private Bson constructFilter(Context ctx) {
     List<Bson> filters = new ArrayList<>(); // start with an empty list of filters
 
-    // if (ctx.queryParamMap().containsKey(AGE_KEY)) {
-    //   int targetAge = ctx.queryParamAsClass(AGE_KEY, Integer.class)
-    //     .check(it -> it > 0, "User's age must be greater than zero; you provided " + ctx.queryParam(AGE_KEY))
-    //     .check(it -> it < REASONABLE_AGE_LIMIT,
-    //       "User's age must be less than " + REASONABLE_AGE_LIMIT + "; you provided " + ctx.queryParam(AGE_KEY))
-    //     .get();
-    //   filters.add(eq(AGE_KEY, targetAge));
-    // }
-    // if (ctx.queryParamMap().containsKey(COMPANY_KEY)) {
-    //   Pattern pattern = Pattern.compile(Pattern.quote(ctx.queryParam(COMPANY_KEY)), Pattern.CASE_INSENSITIVE);
-    //   filters.add(regex(COMPANY_KEY, pattern));
-    // }
-    // if (ctx.queryParamMap().containsKey(ROLE_KEY)) {
-    //   String role = ctx.queryParamAsClass(ROLE_KEY, String.class)
-    //     .check(it -> it.matches(ROLE_REGEX), "User must have a legal user role")
-    //     .get();
-    //   filters.add(eq(ROLE_KEY, role));
-    // }
-
-    // Combine the list of filters into a single filtering document.
     Bson combinedFilter = filters.isEmpty() ? new Document() : and(filters);
 
     return combinedFilter;
   }
 
   /**
-   * Construct a Bson sorting document to use in the `sort` method based on the
-   * query parameters from the context.
-   *
-   * This checks for the presence of the `sortby` and `sortorder` query
-   * parameters and constructs a sorting document that will sort users by
-   * the specified field in the specified order. If the `sortby` query
-   * parameter is not present, it defaults to "name". If the `sortorder`
-   * query parameter is not present, it defaults to "asc".
-   *
    * @param ctx a Javalin HTTP context, which contains the query parameters
    *   used to construct the sorting order
    * @return a Bson sorting document that can be used in the `sort` method
@@ -170,24 +168,7 @@ public class RequiredItemController implements Controller {
   }
 
   /**
-   * Set the JSON body of the response to be a list of all the user names and IDs
-   * returned from the database, grouped by company
-   *
-   * This "returns" a list of user names and IDs, grouped by company in the JSON
-   * body of the response. The user names and IDs are stored in `UserIdName` objects,
-   * and the company name, the number of users in that company, and the list of user
-   * names and IDs are stored in `UserByCompany` objects.
-   *
    * @param ctx a Javalin HTTP context that provides the query parameters
-   *   used to sort the results. We support either sorting by company name
-   *   (in either `asc` or `desc` order) or by the number of users in the
-   *   company (`count`, also in either `asc` or `desc` order).
-   */
-
-  /**
-   * Add a new user using information from the context
-   * (as long as the information gives "legal" values to User fields)
-   *
    * @param ctx a Javalin HTTP context that provides the user info
    *  in the JSON body of the request
    */
@@ -263,6 +244,7 @@ public class RequiredItemController implements Controller {
     // List items, filtered using query parameters
     server.get(API_GRADE_LIST, this::getItems);
 
+    server.get(API_SCHOOL_LIST, this::getSchools);
     // Get the users, possibly filtered, grouped by company
     // server.get("/api/usersByCompany", this::getUsersGroupedByCompany);
 

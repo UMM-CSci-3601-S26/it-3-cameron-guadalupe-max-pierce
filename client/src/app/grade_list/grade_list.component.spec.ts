@@ -1,25 +1,25 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { Observable } from 'rxjs';
-import { MockInventoryService } from 'src/testing/inventory.service.mock';
-import { InventoryListComponent } from './inventory_list.component';
-import { InventoryItem } from './inventory_item';
-import { InventoryService } from './inventory.service';
+import { MockGradeListService } from 'src/testing/grade_list.service.mock';
+import { GradeListComponent } from './grade_list.component';
+import { GradeListService } from './grade_list.service';
+import { RequiredItem } from './required_item';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
-describe('Inventory list', () => {
-  let inventoryList: InventoryListComponent;
-  let fixture: ComponentFixture<InventoryListComponent>;
-  let inventoryService: InventoryService;
+describe('Grade List', () => {
+  let gradeList: GradeListComponent;
+  let fixture: ComponentFixture<GradeListComponent>;
+  let inventoryService: GradeListService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [InventoryListComponent],
+      imports: [GradeListComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: InventoryService, useClass: MockInventoryService },
+        { provide: GradeListService, useClass: MockGradeListService },
         provideRouter([])
       ],
     });
@@ -27,88 +27,99 @@ describe('Inventory list', () => {
 
   beforeEach(waitForAsync(() => {
     TestBed.compileComponents().then(() => {
-      fixture = TestBed.createComponent(InventoryListComponent);
-      inventoryList = fixture.componentInstance;
-      inventoryService = TestBed.inject(InventoryService);
+      fixture = TestBed.createComponent(GradeListComponent);
+      gradeList = fixture.componentInstance;
+      inventoryService = TestBed.inject(GradeListService);
       fixture.detectChanges();
     });
   }));
 
   it('should create the component', () => {
-    expect(inventoryList).toBeTruthy();
+    expect(gradeList).toBeTruthy();
   });
 
   it('should initialize with serverFilteredItems available', () => {
-    const items = inventoryList.serverFilteredItems();
+    const items = gradeList.serverFilteredItems();
     expect(items).toBeDefined();
     expect(Array.isArray(items)).toBe(true);
   });
 
   it('should initialize with filteredItems available', () => {
-    const items = inventoryList.filteredItems();
+    const items = gradeList.filteredItems();
+    expect(items).toBeDefined();
+    expect(Array.isArray(items)).toBe(true);
+  });
+
+  it('should initialize with filteredTypeOptions available', () => {
+    const items = gradeList.filteredTypeOptions();
+    expect(items).toBeDefined();
+    expect(Array.isArray(items)).toBe(true);
+  });
+
+  it('should initialize with filteredGradeOptions available', () => {
+    const items = gradeList.filteredGradeOptions();
     expect(items).toBeDefined();
     expect(Array.isArray(items)).toBe(true);
   });
 
   it('should initialize with typeFilteredItems available', () => {
-    const typedItems = inventoryList.typeFilteredItems();
+    const typedItems = gradeList.typeFilteredItems();
     expect(typedItems).toBeDefined();
     expect(Array.isArray(typedItems)).toBe(true);
+  });
+
+  it('should initialize with schoolFilteredItems available', () => {
+    const schoolItems = gradeList.schoolFilteredItems();
+    expect(schoolItems).toBeDefined();
+    expect(Array.isArray(schoolItems)).toBe(true);
   });
 
   it('should call getItems() and updateSavedSearch() when itemName signal changes', () => {
     const spy = spyOn(inventoryService, 'getItems').and.callThrough();
     const doubleAgent = spyOn(inventoryService, 'updateSavedSearch').and.callThrough();
-    inventoryList.itemName.set('test');
+    gradeList.itemName.set('test');
     fixture.detectChanges();
     expect(spy).toHaveBeenCalledWith({  }); //Since we're not filtering on server, no arguements should be passed.
     expect(doubleAgent).toHaveBeenCalled();
   });
 
-  //Current setup just calls getItems when anything changes. Probably a better way to test this.
-  // it('should call getUsers() when userAge signal changes', () => {
-  //   const spy = spyOn(userService, 'getUsers').and.callThrough();
-  //   userList.userAge.set(25);
-  //   fixture.detectChanges();
-  //   expect(spy).toHaveBeenCalledWith({ role: undefined, age: 25 });
-  // });
-
   it('should not show error message on successful load', () => {
-    expect(inventoryList.errMsg()).toBeUndefined();
+    expect(gradeList.errMsg()).toBeUndefined();
   });
 
   it("correctly handles the 'Location Reset' button", () => {
-    expect(inventoryList.resetVisible()).toEqual(false);
-    inventoryList.revealReset();
-    expect(inventoryList.resetVisible()).toEqual(true);
+    expect(gradeList.resetVisible()).toEqual(false);
+    gradeList.revealReset();
+    expect(gradeList.resetVisible()).toEqual(true);
   });
 
-  it("calls the service with correct parameters for location reset", () => {
-    const spy = spyOn(inventoryService, 'modifyMass').and.callThrough();
-    const originalItems = inventoryList.filteredItems();
-    inventoryList.resetLocations();
-    fixture.detectChanges();
-    expect(spy).toHaveBeenCalledOnceWith(
-      {
-        _id:undefined,
-        location:"N/A",
-        stocked:undefined,
-        name:undefined,
-        type:undefined,
-        desc:undefined
-      },
-      originalItems
-    );
-  });
+  //Irrellevant; eventually add a test for clearing the grade list.
+  // it("calls the service with correct parameters for location reset", () => {
+  //   const spy = spyOn(inventoryService, 'modifyMass').and.callThrough();
+  //   const originalItems = gradeList.filteredItems();
+  //   gradeList.resetLocations();
+  //   fixture.detectChanges();
+  //   expect(spy).toHaveBeenCalledOnceWith(
+  //     {
+  //       _id:undefined,
+  //       location:"N/A",
+  //       stocked:undefined,
+  //       name:undefined,
+  //       type:undefined,
+  //       desc:undefined
+  //     },
+  //     originalItems
+  //   );
+  // });
 });
 
-describe('Misbehaving Item List', () => {
-  let itemList: InventoryListComponent;
-  let fixture: ComponentFixture<InventoryListComponent>;
+describe('Misbehaving Grade List', () => {
+  let itemList: GradeListComponent;
+  let fixture: ComponentFixture<GradeListComponent>;
 
   let inventoryServiceStub: {
-    getItems: () => Observable<InventoryItem[]>;
-    filterItems: () => InventoryItem[];
+    getItems: () => Observable<RequiredItem[]>;
+    filterItems: () => RequiredItem[];
     updateSavedSearch: () => undefined;
   };
 
@@ -123,18 +134,14 @@ describe('Misbehaving Item List', () => {
       updateSavedSearch: () => undefined
     };
   });
-
-  // Construct the `userList` used for the testing in the `it` statement
-  // below.
+  //Still no idea what this is doing, whatever
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [
-        InventoryListComponent
+        GradeListComponent
       ],
-      // providers:    [ UserService ]  // NO! Don't provide the real service!
-      // Provide a test-double instead
       providers: [{
-        provide: InventoryService,
+        provide: GradeListService,
         useValue: inventoryServiceStub
       }, provideRouter([])],
     })
@@ -142,12 +149,12 @@ describe('Misbehaving Item List', () => {
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(InventoryListComponent);
+    fixture = TestBed.createComponent(GradeListComponent);
     itemList = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it("generates an error if we don't set up an InventoryListService", () => {
+  it("generates an error if we don't set up a GradeListService", () => {
     // If the service fails, we expect the `serverFilteredUsers` signal to
     // be an empty array of users.
     expect(itemList.serverFilteredItems())

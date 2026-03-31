@@ -151,17 +151,17 @@ class FamilyControllerSpec {
         testFamilies.add(
             new Document()
                 .append("name", "Richards")
-                .append("time", 100)
+                .append("time", "1:00pm")
                 .append("students",  testStudents1));
         testFamilies.add(
             new Document()
                 .append("name", "Hendersons")
-                .append("time", 200)
+                .append("time", "2:00pm")
                 .append("students",  testStudents2));
         testFamilies.add(
             new Document()
                 .append("name", "Jones")
-                .append("time", 100)
+                .append("time", "3:00pm")
                 .append("students",  testStudents3));
 
         testItemId1 = new ObjectId();
@@ -253,7 +253,7 @@ class FamilyControllerSpec {
     newStudents.add(student2);
 
     newFamily.name = "Hendrixes";
-    newFamily.time = 250;
+    newFamily.time = "2:50";
     newFamily.students = newStudents;
 
     String newFamilyJson = javalinJackson.toJsonString(newFamily, Family.class);
@@ -299,7 +299,7 @@ class FamilyControllerSpec {
     String newFamilyJson = """
       {
         "name": "no",
-        "time": 2,
+        "time": "2",
         "students":[]
       }
       """;
@@ -314,28 +314,6 @@ class FamilyControllerSpec {
     });
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
     assertTrue(exceptionMessage.contains("no"));
-  }
-
-  @Test
-  void addInvalidTimeFamily() throws IOException {
-    String newFamilyJson = """
-      {
-        "name": "Potters",
-        "stocked": "This is not a number!",
-        "students":[]
-      }
-      """;
-
-    when(ctx.body()).thenReturn(newFamilyJson);
-    when(ctx.bodyValidator(Family.class))
-        .thenReturn(new BodyValidator<Family>(newFamilyJson, Family.class,
-                      () -> javalinJackson.fromJsonString(newFamilyJson, Family.class)));
-    ValidationException exception = assertThrows(ValidationException.class, () -> {
-      familyController.addNewFamily(ctx);
-    });
-    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
-
-    assertTrue(exceptionMessage.contains("This is not a number!"));
   }
 
   @Test

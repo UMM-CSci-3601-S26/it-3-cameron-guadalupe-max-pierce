@@ -12,7 +12,7 @@
       </a>
 
       <!-- Unused, currently just goes back companies. -->
-      <a mat-list-item routerLink="/companies" routerLinkActive="drawer-list-item-active"
+      <a mat-list-item routerLink="/todo" routerLinkActive="drawer-list-item-active"
         #routerLinkActiveInstance="routerLinkActive" [routerLinkActiveOptions]="{exact: true}" (click)="drawer.close()">
         <mat-icon matListItemIcon>shopping_cart</mat-icon>
         Shopping List
@@ -23,18 +23,17 @@
         Inventory
       </a>
 
-      <a mat-list-item routerLink="/users" routerLinkActive="drawer-list-item-active" (click)="drawer.close()">
+      <a mat-list-item routerLink="/families" routerLinkActive="drawer-list-item-active" (click)="drawer.close()">
         <mat-icon matListItemIcon>people</mat-icon>
-        Students
+        Families
       </a>
 
-      <a mat-list-item routerLink="/companies" routerLinkActive="drawer-list-item-active" (click)="drawer.close()">
+      <a mat-list-item routerLink="/todo" routerLinkActive="drawer-list-item-active" (click)="drawer.close()">
         <mat-icon matListItemIcon>business</mat-icon>
         Schools
       </a>
 
-      <!-- Unused, currently just goes back companies. -->
-      <a mat-list-item routerLink="/companies" routerLinkActive="drawer-list-item-active"
+      <a mat-list-item routerLink="/grade_list" routerLinkActive="drawer-list-item-active"
         #routerLinkActiveInstance="routerLinkActive" [routerLinkActiveOptions]="{exact: true}" (click)="drawer.close()">
         <mat-icon matListItemIcon>check_circle_outline</mat-icon>
         Grade Requirements

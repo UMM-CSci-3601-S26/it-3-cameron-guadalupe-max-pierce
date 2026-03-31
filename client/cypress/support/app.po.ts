@@ -22,7 +22,7 @@ export class AppPage {
     return cy.get(this.sideNav);
   }
 
-  getNavLink(navOption: 'Home' | 'Students') { //Changed to reflect new name
+  getNavLink(navOption: 'Home' | 'Families'|'Grade_List') { //Changed to reflect new name
     return cy.contains(this.sideNavOption, `${navOption}`);
   }
 }
