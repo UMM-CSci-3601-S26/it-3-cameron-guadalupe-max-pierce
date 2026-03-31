@@ -127,6 +127,7 @@
                   type="button"
                   color="accent"
                   [style.height.px]=30
+                  [disabled]="!populateAllowed"
                   data-test="populateButtonSchool"
                   (click)="populateInventory(school.school_val)"
                 >
@@ -145,7 +146,8 @@
                         color="accent"
                         [style.height.px]=30
                         data-test="populateButton"
-                        (click)="populateInventory(school.school_val,grade.grade_val)"
+                        [disabled]="!populateAllowed"
+                        (click)="populateInventory(school.school_val, grade.grade_val)"
                       >
                       Add {{grade.grade_header}} requirements to Inventory
                       </button>

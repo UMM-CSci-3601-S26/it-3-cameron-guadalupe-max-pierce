@@ -71,6 +71,7 @@ export class GradeListComponent {
   itemType = signal<string|undefined>(this.gradeListService.savedGradeListType);
   sortBy = signal<string|undefined>(this.gradeListService.savedGradeListSortBy);
   resetVisible = signal<boolean|undefined>(false);//Reset button is initially hidden.
+  populateAllowed = true; //Set to false when a populate button is pressed; reset when page reloads. Prevents spamming.
 
   filteredTypeOptions = computed(() => {
     const input = (this.itemType() || '').toLowerCase();
@@ -276,13 +277,22 @@ export class GradeListComponent {
   populateInventory(school_val: string, grade_val?: string) {
     let popArray: RequiredItem[] = [];
     let itemCount = 0;
+    let duplicateCount = 0;
     if (grade_val) {
       popArray = this.gradeListService.filterItems(this.serverFilteredItems(),{school:school_val,grade:grade_val});
     } else {
       popArray = this.gradeListService.filterItems(this.serverFilteredItems(),{school:school_val});
     }
+    let newItem: InventoryItem = {
+      _id: undefined,
+      name:'',
+      type:'',
+      location:'N/A',
+      stocked:0,
+      desc:'',
+    }
     for (let i = 0; i < popArray.length; i ++) {
-      const newItem: InventoryItem = {
+      newItem = {
         _id: undefined,
         name:popArray[i].name,
         type:popArray[i].type,
@@ -290,55 +300,68 @@ export class GradeListComponent {
         stocked:0,
         desc:popArray[i].desc,
       }
-      //Add each item.
-      this.gradeListService.addItemToInventory(newItem).subscribe({
-        next: () => {},
-        error: err => { //None of these should occur, since these items were already legally added. ...But just in case...
-          if (err.status === 400) {
-            this.snackBar.open(
-              `Tried to add an illegal new item – Error Code: ${err.status}\nMessage: ${err.message}`,
-              'OK',
-              { duration: 5000 }
-            );
-          } else if (err.status === 500) {
-            this.snackBar.open(
-              `The server failed to process your request to add a new item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
-              'OK',
-              { duration: 5000 }
-            );
-          } else {
-            this.snackBar.open(
-              `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
-              'OK',
-              { duration: 5000 }
-            );
-          }
-        },
-      });
-      //Increment counter for final message.
-      itemCount ++;
+      //Check and Add each item. For some reason alreadyInInventory breaks shit.
+      if (this.gradeListService.alreadyInInventory(newItem.name,newItem.desc)) {
+        duplicateCount ++;
+      } else {
+        this.gradeListService.addItemToInventory(newItem).subscribe({
+          next: () => {},
+          error: err => { //None of these should occur, since these items were already legally added. ...But just in case...
+            if (err.status === 400) {
+              this.snackBar.open(
+                `Tried to add an illegal new item – Error Code: ${err.status}\nMessage: ${err.message}`,
+                'OK',
+                { duration: 5000 }
+              );
+            } else if (err.status === 500) {
+              this.snackBar.open(
+                `The server failed to process your request to add a new item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
+                'OK',
+                { duration: 5000 }
+              );
+            } else {
+              this.snackBar.open(
+                `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
+                'OK',
+                { duration: 5000 }
+              );
+            }
+          },
+        });
+        //Increment counter for final message.
+        itemCount ++;
+      }
     }
-    this.snackBar.open(
-      `Added x${itemCount.toString()} Items from ${school_val}, ${grade_val} to Inventory`,
-      'OK',
-      { duration: 6000 }
-    );
+    //Will need to test for all 3 scenarios. =-(
+    if ((duplicateCount > 0) && (itemCount == 0)) {
+      this.snackBar.open(
+        `All x${duplicateCount.toString()} Items already present in Inventory.`,
+        'OK',
+        { duration: 5000 }
+      );
+    } else if ((duplicateCount > 0) && (itemCount > 0)) {
+      this.populateAllowed = false; //Prevents spam
+      this.snackBar.open(
+        `Adding x${itemCount.toString()} new Items from ${school_val}, ${grade_val} to Inventory. Please wait a moment...`,
+        'OK',
+        { duration: 4000 }
+      );
+      //Frustrating that this seems necessary. Surely there's a better way to do this?
+      setTimeout(() => {
+        window.location.reload();
+        //Why on Earth does it need such a long delay to handle this???
+      }, 4000);
+    } else {
+      this.populateAllowed = false; //Prevents spam
+      this.snackBar.open(
+        `Adding all x${itemCount.toString()} Items from ${school_val}, ${grade_val} to Inventory. Please wait a moment...`,
+        'OK',
+        { duration: 4000 }
+      );
+      //See above
+      setTimeout(() => {
+        window.location.reload();
+      }, 4000);
+    }
   }
-  // resetLocations() {
-  //   // const tempItem: InventoryItem = {
-  //   //   _id:undefined,
-  //   //   location:"N/A",
-  //   //   stocked:undefined,
-  //   //   name:undefined,
-  //   //   type:undefined,
-  //   //   desc:undefined
-  //   // }
-  //   // this.inventoryService.modifyMass(tempItem,this.filteredItems());
-  //   //TODO, We need to update something, such that the page doesn't need manual reloading...
-  //   this.snackBar.open(
-  //     `Grades not actually reset. This is a work in progress.`,
-  //     'OK',
-  //     { duration: 6000 }
-  //   );
-  // }
 }

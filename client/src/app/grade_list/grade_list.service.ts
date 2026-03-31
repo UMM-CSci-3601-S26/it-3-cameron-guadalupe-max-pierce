@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal} from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -8,6 +8,10 @@ import { InventoryItem } from '../inventory/inventory_item';
 import { School } from './school';
 import { InventoryService } from '../inventory/inventory.service';
 import { FamilyService } from '../families/family.service';
+import { toSignal, toObservable} from '@angular/core/rxjs-interop';
+//import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 //import { Company } from '../company-list/company';
 //import { Signal } from '@angular/core/rxjs-interop';
 
@@ -28,6 +32,8 @@ export class GradeListService {
   // might not be currently running.
   private httpClient = inject(HttpClient);
 
+  private snackBar = inject(MatSnackBar);
+  errMsg = signal<string | undefined>(undefined);
   // The URL for the users part of the server API.
   readonly inventoryUrl: string = `${environment.apiUrl}inventory`;
   readonly gradeListUrl: string = `${environment.apiUrl}grade_list`;
@@ -148,6 +154,55 @@ export class GradeListService {
     });
   }
 
+  //This is 100% not the correct way to do this.
+  itemName = signal<string|undefined>('');
+  itemStocked = signal<number|undefined>(0);
+  itemDesc = signal<string|undefined>('');
+  itemLocation = signal<string|undefined>('');
+  itemType = signal<string|undefined>('');
+
+  private itemName$ = toObservable(this.itemName);
+  private itemStock$ = toObservable(this.itemStocked);
+  private itemDesc$ = toObservable(this.itemDesc);
+  private itemLocation$ = toObservable(this.itemLocation);
+  private itemType$ = toObservable(this.itemType);
+
+  inventoryReference =
+    toSignal(
+      //Not actually doing any filtering on the server, just need to get Items.
+      combineLatest([this.itemName$,this.itemStock$,this.itemDesc$,this.itemLocation$,this.itemDesc$,this.itemType$]).pipe(
+        switchMap(() =>
+          this.getItemsFromInventory({}) //If we decide to filter on server, args go her
+        ),
+        catchError((err) => {
+          if (!(err.error instanceof ErrorEvent)) {
+            this.errMsg.set(
+              `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
+            );
+          }
+          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
+          return of<InventoryItem[]>([]);
+        }),
+        tap(() => {
+        })
+      )
+    );
+
+  alreadyInInventory(name_comp: string, desc_comp: string): boolean {
+    const filteredItems = this.inventoryReference();
+    let retVal = false;
+    let returnMessage = '';
+    //Works, but only if the page is reloaded after each press...
+    for (let i = 0; i < filteredItems.length; i ++) {
+      returnMessage = returnMessage.concat(" ~ ", filteredItems[i].name.toLowerCase());
+      if ((filteredItems[i].name.toLowerCase().indexOf(name_comp.toLowerCase()) !== -1)
+      && (filteredItems[i].desc.toLowerCase().indexOf(desc_comp.toLowerCase()) !== -1)) {
+        retVal = true;
+      }
+    }
+    return retVal;
+  }
+
   //Helper function
   getSchools(): Observable<School[]> {
     return this.httpClient.get<School[]>(this.schoolUrl);
@@ -253,12 +308,6 @@ export class GradeListService {
   deleteItem(id: string): Observable<RequiredItem> {
     return this.httpClient.delete<RequiredItem>(`${this.gradeListUrl}/${id}`);
   }
-
-  // alreadyInInventory(name_comp: string, desc_comp: string) {
-  //   //Checks if provided item is already present in inventory
-  //   //const matchingItems = this.getItemsFromInventory({name:name_comp, desc:desc_comp})
-  //   //How to get length?
-  // }
 
   modifyMass(newProps:RequiredItem,oldItems:RequiredItem[]) {
     //We first need to copy the items into a new array. oldItems is connected to a signal or something.

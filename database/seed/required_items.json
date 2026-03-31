@@ -75,5 +75,29 @@
     "required":4,
     "school":"MAES",
     "grade":"1"
+  },
+  {
+    "name": "Colored Markers 10-Pack",
+    "type": "markers",
+    "desc":"Crayola markers, 10-color pack",
+    "required":1,
+    "school":"Saint Mary's",
+    "grade":"2"
+  },
+  {
+    "name": "Colored Markers 10-Pack",
+    "type": "markers",
+    "desc":"Crayola markers, 10-color pack",
+    "required":1,
+    "school":"MAES",
+    "grade":"2"
+  },
+  {
+    "name": "Yellow Pencils 12-Pack",
+    "type": "pencils",
+    "desc":"Yellow #2 pencils, NOT TICONDEROGA",
+    "required":1,
+    "school":"MAES",
+    "grade":"4"
   }
 ]
