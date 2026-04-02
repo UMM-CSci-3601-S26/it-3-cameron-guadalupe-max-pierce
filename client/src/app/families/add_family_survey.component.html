@@ -42,8 +42,8 @@
           </mat-form-field>
 
           <div class="radio-group">
-            <label>Needs backpack?</label>
-            <mat-radio-group [(ngModel)]="surveyBackpackNeeded" name="backpackNeeded" required>
+            <label>BackpackNeeded?</label>
+            <mat-radio-group id="backpackNeeded"[(ngModel)]="surveyBackpackNeeded" name="backpackNeeded" required>
               <mat-radio-button value="yes">Yes</mat-radio-button>
               <mat-radio-button value="no">No</mat-radio-button>
             </mat-radio-group>

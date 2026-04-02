@@ -1,12 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { RouterTestingModule } from '@angular/router/testing';
 import { BackpackSurveyComponent } from './add_family_survey.component';
+import { FamilyService } from './family.service';
 
 describe('BackpackSurveyComponent', () => {
   let component: BackpackSurveyComponent;
@@ -14,16 +16,18 @@ describe('BackpackSurveyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ BackpackSurveyComponent ],
       imports: [
+        BackpackSurveyComponent,
         FormsModule,
-        NoopAnimationsModule,
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
         MatRadioModule,
-        MatButtonModule
-      ]
+        MatButtonModule,
+        MatSnackBarModule,
+        RouterTestingModule
+      ],
+      providers: [FamilyService]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BackpackSurveyComponent);
