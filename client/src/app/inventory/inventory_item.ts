@@ -5,4 +5,5 @@ export interface InventoryItem {
   desc: string;
   location: string;
   stocked: number;
+  pack: number;
 }

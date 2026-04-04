@@ -95,7 +95,8 @@ describe('Inventory list', () => {
         stocked:undefined,
         name:undefined,
         type:undefined,
-        desc:undefined
+        desc:undefined,
+        pack:undefined
       },
       originalItems
     );

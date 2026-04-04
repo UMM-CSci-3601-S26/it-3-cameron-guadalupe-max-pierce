@@ -194,7 +194,9 @@ export class GradeListService {
     for (let i = 0; i < filteredItems.length; i ++) {
       returnMessage = returnMessage.concat(" ~ ", filteredItems[i].name.toLowerCase());
       if ((filteredItems[i].name.toLowerCase().indexOf(newItem.name.toLowerCase()) !== -1)
-      && (filteredItems[i].desc.toLowerCase().indexOf(newItem.desc.toLowerCase()) !== -1)) {
+      && (filteredItems[i].desc.toLowerCase().indexOf(newItem.desc.toLowerCase()) !== -1)
+      && (filteredItems[i].type.toLowerCase().indexOf(newItem.type.toLowerCase()) !== -1)
+      && (filteredItems[i].pack == newItem.pack)) {
         retVal = true;
       }
     }
@@ -321,6 +323,7 @@ export class GradeListService {
         school:undefined,
         desc:undefined,
         required:undefined,
+        pack:undefined,
         type:undefined
       }
       //Create a new array of items, initialized as empty.
@@ -336,6 +339,12 @@ export class GradeListService {
         newItems[i].required = newProps.required;
       } else {
         newItems[i].required = oldItems[i].required;
+      }
+
+      if (newProps.pack != undefined) {
+        newItems[i].pack = newProps.pack;
+      } else {
+        newItems[i].pack = oldItems[i].pack;
       }
 
       if (newProps.grade != undefined) {

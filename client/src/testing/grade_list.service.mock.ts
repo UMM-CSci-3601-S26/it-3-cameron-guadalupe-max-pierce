@@ -49,7 +49,8 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
       grade:'K',
       school:'MAES',
       required: 6,
-      desc: 'yellow Ticonderoga pencils'
+      desc: 'yellow Ticonderoga pencils',
+      pack:1
     },
     {
       _id: 'eraser_id',
@@ -58,7 +59,8 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
       grade:'1',
       school:'MAES',
       required: 2,
-      desc: '2-inch rubber eraser'
+      desc: '2-inch rubber eraser',
+      pack:1
     },
     {
       _id: '1',
@@ -67,7 +69,8 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
       grade:'3',
       school:'Hancock',
       required: 0,
-      desc: 'standard size red plastic folder.'
+      desc: 'standard size red plastic folder.',
+      pack:1
     }
   ];
   static emptyItem: RequiredItem = {
@@ -77,7 +80,8 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
     grade: '',
     school: '',
     required: 0,
-    desc: ''
+    desc: '',
+    pack:1
   }
 
   //Probably terrible form, but best way I could figure to get the tests working.
@@ -168,7 +172,8 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
         school:undefined,
         desc:undefined,
         required:undefined,
-        type:undefined
+        type:undefined,
+        pack:undefined
       }
       //Create a new array of items, initialized as empty.
       newItems.push(baseItem);
@@ -183,6 +188,12 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
         newItems[i].required = newProps.required;
       } else {
         newItems[i].required = oldItems[i].required;
+      }
+
+      if (newProps.pack != undefined) {
+        newItems[i].pack = newProps.pack;
+      } else {
+        newItems[i].pack = oldItems[i].pack;
       }
 
       if (newProps.grade != undefined) {

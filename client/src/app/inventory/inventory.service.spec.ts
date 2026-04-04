@@ -15,7 +15,8 @@ describe('InventoryService', () => {
       type: 'pencil',
       location: 'Tote #3',
       stocked: 6,
-      desc: 'yellow Ticonderoga pencils'
+      desc: 'yellow Ticonderoga pencils',
+      pack:1
     },
     {
       _id: 'eraser_id',
@@ -23,7 +24,8 @@ describe('InventoryService', () => {
       type: 'eraser',
       location: 'Tote #4',
       stocked: 2,
-      desc: '2-inch rubber eraser'
+      desc: '2-inch rubber eraser',
+      pack:1
     },
     {
       _id: 'folder_id',
@@ -31,7 +33,8 @@ describe('InventoryService', () => {
       type: 'folder',
       location: 'Tote #2',
       stocked: 0,
-      desc: 'standard size red plastic folder.'
+      desc: 'standard size red plastic folder.',
+      pack:1
     }
   ];
 
@@ -352,7 +355,8 @@ describe('InventoryService', () => {
       type: undefined,
       location: undefined,
       stocked: undefined,
-      desc: undefined
+      desc: undefined,
+      pack: undefined
     }
 
     beforeEach(() => {
@@ -371,7 +375,8 @@ describe('InventoryService', () => {
         type: undefined,
         location: undefined,
         stocked: undefined,
-        desc: undefined
+        desc: undefined,
+        pack: undefined
       }
     });
 
@@ -411,7 +416,8 @@ describe('InventoryService', () => {
         type: testItems[2].type,
         location: testItems[2].location,
         stocked: testItems[2].stocked,
-        desc: testItems[2].desc
+        desc: testItems[2].desc,
+        pack: testItems[2].pack
       }
 
       const mockedAdd = spyOn(httpClient, 'post').and.returnValue(of(targetItem));

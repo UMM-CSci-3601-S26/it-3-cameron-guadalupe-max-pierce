@@ -243,7 +243,8 @@ export class InventoryService {
         location:undefined,
         desc:undefined,
         stocked:undefined,
-        type:undefined
+        type:undefined,
+        pack:undefined
       }
       //Create a new array of items, initialized as empty.
       newItems.push(baseItem);
@@ -258,6 +259,12 @@ export class InventoryService {
         newItems[i].stocked = newProps.stocked;
       } else {
         newItems[i].stocked = oldItems[i].stocked;
+      }
+
+      if (newProps.pack != undefined) {
+        newItems[i].pack = newProps.pack;
+      } else {
+        newItems[i].pack = oldItems[i].pack;
       }
 
       if (newProps.location != undefined) {

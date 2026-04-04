@@ -178,7 +178,7 @@ public class RequiredItemController implements Controller {
       .check(itm -> itm.name != null && itm.name.length() >= 4,
         "Item must have a non-empty name; body was " + body)
       .check(itm -> itm.required >= 0,
-        "Stocked value must be greater than or equal to zero; body was " + body)
+        "Required value must be greater than or equal to zero; body was " + body)
       .check(itm -> itm.type != null && itm.type.length() > 0,
         "Item must have a non-empty type; body was " + body)
       .get();

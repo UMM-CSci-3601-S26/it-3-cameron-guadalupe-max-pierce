@@ -55,14 +55,17 @@ export class AddItemComponent {
       },
     ])),
 
-    // Since this is for a company, we need workers to be old enough to work, and probably not older than 200.
     stocked: new FormControl<number>(null, Validators.compose([
       Validators.required,
       Validators.min(0),
       Validators.max(9999),
-      // In the HTML, we set type="number" on this field. That guarantees that the value of this field is numeric,
-      // but not that it's a whole number. (The user could still type -27.3232, for example.) So, we also need
-      // to include this pattern.
+      Validators.pattern('^[0-9]+$')
+    ])),
+
+    pack: new FormControl<number>(1, Validators.compose([ //Defaults to 1
+      Validators.required,
+      Validators.min(1),
+      Validators.max(999),
       Validators.pattern('^[0-9]+$')
     ])),
 
@@ -94,6 +97,13 @@ export class AddItemComponent {
       {type: 'min', message: 'Stocked must be at least 0. No pencil debt allowed.'},
       {type: 'max', message: 'Stocked may not be greater than 9999. Why are you counting these?'},
       {type: 'pattern', message: 'Stocked must be a whole number! Half a pencil is not a thing.'}
+    ],
+
+    pack: [
+      {type: 'required', message: 'Pack # is required!'},
+      {type: 'min', message: 'Pack # must be at least 1. No Air guitars allowed.'},
+      {type: 'max', message: 'Pack # may not be greater than 999. Too many colors.'},
+      {type: 'pattern', message: 'Pack # must be a whole number! Half a pencil is not a thing.'}
     ],
 
     type: [

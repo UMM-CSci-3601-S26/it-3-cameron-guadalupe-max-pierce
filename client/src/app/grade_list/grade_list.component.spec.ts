@@ -21,7 +21,8 @@ describe('Grade List', () => {
       grade:'K',
       school:'MAES',
       required: 6,
-      desc: 'yellow Ticonderoga pencils'
+      desc: 'yellow Ticonderoga pencils',
+      pack:1
     },
     {
       _id: 'eraser_id',
@@ -30,7 +31,8 @@ describe('Grade List', () => {
       grade:'1',
       school:'MAES',
       required: 2,
-      desc: '2-inch rubber eraser'
+      desc: '2-inch rubber eraser',
+      pack:1
     },
     {
       _id: '1',
@@ -39,7 +41,8 @@ describe('Grade List', () => {
       grade:'3',
       school:'Hancock',
       required: 0,
-      desc: 'standard size red plastic folder.'
+      desc: 'standard size red plastic folder.',
+      pack:1
     }
   ];
   beforeEach(() => {

@@ -3,11 +3,12 @@
     "_id": {
       "$oid": "588935f57546a2daea44de7c"
     },
-    "name": "Yellow Pencils 12-Pack",
+    "name": "Yellow Pencils",
     "type": "pencils",
-    "desc":"Yellow #2 Ticonderoga pencils, sharpened, comes in packs of 12",
+    "desc":"Yellow #2 Ticonderoga pencils, sharpened",
     "location":"Tote #1",
-    "stocked":0
+    "stocked":0,
+    "pack":12
   },
   {
     "_id": {
@@ -17,27 +18,30 @@
     "type": "folders",
     "desc":"Red plastic folders, GreatValue",
     "location":"Tote #2",
-    "stocked":3
+    "stocked":3,
+    "pack":1
   },
   {
     "_id": {
       "$oid": "588935f51c55b55c75a84848"
     },
-    "name": "Erasers 6-Pack",
+    "name": "Erasers",
     "type": "erasers",
-    "desc":"2-inch pink erasers, comes in packs of 6",
+    "desc":"2-inch pink erasers",
     "location":"Tote #42",
-    "stocked":1
+    "stocked":1,
+    "pack":6
   },
   {
     "_id": {
       "$oid": "58af3a600343927e48e87212"
     },
-    "name": "Colored Pencils 16-Pack",
+    "name": "Colored Pencils",
     "type": "colored_pencils",
-    "desc":"Crayola colored pencils, sharpened. Comes in packs of 16.",
+    "desc":"Crayola colored pencils, sharpened.",
     "location":"Tote #3",
-    "stocked":67
+    "stocked":67,
+    "pack":16
   },
   {
     "_id": {
@@ -47,7 +51,8 @@
     "type": "folders",
     "desc":"Green plastic folders, GreatValue",
     "location":"Tote #2",
-    "stocked":3
+    "stocked":3,
+    "pack":1
   },
   {
     "_id": {
@@ -57,7 +62,8 @@
     "type": "boxes",
     "desc":"Plastic pencil box, any color, 8*5 inches, Crayola",
     "location":"Tote #5",
-    "stocked":10
+    "stocked":10,
+    "pack":1
   },
   {
     "_id": {
@@ -67,6 +73,7 @@
     "type": "folders",
     "desc":"Paper manilla folders, any brand",
     "location":"N/A",
-    "stocked":24
+    "stocked":24,
+    "pack":6
   }
 ]

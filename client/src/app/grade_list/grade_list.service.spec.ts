@@ -20,7 +20,8 @@ describe('GradeListService', () => {
       grade:'K',
       school:'MAES',
       required: 6,
-      desc: 'yellow Ticonderoga pencils'
+      desc: 'yellow Ticonderoga pencils',
+      pack:1
     },
     {
       _id: 'eraser_id',
@@ -29,7 +30,8 @@ describe('GradeListService', () => {
       grade:'1',
       school:'MAES',
       required: 2,
-      desc: '2-inch rubber eraser'
+      desc: '2-inch rubber eraser',
+      pack:1
     },
     {
       _id: '1',
@@ -38,7 +40,8 @@ describe('GradeListService', () => {
       grade:'3',
       school:'Hancock',
       required: 1,
-      desc: 'standard size red plastic folder.'
+      desc: 'standard size red plastic folder.',
+      pack:1
     }
   ];
 
@@ -49,7 +52,8 @@ describe('GradeListService', () => {
       type: 'pencil',
       location: 'Tote #3',
       stocked: 6,
-      desc: 'yellow Ticonderoga pencils'
+      desc: 'yellow Ticonderoga pencils',
+      pack:1
     },
     {
       _id: 'eraser_id',
@@ -57,7 +61,8 @@ describe('GradeListService', () => {
       type: 'eraser',
       location: 'Tote #4',
       stocked: 2,
-      desc: '2-inch rubber eraser'
+      desc: '2-inch rubber eraser',
+      pack:1
     },
     {
       _id: 'folder_id',
@@ -65,7 +70,8 @@ describe('GradeListService', () => {
       type: 'folder',
       location: 'Tote #2',
       stocked: 0,
-      desc: 'standard size red plastic folder.'
+      desc: 'standard size red plastic folder.',
+      pack:1
     }
   ];
 
@@ -509,7 +515,8 @@ describe('GradeListService', () => {
         grade:'2',
         school:'MAES',
         required:2,
-        type:'other'
+        type:'other',
+        pack:1
       }
       //const mockedMethod = spyOn(httpClient, 'post').and.returnValue(of(targetItem));
       expect(gradeService.alreadyInInventory(targetItem,testInventory)).toBeFalse();
@@ -526,7 +533,8 @@ describe('GradeListService', () => {
       grade: undefined,
       school: undefined,
       required: undefined,
-      desc: undefined
+      desc: undefined,
+      pack:undefined
     }
 
     beforeEach(() => {
@@ -546,7 +554,8 @@ describe('GradeListService', () => {
         grade: undefined,
         school: undefined,
         required: undefined,
-        desc: undefined
+        desc: undefined,
+        pack: undefined
       }
     });
 
@@ -587,7 +596,8 @@ describe('GradeListService', () => {
         grade: testItems[2].grade,
         school: testItems[2].school,
         required: testItems[2].required,
-        desc: testItems[2].desc
+        desc: testItems[2].desc,
+        pack: testItems[2].pack
       }
 
       const mockedAdd = spyOn(httpClient, 'post').and.returnValue(of(targetItem));

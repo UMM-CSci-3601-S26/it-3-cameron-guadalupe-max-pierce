@@ -27,7 +27,8 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
       type: 'pencil',
       location: 'Tote #3',
       stocked: 6,
-      desc: 'yellow Ticonderoga pencils'
+      desc: 'yellow Ticonderoga pencils',
+      pack:1
     },
     {
       _id: 'eraser_id',
@@ -35,7 +36,8 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
       type: 'eraser',
       location: 'Tote #4',
       stocked: 2,
-      desc: '2-inch rubber eraser'
+      desc: '2-inch rubber eraser',
+      pack:1
     },
     {
       _id: '1',
@@ -43,7 +45,8 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
       type: 'folder',
       location: 'Tote #2',
       stocked: 0,
-      desc: 'standard size red plastic folder.'
+      desc: 'standard size red plastic folder.',
+      pack:1
     }
   ];
   static emptyItem: InventoryItem = {
@@ -52,7 +55,8 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
     type: '',
     location: '',
     stocked: 0,
-    desc: ''
+    desc: '',
+    pack:1
   }
 
   //Probably terrible form, but best way I could figure to get the tests working.
@@ -120,7 +124,8 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
         location:undefined,
         desc:undefined,
         stocked:undefined,
-        type:undefined
+        type:undefined,
+        pack:undefined,
       }
       //Create a new array of items, initialized as empty.
       newItems.push(baseItem);
@@ -135,6 +140,12 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
         newItems[i].stocked = newProps.stocked;
       } else {
         newItems[i].stocked = oldItems[i].stocked;
+      }
+
+      if (newProps.pack != undefined) {
+        newItems[i].pack = newProps.pack;
+      } else {
+        newItems[i].pack = oldItems[i].pack;
       }
 
       if (newProps.location != undefined) {

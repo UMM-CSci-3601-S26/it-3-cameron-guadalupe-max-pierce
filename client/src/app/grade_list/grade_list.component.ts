@@ -283,21 +283,14 @@ export class GradeListComponent {
     } else {
       popArray = this.gradeListService.filterItems(items,{school:school_val});
     }
-    let newItem: InventoryItem = {
-      _id: undefined,
-      name:'',
-      type:'',
-      location:'N/A',
-      stocked:0,
-      desc:'',
-    }
     for (let i = 0; i < popArray.length; i ++) {
-      newItem = {
+      const newItem: InventoryItem = {
         _id: '',
         name:popArray[i].name,
         type:popArray[i].type,
         location:'N/A',
         stocked:0,
+        pack:popArray[i].pack,
         desc:popArray[i].desc,
       }
       //Check and Add each item. For some reason alreadyInInventory breaks shit.

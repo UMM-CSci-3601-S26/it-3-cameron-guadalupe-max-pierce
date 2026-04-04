@@ -6,4 +6,5 @@ export interface RequiredItem {
   grade: string;
   school: string;
   required: number;
+  pack: number;
 }

@@ -156,7 +156,10 @@
                         <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
                         <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
                         <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
-                        </a>
+                        @if (item.pack > 1) {
+                          <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
+                        }
+                      </a>
                       }
                     </mat-card-content>
                     </mat-card>
@@ -171,12 +174,17 @@
               @for (collection of typeFilteredItems(); track collection.items) {
                 <mat-card class = "section-card">
                 <mat-card-content>
+                <mat-toolbar color="primary">
                 <h2 matSubheader>{{ collection.header }}</h2>
+                </mat-toolbar>
                 <!--Sublist for each item type-->
                 @for (item of collection.items; track item._id) {
                     <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
                     <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
                     <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
+                    @if (item.pack > 1) {
+                      <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
+                    }
                     </a>
                 }
                 </mat-card-content>
@@ -192,6 +200,9 @@
                   <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
                   <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.required}}</strong> ~ {{item.name}}</span>
                   <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
+                  @if (item.pack > 1) {
+                    <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
+                  }
                   </a>
               }
             </mat-nav-list>

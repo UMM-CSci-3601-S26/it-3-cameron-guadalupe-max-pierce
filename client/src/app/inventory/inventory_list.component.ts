@@ -182,7 +182,8 @@ export class InventoryListComponent {
       stocked:undefined,
       name:undefined,
       type:undefined,
-      desc:undefined
+      desc:undefined,
+      pack:undefined,
     }
     this.inventoryService.modifyMass(tempItem,this.filteredItems());
     //TODO, We need to update something, such that the page doesn't need manual reloading...

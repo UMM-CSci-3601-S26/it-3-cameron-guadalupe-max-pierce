@@ -101,9 +101,13 @@ export class ModifyItemComponent {
       Validators.required,
       Validators.min(0),
       Validators.max(9999),
-      // In the HTML, we set type="number" on this field. That guarantees that the value of this field is numeric,
-      // but not that it's a whole number. (The user could still type -27.3232, for example.) So, we also need
-      // to include this pattern.
+      Validators.pattern('^[0-9]+$')
+    ])),
+
+    pack: new FormControl<number>(1, Validators.compose([
+      Validators.required,
+      Validators.min(0),
+      Validators.max(999),
       Validators.pattern('^[0-9]+$')
     ])),
 
@@ -138,6 +142,13 @@ export class ModifyItemComponent {
       {type: 'pattern', message: 'Stocked must be a whole number! Half a pencil is not a thing.'}
     ],
 
+    pack: [
+      {type: 'required', message: 'Pack # is required!'},
+      {type: 'min', message: 'Pack # must be at least 1. No Air guitars allowed.'},
+      {type: 'max', message: 'Pack # may not be greater than 999. Too many colors.'},
+      {type: 'pattern', message: 'Pack # must be a whole number! Half a pencil is not a thing.'}
+    ],
+
     type: [
       {type: 'required', message: 'Type is required!'},
       {type: 'pattern', message: 'Type must be selected from the dropdown.'}
@@ -168,7 +179,8 @@ export class ModifyItemComponent {
       location:this.item().location,
       desc:this.item().desc,
       stocked:this.item().stocked,
-      type:this.item().type
+      type:this.item().type,
+      pack:this.item().pack
     },
     {
       emitEvent:true

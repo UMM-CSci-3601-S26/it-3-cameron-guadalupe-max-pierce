@@ -130,11 +130,17 @@
                     @else {
                       <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
                     }
+                    @if (item.pack > 1) {
+                      <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
+                    }
                     </a>
                   } @else {
                     <a mat-list-item disabled="true" [routerLink]="['/inventory', item._id]" class="item-list-item">
                     <span matListItemTitle mat-line class="item-list-name"> <strong>Unstocked</strong> ~ {{item.name}}</span>
                     <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not available</span>
+                    @if (item.pack > 1) {
+                      <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
+                    }
                     </a>
                   }
                 }
@@ -157,11 +163,17 @@
                     @else {
                       <span matListItemLine class="item-list-desc"> {{item.desc}} ~ stored in {{item.location}}</span>
                     }
+                    @if (item.pack > 1) {
+                      <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
+                    }
                   </a>
                 } @else {
                   <a mat-list-item disabled="true" [routerLink]="['/inventory', item._id]" class="item-list-item">
                   <span matListItemTitle mat-line class="item-list-name"> <strong>Unstocked</strong> ~ {{item.name}}</span>
                   <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not availible</span>
+                  @if (item.pack > 1) {
+                      <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
+                    }
                   </a>
                 }
               }

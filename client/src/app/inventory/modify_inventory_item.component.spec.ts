@@ -110,6 +110,49 @@ describe('ModifyItemComponent', () => {
       expect(nameControl.valid).toBeTruthy();
     });
   });
+  describe('The description field', () => {
+    it('should allow empty values', () => {
+      const descControl = modifyItemComponent.modifyInventoryForm.controls.desc;
+      descControl.setValue('');
+      expect(descControl.valid).toBeTruthy();
+    });
+  });
+
+  describe('The pack field', () => {
+    let packControl: AbstractControl;
+
+    beforeEach(() => {
+      packControl = modifyItemComponent.modifyInventoryForm.controls.pack;
+    });
+
+    it('should not allow missing stock', () => {
+      packControl.setValue('');
+      expect(packControl.valid).toBeFalsy();
+    });
+
+    it('should be fine with "27"', () => {
+      packControl.setValue('27');
+      expect(packControl.valid).toBeTruthy();
+    });
+
+    it('should fail on negative pack', () => {
+      packControl.setValue('-27');
+      expect(packControl.valid).toBeFalsy();
+      expect(packControl.hasError('min')).toBeTruthy();
+    });
+
+    it('should fail on packs that are too high', () => {
+      packControl.setValue(99999999999);
+      expect(packControl.valid).toBeFalsy();
+      expect(packControl.hasError('max')).toBeTruthy();
+    });
+
+    it('should not allow a pack to contain a decimal point', () => {
+      packControl.setValue(27.5);
+      expect(packControl.valid).toBeFalsy();
+      expect(packControl.hasError('pattern')).toBeTruthy();
+    });
+  });
 
   describe('The stocked field', () => {
     let stockedControl: AbstractControl;
