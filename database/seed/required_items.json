@@ -1,103 +1,634 @@
 [
    {
-    "_id": {
-      "$oid": "588935f57546a2daea44de7c"
-    },
-    "name": "Black Pencils 12-Pack",
+    "name": "Backpack",
+    "type": "backpacks",
+    "desc":"Not required for all students",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Headphones/earbuds",
+    "type": "headphones",
+    "desc":"Good quality, REQUIRED",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Grocery bag/brown paper",
+    "type": "other",
+    "desc":"For textbook cover",
+    "required":2,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Pencils",
     "type": "pencils",
-    "desc":"12 Black #2 Ticonderoga pencils, sharpened, comes in packs of 12",
-    "required":1,
+    "desc":"#2, Yellow",
+    "required":6,
     "school":"MAES",
-    "grade":"K"
+    "grade":"7"
   },
   {
-    "_id": {
-      "$oid": "588935f5597715f06f3e8f6c"
-    },
-    "name": "Purple Folders",
+    "name": "Pens",
+    "type": "pens",
+    "desc":"Black or blue only",
+    "required":12,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Highlighter",
+    "type": "highlighters",
+    "desc":"any color",
+    "required":2,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Colored Pencil",
+    "type": "pencils",
+    "desc":"7th Graders only",
+    "required":2,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Markers, 12-pack",
+    "type": "markers",
+    "desc":"7th Graders only",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Crayons, 12-pack",
+    "type": "crayons",
+    "desc":"7th Graders only",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Glue Sticks",
+    "type": "glue",
+    "desc":"",
+    "required":6,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Scissors",
+    "type": "scissors",
+    "desc":"7-inch only",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Folders, Yellow",
     "type": "folders",
-    "desc":"Purple plastic folders, GreatValue",
+    "desc":"Part of the 5 color packs",
     "required":1,
     "school":"MAES",
-    "grade":"K"
+    "grade":"7"
   },
   {
-    "_id": {
-      "$oid": "588935f51c55b55c75a84848"
-    },
-    "name": "Erasers 12-Pack",
-    "type": "erasers",
-    "desc":"1-inch pink erasers, comes in packs of 12",
-    "required":1,
-    "school":"MAES",
-    "grade":"K"
-  },
-  {
-    "_id": {
-      "$oid": "58af3a600343927e48e87212"
-    },
-    "name": "Colored Pencils 16-Pack",
-    "type": "colored_pencils",
-    "desc":"Crayola colored pencils, sharpened. Comes in packs of 16.",
-    "required":1,
-    "school":"MAES",
-    "grade":"1"
-  },
-  {
-    "_id": {
-      "$oid": "58af3a600343927e48e87213"
-    },
-    "name": "Green Folders",
+    "name": "Folders, Purple",
     "type": "folders",
-    "desc":"Green plastic folders, GreatValue",
+    "desc":"Part of the 5 color packs",
     "required":1,
-    "school":"Hancock",
-    "grade":"3"
+    "school":"MAES",
+    "grade":"7"
   },
   {
-    "_id": {
-      "$oid": "58af3a600343927e48e87214"
-    },
+    "name": "Folders, Blue",
+    "type": "folders",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Folders, Red",
+    "type": "folders",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Folders, Green",
+    "type": "folders",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Notebook, Green",
+    "type": "notebooks",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Notebook, Red",
+    "type": "notebooks",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Notebook, Blue",
+    "type": "notebooks",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Notebook, Yellow",
+    "type": "notebooks",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Notebook, Yellow",
+    "type": "notebooks",
+    "desc":"College Ruled, 7th grade only",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Notebook, Blue",
+    "type": "notebooks",
+    "desc":"Spiral, 7th grade only",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Composition Notebook",
+    "type": "notebooks",
+    "desc":"7th grade only",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Notebook, Purple",
+    "type": "notebooks",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Loose Leaf Paper",
+    "type": "other",
+    "desc":"",
+    "required":1,
+    "school":"MAES",
+    "grade":"7"
+  },
+  {
+    "name": "Backpack",
+    "type": "backpacks",
+    "desc":"Not required for all students",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Headphones/earbuds",
+    "type": "headphones",
+    "desc":"Good quality, REQUIRED",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+  "name": "Pencils",
+  "type": "pencils",
+  "desc":"Any variety",
+  "required":36,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Pens",
+  "type": "pens",
+  "desc":"Blue or black",
+  "required":2,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Pen",
+  "type": "pens",
+  "desc":"Red",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Eraser",
+  "type": "erasers",
+  "desc":"",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Highlighters",
+  "type": "highlighters",
+  "desc":"Any color",
+  "required":2,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Colored Pencils",
+  "type": "colored_pencils",
+  "desc":"12 or 24 pack",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Dry Erase Markers",
+  "type": "dry_erase_markers",
+  "desc":"Expo only, black",
+  "required":2,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Glue Stick",
+  "type": "glue",
+  "desc":"",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Scissors",
+  "type": "scissors",
+  "desc":"",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Blue Notebook",
+  "type": "notebooks",
+  "desc":"Spiral, part of 5-color-packs",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Green Notebook",
+  "type": "notebooks",
+  "desc":"Spiral, part of 5-color-packs",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Purple Notebook",
+  "type": "notebooks",
+  "desc":"Spiral, part of 5-color-packs",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Yellow Notebook",
+  "type": "notebooks",
+  "desc":"Spiral, part of 5-color-packs",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Red Notebook",
+  "type": "notebooks",
+  "desc":"Spiral, part of 5-color-packs",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "Post-It Notes",
+  "type": "other",
+  "desc":"Standard size",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+  "name": "3-Ring Binder",
+  "type": "binders",
+  "desc":"1-inch, with front cover pocket",
+  "required":1,
+  "school":"MAES",
+  "grade":"6"
+  },
+  {
+    "name": "Folders, Yellow",
+    "type": "folders",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Folders, Purple",
+    "type": "folders",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Folders, Blue",
+    "type": "folders",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Folders, Red",
+    "type": "folders",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Folders, Green",
+    "type": "folders",
+    "desc":"Part of the 5 color packs",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Page Protectors",
+    "type": "other",
+    "desc":"50 ct.",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Index Cards",
+    "type": "other",
+    "desc":"100 ct, 3x5in",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Tennis Shoes",
+    "type": "other",
+    "desc":"For phy. ed.",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Computer Mouse",
+    "type": "other",
+    "desc":"(Recommended)",
+    "required":1,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Kleenex",
+    "type": "other",
+    "desc":"200 ct.",
+    "required":3,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Bleach Wipes",
+    "type": "other",
+    "desc":"Clorox",
+    "required":2,
+    "school":"MAES",
+    "grade":"6"
+  },
+  {
+    "name": "Backpack",
+    "type": "backpacks",
+    "desc":"Not required for all students",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Headphones/earbuds",
+    "type": "headphones",
+    "desc":"Good quality, REQUIRED",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
     "name": "Pencil Box",
     "type": "boxes",
-    "desc":"Plastic pencil box, any color, 8*5 inches, Crayola",
+    "desc":"",
     "required":1,
-    "school":"Hancock",
-    "grade":"3"
+    "school":"MAES",
+    "grade":"5"
   },
   {
-    "_id": {
-      "$oid": "58af3a600343927e48e87215"
-    },
-    "name": "Paper Folders",
-    "type": "folders",
-    "desc":"Paper manilla folders, any brand",
+    "name": "Pencils",
+    "type": "pencils",
+    "desc":"#2 Only",
+    "required":24,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Highlighter",
+    "type": "highlighters",
+    "desc":"Any Color",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Colored Pencils",
+    "type": "colored_pencils",
+    "desc":"12 or 24 pack",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Markers",
+    "type": "markers",
+    "desc":"",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Sharpie",
+    "type": "markers",
+    "desc":"Regular size",
+    "required":2,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Dry Erase Markers",
+    "type": "dry_erase_markers",
+    "desc":"Expo only, black",
+    "required":8,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Elmer's Glue",
+    "type": "glue",
+    "desc":"Bottled",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Glue Stick",
+    "type": "glue",
+    "desc":"",
     "required":4,
     "school":"MAES",
-    "grade":"1"
+    "grade":"5"
   },
   {
-    "name": "Colored Markers 10-Pack",
-    "type": "markers",
-    "desc":"Crayola markers, 10-color pack",
-    "required":1,
-    "school":"Saint Mary's",
-    "grade":"2"
+    "name": "Glue Stick",
+    "type": "glue",
+    "desc":"",
+    "required":4,
+    "school":"MAES",
+    "grade":"5"
   },
   {
-    "name": "Colored Markers 10-Pack",
-    "type": "markers",
-    "desc":"Crayola markers, 10-color pack",
+    "name": "Scissors",
+    "type": "scissors",
+    "desc":"",
     "required":1,
     "school":"MAES",
-    "grade":"2"
+    "grade":"5"
   },
   {
-    "name": "Yellow Pencils 12-Pack",
-    "type": "pencils",
-    "desc":"Yellow #2 pencils, NOT TICONDEROGA",
+    "name": "Spiral Notebook",
+    "type": "notebooks",
+    "desc":"One Subject",
     "required":1,
     "school":"MAES",
-    "grade":"4"
+    "grade":"5"
+  },
+  {
+    "name": "3-Ring Binder",
+    "type": "binders",
+    "desc":"1-inch, with front cover pocket",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Folder, Red",
+    "type": "binders",
+    "desc":"3-Prong",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Folder, Green",
+    "type": "binders",
+    "desc":"3-Prong",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Folder, Purple",
+    "type": "binders",
+    "desc":"3-Prong",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Folder, Yellow",
+    "type": "binders",
+    "desc":"3-Prong",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Folder, Blue",
+    "type": "binders",
+    "desc":"3-Prong",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Index Cards",
+    "type": "other",
+    "desc":"100 ct, 3x5in",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Tennis Shoes",
+    "type": "other",
+    "desc":"For phy. ed.",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Computer Mouse",
+    "type": "other",
+    "desc":"(Recommended)",
+    "required":1,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Kleenex",
+    "type": "other",
+    "desc":"200 ct.",
+    "required":3,
+    "school":"MAES",
+    "grade":"5"
+  },
+  {
+    "name": "Bleach Wipes",
+    "type": "other",
+    "desc":"Clorox",
+    "required":2,
+    "school":"MAES",
+    "grade":"5"
   }
 ]
