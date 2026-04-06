@@ -89,10 +89,8 @@ describe('AddFamilySurveyComponent', () => {
       email: 'test@test.com',
       students: [
         {
-          firstName: 'John',
-          lastName: 'Doe',
-          school: 'School',
           grade: '3',
+          school: 'School',
           backpack: true
         }
       ]
