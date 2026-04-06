@@ -4,7 +4,7 @@
   margin: 0 auto;
 
   h1 {
-    color: #000000;
+    color: #000;
     margin-bottom: 20px;
   }
 }
@@ -15,32 +15,28 @@
 
 .flex-row {
   display: flex;
-  align-items: center;
-}
-
-.gap-8 {
-  gap: 32px; // Standard spacing
-}
-
-.flex-wrap {
   flex-wrap: wrap;
+  gap: 16px;
 }
 
 .input-field {
-  flex: 1;
-  min-width: 200px;
+  flex: 1 1 200px;
 }
 
 .radio-group {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
 
-  label {
-    font-weight: 500;
-    font-size: 0.9rem;
-    color: rgba(0, 0, 0, 0.6);
-  }
+.child-form {
+  margin-bottom: 12px;
+}
+
+.child-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .form-actions {

@@ -9,11 +9,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { FamilyService } from './family.service';
-import { Student } from './student';
-import { Family } from './family';
+
+export interface Student {
+  firstName: string;
+  lastName: string;
+  school: string;
+  grade: string;
+  backpack: boolean;
+}
+
+export interface Family {
+  name: string;
+  email: string;
+  students: Student[];
+}
 
 @Component({
-  selector: 'app-backpack-survey',
+  selector: 'app-add-family-survey',
   standalone: true,
   imports: [
     FormsModule,
@@ -27,57 +39,63 @@ import { Family } from './family';
   templateUrl: './add_family_survey.component.html',
   styleUrls: ['./add_family_survey.component.scss']
 })
-export class BackpackSurveyComponent {
+export class AddFamilySurveyComponent {
   private familyService = inject(FamilyService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
 
-  // Model properties
-  surveyFamilyLastName: string = '';
-  surveyChildFirstName: string = '';
-  surveySchool: string = '';
-  surveyGrade: string = '';
-  surveyBackpackNeeded: string = '';
+  surveyFamilyLastName = '';
+  surveyParentEmail = '';
+  surveyChildren: {
+    firstName: string;
+    lastName: string;
+    school: string;
+    grade: string;
+    backpackNeeded: string;
+  }[] = [{ firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' }];
+
+  addChild() {
+    this.surveyChildren.push({ firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' });
+  }
+
+  removeChild(index: number) {
+    this.surveyChildren.splice(index, 1);
+  }
+
+  resetSurvey() {
+    this.surveyFamilyLastName = '';
+    this.surveyParentEmail = '';
+    this.surveyChildren = [{ firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' }];
+  }
 
   submitSurvey() {
-    // Validate that required fields are filled
-    if (!this.surveyFamilyLastName || !this.surveySchool || !this.surveyGrade) {
+    if (!this.surveyFamilyLastName || !this.surveyParentEmail ||
+      this.surveyChildren.some(c => !c.firstName || !c.lastName || !c.school || !c.grade)) {
       this.snackBar.open('Please fill in all required fields', 'OK', { duration: 5000 });
       return;
     }
 
-    // Create a new student with the survey data
-    const newStudent: Student = {
-      grade: this.surveyGrade,
-      school: this.surveySchool,
-      backpack: this.surveyBackpackNeeded === 'yes'
-    };
+    const students: Student[] = this.surveyChildren.map(c => ({
+      firstName: c.firstName,
+      lastName: c.lastName,
+      school: c.school,
+      grade: c.grade,
+      backpack: c.backpackNeeded === 'yes'
+    }));
 
-    // Create a new family with the student
-    const newFamily: Partial<Family> = {
+    this.familyService.addFamily({
       name: this.surveyFamilyLastName,
-      students: [newStudent]
-    };
-
-    // Add the family to the backend
-    this.familyService.addFamily(newFamily).subscribe({
+      email: this.surveyParentEmail,
+      students
+    }).subscribe({
       next: () => {
         this.snackBar.open('Family added successfully!', 'OK', { duration: 5000 });
         this.resetSurvey();
-        // Navigate to family list
         this.router.navigate(['/families']);
       },
       error: (err) => {
         this.snackBar.open(`Error adding family: ${err.message}`, 'OK', { duration: 5000 });
       }
     });
-  }
-
-  resetSurvey() {
-    this.surveyFamilyLastName = '';
-    this.surveyChildFirstName = '';
-    this.surveySchool = '';
-    this.surveyGrade = '';
-    this.surveyBackpackNeeded = '';
   }
 }

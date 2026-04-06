@@ -13,41 +13,45 @@
           </mat-form-field>
 
           <mat-form-field class="input-field">
-            <input matInput placeholder="Child First Name" [(ngModel)]="surveyChildFirstName" name="childFirstName" required>
-            <mat-hint>Child first name</mat-hint>
+            <input matInput placeholder="Parent Email" [(ngModel)]="surveyParentEmail" name="parentEmail" required email>
+            <mat-hint>Parent email</mat-hint>
           </mat-form-field>
 
-          <mat-form-field class="input-field">
-            <input matInput placeholder="School" [(ngModel)]="surveySchool" name="school" required>
-            <mat-hint>Child's school</mat-hint>
-          </mat-form-field>
+          <div *ngFor="let child of surveyChildren; let i = index" class="child-form">
+            <mat-form-field class="input-field">
+              <input matInput placeholder="Child First Name" [(ngModel)]="child.firstName" name="childFirstName{{i}}" required>
+              <mat-hint>Child first name</mat-hint>
+            </mat-form-field>
 
-          <mat-form-field class="input-field">
-            <mat-label>Grade</mat-label>
-            <mat-select [(ngModel)]="surveyGrade" name="grade" required>
-              <mat-option value="K">K</mat-option>
-              <mat-option value="1">1</mat-option>
-              <mat-option value="2">2</mat-option>
-              <mat-option value="3">3</mat-option>
-              <mat-option value="4">4</mat-option>
-              <mat-option value="5">5</mat-option>
-              <mat-option value="6">6</mat-option>
-              <mat-option value="7">7</mat-option>
-              <mat-option value="8">8</mat-option>
-              <mat-option value="9">9</mat-option>
-              <mat-option value="10">10</mat-option>
-              <mat-option value="11">11</mat-option>
-              <mat-option value="12">12</mat-option>
-            </mat-select>
-          </mat-form-field>
+            <mat-form-field class="input-field">
+              <input matInput placeholder="Child Last Name" [(ngModel)]="child.lastName" name="childLastName{{i}}" required>
+              <mat-hint>Child last name</mat-hint>
+            </mat-form-field>
 
-          <div class="radio-group">
-            <label>BackpackNeeded?</label>
-            <mat-radio-group id="backpackNeeded"[(ngModel)]="surveyBackpackNeeded" name="backpackNeeded" required>
-              <mat-radio-button value="yes">Yes</mat-radio-button>
-              <mat-radio-button value="no">No</mat-radio-button>
-            </mat-radio-group>
+            <mat-form-field class="input-field">
+              <input matInput placeholder="School" [(ngModel)]="child.school" name="school{{i}}" required>
+              <mat-hint>Child's school</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field class="input-field">
+              <mat-label>Grade</mat-label>
+              <mat-select [(ngModel)]="child.grade" name="grade{{i}}" required>
+                <mat-option *ngFor="let grade of ['K','1','2','3','4','5','6','7','8','9','10','11','12']" [value]="grade">{{grade}}</mat-option>
+              </mat-select>
+            </mat-form-field>
+
+            <div class="radio-group">
+              <h3>Backpack Needed?</h3>
+              <mat-radio-group [(ngModel)]="child.backpackNeeded" name="backpackNeeded{{i}}" required>
+                <mat-radio-button value="yes">Yes</mat-radio-button>
+                <mat-radio-button value="no">No</mat-radio-button>
+              </mat-radio-group>
+            </div>
+
+            <button mat-button type="button" (click)="removeChild(i)" *ngIf="surveyChildren.length > 1">Remove Child</button>
           </div>
+
+          <button mat-button type="button" (click)="addChild()">Add Another Child</button>
         </div>
       </mat-card-content>
     </mat-card>

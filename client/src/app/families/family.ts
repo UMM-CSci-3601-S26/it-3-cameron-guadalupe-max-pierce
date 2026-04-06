@@ -5,4 +5,5 @@ export interface Family {
   name: string;
   time: string;
   students: Array<Student>;
+  email?: string; //for family survey
 }
