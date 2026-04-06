@@ -4,7 +4,7 @@ describe('Backpack Need Survey', () => {
   });
 
   it('fills out the survey form and submits', () => {
-    cy.intercept('POST', 'http://localhost:4200/api/families', { statusCode: 201, body: { id: 'abc123' } }).as('addFamily');
+    cy.intercept('POST', '**/api/families', { statusCode: 201, body: { id: 'abc123' } }).as('addFamily');
 
     // Family info
     cy.get('input[name="familyLastName"]').type('Smith');
@@ -31,9 +31,8 @@ describe('Backpack Need Survey', () => {
     cy.get('button[type="submit"]').click();
     cy.wait('@addFamily');
 
-    // Confirm form reset
-    cy.get('input[name="familyLastName"]').should('have.value', '');
-    cy.get('input[name="parentEmail"]').should('have.value', '');
+    // Confirm redirect to families page after successful submit
+    cy.url().should('include', '/families');
   });
 
   it('can add and remove a child', () => {
