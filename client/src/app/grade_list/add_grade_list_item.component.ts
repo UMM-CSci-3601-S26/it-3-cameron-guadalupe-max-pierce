@@ -86,7 +86,7 @@ export class AddRequirementComponent {
     let expression = '^(';
     if (this.filteredSchoolOptions() != undefined) {
       for (let i = 0; i < this.filteredSchoolOptions().length; i++) {
-        expression = expression.concat(this.filteredSchoolOptions()[i].label);
+        expression = expression.concat(this.filteredSchoolOptions()[i].label.replace("'","\\'")); //Saint Mary's, good lord...
         if (i < this.filteredSchoolOptions().length - 1) { //Last one doesn't need a '|'
           expression = expression.concat('|');
         }
@@ -150,7 +150,8 @@ export class AddRequirementComponent {
       Validators.minLength(3),
       Validators.maxLength(100),
       //'^(MAES|Hancock|Saint Mary\'s)$'
-      Validators.pattern(this.schoolRegex()) //Automatically generated from database
+      //TODO, fix this! This returns an identical string, why TF doesn't it work with St. Mary's?
+      Validators.pattern('^(MAES|Hancock|Saint Mary\'s)$') //this.schoolRegex()
     ])),
   });
 
