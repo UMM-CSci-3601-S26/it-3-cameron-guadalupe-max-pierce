@@ -4,7 +4,7 @@ import { HomeComponent } from './home/home.component';
 
 import { FamilyListComponent } from './families/family_list.component';
 import { GradeListComponent } from './grade_list/grade_list.component';
-import { BackpackSurveyComponent } from './families/add_family_survey.component';
+import { AddFamilySurveyComponent } from './families/add_family_survey.component';
 
 //import { CompanyListComponent } from './company-list/company-list.component';
 import { InventoryListComponent } from './inventory/inventory_list.component';
@@ -17,7 +17,7 @@ import { ModifyItemComponent } from './inventory/modify_inventory_item.component
 const routes: Routes = [
   {path: '', component: HomeComponent, title: 'Home'},
   {path: 'families', component: FamilyListComponent, title: 'Families'},
-  {path: 'families/survey', component: BackpackSurveyComponent, title: 'Backpack Survey'},
+  {path: 'families/survey', component: AddFamilySurveyComponent, title: 'Backpack Survey'},
   {path: 'grade_list', component: GradeListComponent, title: 'Requirements'},
   // {path: 'families/new', component: AddUserComponent, title: 'Add User'},
   // {path: 'families/:id', component: UserProfileComponent, title: 'User Profile'},

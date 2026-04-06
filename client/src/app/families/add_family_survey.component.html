@@ -17,7 +17,8 @@
             <mat-hint>Parent email</mat-hint>
           </mat-form-field>
 
-          <div *ngFor="let child of surveyChildren; let i = index" class="child-form">
+          @for (child of surveyChildren; track child; let i = $index) {
+          <div class="child-form">
             <mat-form-field class="input-field">
               <input matInput placeholder="Child First Name" [(ngModel)]="child.firstName" name="childFirstName{{i}}" required>
               <mat-hint>Child first name</mat-hint>
@@ -36,7 +37,9 @@
             <mat-form-field class="input-field">
               <mat-label>Grade</mat-label>
               <mat-select [(ngModel)]="child.grade" name="grade{{i}}" required>
-                <mat-option *ngFor="let grade of ['K','1','2','3','4','5','6','7','8','9','10','11','12']" [value]="grade">{{grade}}</mat-option>
+                @for (grade of ['K','1','2','3','4','5','6','7','8','9','10','11','12']; track grade) {
+                  <mat-option [value]="grade">{{grade}}</mat-option>
+                }
               </mat-select>
             </mat-form-field>
 
@@ -48,8 +51,11 @@
               </mat-radio-group>
             </div>
 
-            <button mat-button type="button" (click)="removeChild(i)" *ngIf="surveyChildren.length > 1">Remove Child</button>
+            @if (surveyChildren.length > 1) {
+              <button mat-button type="button" (click)="removeChild(i)">Remove Child</button>
+            }
           </div>
+          }
 
           <button mat-button type="button" (click)="addChild()">Add Another Child</button>
         </div>

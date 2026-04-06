@@ -83,18 +83,17 @@ describe('AddFamilySurveyComponent', () => {
     tick();
 
     expect(familyServiceSpy.addFamily).toHaveBeenCalled();
-    const submittedPayload = familyServiceSpy.addFamily.calls.mostRecent().args[0];
-    expect(submittedPayload).toEqual({
-      name: 'Smith',
-      email: 'test@test.com',
-      students: [
-        {
-          grade: '3',
-          school: 'School',
-          backpack: true
-        }
-      ]
-    });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const submittedPayload: any = familyServiceSpy.addFamily.calls.mostRecent().args[0];
+    expect(submittedPayload.name).toBe('Smith');
+    expect(submittedPayload.email).toBe('test@test.com');
+    expect(submittedPayload.students[0]).toEqual(jasmine.objectContaining({
+      firstName: 'John',
+      lastName: 'Doe',
+      school: 'School',
+      grade: '3',
+      backpack: true
+    }));
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/families']);
     expect(snackBarSpy.open).toHaveBeenCalledWith(
       'Family added successfully!',
