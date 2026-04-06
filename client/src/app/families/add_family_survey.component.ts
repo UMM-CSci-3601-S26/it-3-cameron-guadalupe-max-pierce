@@ -46,32 +46,52 @@ export class AddFamilySurveyComponent {
 
   surveyFamilyLastName = '';
   surveyParentEmail = '';
+
   surveyChildren: {
     firstName: string;
     lastName: string;
     school: string;
     grade: string;
     backpackNeeded: string;
-  }[] = [{ firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' }];
+  }[] = [
+      { firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' }
+    ];
 
-  addChild() {
-    this.surveyChildren.push({ firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' });
+  addChild(): void {
+    this.surveyChildren.push({
+      firstName: '',
+      lastName: '',
+      school: '',
+      grade: '',
+      backpackNeeded: ''
+    });
   }
 
-  removeChild(index: number) {
-    this.surveyChildren.splice(index, 1);
+  removeChild(index: number): void {
+    if (this.surveyChildren.length > 1) {
+      this.surveyChildren.splice(index, 1);
+    }
   }
 
-  resetSurvey() {
+  resetSurvey(): void {
     this.surveyFamilyLastName = '';
     this.surveyParentEmail = '';
-    this.surveyChildren = [{ firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' }];
+    this.surveyChildren = [
+      { firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' }
+    ];
   }
 
-  submitSurvey() {
-    if (!this.surveyFamilyLastName || !this.surveyParentEmail ||
-      this.surveyChildren.some(c => !c.firstName || !c.lastName || !c.school || !c.grade)) {
-      this.snackBar.open('Please fill in all required fields', 'OK', { duration: 5000 });
+  submitSurvey(): void {
+    if (
+      !this.surveyFamilyLastName ||
+      !this.surveyParentEmail ||
+      this.surveyChildren.some(
+        c => !c.firstName || !c.lastName || !c.school || !c.grade
+      )
+    ) {
+      this.snackBar.open('Please fill in all required fields', 'OK', {
+        duration: 5000
+      });
       return;
     }
 
@@ -89,12 +109,16 @@ export class AddFamilySurveyComponent {
       students
     }).subscribe({
       next: () => {
-        this.snackBar.open('Family added successfully!', 'OK', { duration: 5000 });
+        this.snackBar.open('Family added successfully!', 'OK', {
+          duration: 5000
+        });
         this.resetSurvey();
         this.router.navigate(['/families']);
       },
-      error: (err) => {
-        this.snackBar.open(`Error adding family: ${err.message}`, 'OK', { duration: 5000 });
+      error: (err: Error) => {
+        this.snackBar.open(`Error adding family: ${err.message}`, 'OK', {
+          duration: 5000
+        });
       }
     });
   }

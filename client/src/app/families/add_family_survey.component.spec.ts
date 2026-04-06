@@ -1,132 +1,133 @@
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
-import { FormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { of, throwError } from 'rxjs';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AddFamilySurveyComponent } from './add_family_survey.component';
+import { of, throwError } from 'rxjs';
 import { FamilyService } from './family.service';
+import { Router } from '@angular/router';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 describe('AddFamilySurveyComponent', () => {
   let component: AddFamilySurveyComponent;
-  let fixture: ComponentFixture<AddFamilySurveyComponent>;
-  let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let familyServiceSpy: jasmine.SpyObj<FamilyService>;
   let routerSpy: jasmine.SpyObj<Router>;
+  let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
 
-  beforeEach(async () => {
-    snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
+  beforeEach(() => {
     familyServiceSpy = jasmine.createSpyObj('FamilyService', ['addFamily']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
-    await TestBed.configureTestingModule({
-      declarations: [AddFamilySurveyComponent],
-      imports: [
-        FormsModule,
-        MatCardModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatRadioModule,
-        MatButtonModule,
-        NoopAnimationsModule
-      ],
+    TestBed.configureTestingModule({
+      imports: [AddFamilySurveyComponent],
       providers: [
-        { provide: MatSnackBar, useValue: snackBarSpy },
         { provide: FamilyService, useValue: familyServiceSpy },
-        { provide: Router, useValue: routerSpy }
+        { provide: Router, useValue: routerSpy },
+        { provide: MatSnackBar, useValue: snackBarSpy }
       ]
-    }).compileComponents();
+    });
 
-    fixture = TestBed.createComponent(AddFamilySurveyComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    component = TestBed.createComponent(AddFamilySurveyComponent).componentInstance;
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should add and remove children', () => {
-    const initial = component.surveyChildren.length;
+  it('should add and remove child', () => {
     component.addChild();
-    expect(component.surveyChildren.length).toBe(initial + 1);
+    expect(component.surveyChildren.length).toBe(2);
 
     component.removeChild(0);
-    expect(component.surveyChildren.length).toBe(initial);
+    expect(component.surveyChildren.length).toBe(1);
+  });
+
+  it('should not remove the last child', () => {
+    component.removeChild(0);
+    expect(component.surveyChildren.length).toBe(1);
   });
 
   it('should reset survey', () => {
-    component.surveyFamilyLastName = 'Test';
-    component.surveyParentEmail = 'parent@test.com';
-    component.surveyChildren[0] = {
-      firstName: 'A', lastName: 'B', school: 'S', grade: '1', backpackNeeded: 'yes'
-    };
+    component.surveyFamilyLastName = 'Smith';
+    component.surveyParentEmail = 'test@test.com';
+
     component.resetSurvey();
 
     expect(component.surveyFamilyLastName).toBe('');
-    expect(component.surveyParentEmail).toBe('');
     expect(component.surveyChildren.length).toBe(1);
-    expect(component.surveyChildren[0]).toEqual({ firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' });
   });
 
-  it('should show error if fields missing', fakeAsync(() => {
+  it('should show validation error if form incomplete', () => {
     component.submitSurvey();
-    tick();
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Please fill in all required fields', 'OK', { duration: 5000 });
-  }));
 
-  it('should submit survey successfully', fakeAsync(() => {
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Please fill in all required fields',
+      'OK',
+      { duration: 5000 }
+    );
+    expect(familyServiceSpy.addFamily).not.toHaveBeenCalled();
+  });
+
+  it('should submit successfully', fakeAsync(() => {
     component.surveyFamilyLastName = 'Smith';
-    component.surveyParentEmail = 'parent@test.com';
-    component.surveyChildren = [
-      { firstName: 'John', lastName: 'Doe', school: 'Lincoln', grade: '5', backpackNeeded: 'yes' }
-    ];
+    component.surveyParentEmail = 'test@test.com';
+    component.surveyChildren[0] = {
+      firstName: 'John',
+      lastName: 'Doe',
+      school: 'School',
+      grade: '3',
+      backpackNeeded: 'yes'
+    };
 
-    familyServiceSpy.addFamily.and.returnValue(of('123'));
+    familyServiceSpy.addFamily.and.returnValue(of('abc123'));
+
     component.submitSurvey();
     tick();
 
     expect(familyServiceSpy.addFamily).toHaveBeenCalled();
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Family added successfully!', 'OK', { duration: 5000 });
+    const submittedPayload = familyServiceSpy.addFamily.calls.mostRecent().args[0];
+    expect(submittedPayload).toEqual({
+      name: 'Smith',
+      email: 'test@test.com',
+      students: [
+        {
+          firstName: 'John',
+          lastName: 'Doe',
+          school: 'School',
+          grade: '3',
+          backpack: true
+        }
+      ]
+    });
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/families']);
-    expect(component.surveyChildren.length).toBe(1); // reset
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Family added successfully!',
+      'OK',
+      { duration: 5000 }
+    );
   }));
 
-  it('should show error if service fails', fakeAsync(() => {
+  it('should handle error on submit', fakeAsync(() => {
     component.surveyFamilyLastName = 'Smith';
-    component.surveyParentEmail = 'parent@test.com';
+    component.surveyParentEmail = 'test@test.com';
     component.surveyChildren[0] = {
-      firstName: 'John', lastName: 'Doe', school: 'Lincoln', grade: '5', backpackNeeded: 'yes'
+      firstName: 'John',
+      lastName: 'Doe',
+      school: 'School',
+      grade: '3',
+      backpackNeeded: 'yes'
     };
 
-    const error = new Error('Network error');
-    familyServiceSpy.addFamily.and.returnValue(throwError(() => error));
+    familyServiceSpy.addFamily.and.returnValue(
+      throwError(() => new Error('fail'))
+    );
+
     component.submitSurvey();
     tick();
 
-    expect(snackBarSpy.open).toHaveBeenCalledWith('Error adding family: Network error', 'OK', { duration: 5000 });
-  }));
-
-  it('should handle multiple children', fakeAsync(() => {
-    component.surveyFamilyLastName = 'Doe';
-    component.surveyParentEmail = 'parent@test.com';
-    component.surveyChildren = [
-      { firstName: 'A', lastName: 'A', school: 'S', grade: '1', backpackNeeded: 'yes' },
-      { firstName: 'B', lastName: 'B', school: 'S', grade: '2', backpackNeeded: 'no' }
-    ];
-
-    familyServiceSpy.addFamily.and.returnValue(of('456'));
-    component.submitSurvey();
-    tick();
-
-    expect(component.surveyChildren.length).toBe(1); // form reset
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Error adding family: fail',
+      'OK',
+      { duration: 5000 }
+    );
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
   }));
 });

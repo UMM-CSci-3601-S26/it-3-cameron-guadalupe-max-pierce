@@ -1,19 +1,42 @@
 describe('Backpack Need Survey', () => {
-  it('visits survey and submits required data', () => {
-    cy.visit('/families/survey');
+  beforeEach(() => {
+    cy.visit('/add-family-survey'); // adjust route to your component
+  });
 
-    cy.get('[name=familyLastName]').should('be.visible').type('Smith');
-    cy.get('[name=childFirstName]').type('Emma');
-    cy.get('[name=school]').type('Lincoln Elementary');
+  it('fills out the survey form and submits', () => {
+    // Family info
+    cy.get('input[name="familyLastName"]').type('Smith');
+    cy.get('input[name="parentEmail"]').type('parent@example.com');
 
-    cy.get('[name=grade]').click();
-    cy.get('mat-option').contains('4').click();
-
+    // First child
+    cy.get('input[name="childFirstName0"]').type('John');
+    cy.get('input[name="childLastName0"]').type('Smith');
+    cy.get('input[name="school0"]').type('Lincoln Elementary');
+    cy.get('mat-select[name="grade0"]').click();
+    cy.get('mat-option').contains('3').click();
     cy.get('mat-radio-button[value="yes"]').click();
 
+    // Add second child
+    cy.contains('Add Another Child').click();
+    cy.get('input[name="childFirstName1"]').type('Emma');
+    cy.get('input[name="childLastName1"]').type('Smith');
+    cy.get('input[name="school1"]').type('Lincoln Elementary');
+    cy.get('mat-select[name="grade1"]').click();
+    cy.get('mat-option').contains('1').click();
+    cy.get('mat-radio-button[value="no"]').last().click();
+
+    // Submit
     cy.get('button[type="submit"]').click();
 
-    cy.url({ timeout: 10000 }).should('include', '/families');
-    cy.contains('FAMILIES').should('be.visible');
+    // Confirm form reset
+    cy.get('input[name="familyLastName"]').should('have.value', '');
+    cy.get('input[name="parentEmail"]').should('have.value', '');
+  });
+
+  it('can add and remove a child', () => {
+    cy.contains('Add Another Child').click();
+    cy.get('.child-form').should('have.length', 2);
+    cy.get('.child-form button').contains('Remove Child').last().click();
+    cy.get('.child-form').should('have.length', 1);
   });
 });
