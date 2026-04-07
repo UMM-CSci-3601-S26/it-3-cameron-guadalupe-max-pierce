@@ -86,7 +86,8 @@ describe('Item list', () => {
   });
 
   it('Should relocate a selected item and refresh the list without manual reload', () => {
-    page.clickItemCheckbox(0);
+    page.clickFirstEnabledItemCheckbox().should('be.checked');
+
     page.relocateSelectedButton().should('be.visible');
 
     cy.window().then((win) => {

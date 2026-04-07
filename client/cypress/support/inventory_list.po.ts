@@ -47,6 +47,10 @@ export class ItemListPage {
     return cy.get(`${this.itemListItemsSelector} ${this.itemCheckboxSelector}`);
   }
 
+  getEnabledItemCheckboxInputs() {
+    return cy.get(`${this.itemListItemsSelector} input[type="checkbox"]:enabled`);
+  }
+
   /**
    * Clicks the "view profile" button for the given user card.
    * Requires being in the "card" view.
@@ -63,6 +67,10 @@ export class ItemListPage {
 
   clickItemCheckbox(index: number) {
     return this.getItemCheckboxes().eq(index).click({ force: true });
+  }
+
+  clickFirstEnabledItemCheckbox() {
+    return this.getEnabledItemCheckboxInputs().first().check({ force: true });
   }
 
   addItemButton() {
