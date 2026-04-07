@@ -152,8 +152,9 @@ class InventoryItemControllerSpec {
         Javalin mockServer = mock(Javalin.class);
         inventoryItemController.addRoutes(mockServer);
         verify(mockServer, Mockito.atLeast(2)).get(any(), any()); //getItem, get Items
-        // verify(mockServer, Mockito.atLeastOnce()).post(any(), any());
-        // verify(mockServer, Mockito.atLeastOnce()).delete(any(), any());
+      verify(mockServer, Mockito.atLeastOnce()).post(any(), any());
+      verify(mockServer, Mockito.atLeastOnce()).delete(any(), any());
+      verify(mockServer, Mockito.atLeastOnce()).put(any(), any());
     }
 
     @Test
@@ -347,5 +348,86 @@ class InventoryItemControllerSpec {
 
     // Family is still not in the database (Again, if this fails, something's gone horribly wrong)
     assertEquals(0, testDatabase.getCollection("inventory_items").countDocuments(eq("_id", new ObjectId(testID))));
+  }
+
+  @Test
+  void updateFoundItem() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = "marker";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    inventoryItemController.updateItem(ctx);
+
+    verify(ctx).status(HttpStatus.OK);
+    Document savedItem = testDatabase.getCollection("inventory_items")
+      .find(eq("_id", new ObjectId(testID))).first();
+
+    assertEquals("Updated Marker", savedItem.get("name"));
+    assertEquals(77, savedItem.get("stocked"));
+    assertEquals("Aisle 9, Shelf Z", savedItem.get("location"));
+  }
+
+  @Test
+  void updateItemWithBadId() throws IOException {
+    when(ctx.pathParam("id")).thenReturn("bad! bad id!");
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = "marker";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    Throwable exception = assertThrows(BadRequestResponse.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+
+    assertEquals("The requested item id wasn't a legal Mongo Object ID.", exception.getMessage());
+  }
+
+  @Test
+  void updateItemWithNonexistentId() throws IOException {
+    String testID = "588935f5c668650dc77df581";
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = "marker";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    assertThrows(NotFoundResponse.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+
+    verify(ctx).status(HttpStatus.NOT_FOUND);
   }
 }
