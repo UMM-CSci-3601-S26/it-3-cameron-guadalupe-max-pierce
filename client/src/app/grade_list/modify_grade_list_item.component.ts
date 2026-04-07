@@ -1,4 +1,4 @@
-import { Component, inject, computed, signal } from '@angular/core';
+import { Component, inject, computed, signal, Signal } from '@angular/core';
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -11,17 +11,19 @@ import { Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { GradeListService } from './grade_list.service';
 import { School } from './school';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { RequiredItem } from './required_item';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
+import { catchError, combineLatest, of, map, switchMap, tap } from 'rxjs';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-add-inventory-item',
-  templateUrl: './add_grade_list_item.component.html',
-  styleUrls: ['./add_grade_list_item.component.scss'],
+  selector: 'app-modify-inventory-item',
+  templateUrl: './modify_grade_list_item.component.html',
+  styleUrls: ['./modify_grade_list_item.component.scss'],
   imports: [FormsModule, ReactiveFormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatAutocompleteModule]
 })
-export class AddRequirementComponent {
+export class ModifyRequirementComponent {
   public gradeService = inject(GradeListService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
@@ -45,7 +47,7 @@ export class AddRequirementComponent {
 
   filteredGradeOptions = computed(() => {
     //const input = (this.gradeInput() || '').toLowerCase();
-    return this.gradeService.gradeOptions;
+    return this.gradeService.gradeOptions
     // if (!input) return this.gradeService.gradeOptions;
     // return this.gradeService.gradeOptions.filter(option =>
     //   option.label.toLowerCase().includes(input) || option.value.toLowerCase().includes(input)
@@ -111,7 +113,31 @@ export class AddRequirementComponent {
     return match ? match.label : value;
   };
 
-  addRequirementForm = new FormGroup({
+  error = signal({ help: '', httpResponse: '', message: '' });
+
+  private route = inject(ActivatedRoute);
+
+  //Connect an item, such that we can display both old and new values!
+  item: Signal<RequiredItem> = toSignal(
+    this.route.paramMap.pipe(
+      // Map the paramMap into the id
+      map((paramMap: ParamMap) => paramMap.get('id')),
+      // Maps the `id` string into the Observable<InventoryItem>,
+      // which will emit zero or one values depending on whether there is a
+      // `Item` with that ID.
+      switchMap((id: string) => this.gradeService.getItemById(id)),
+      catchError((_err) => {
+        this.error.set({
+          help: 'There was a problem loading the item – try again.',
+          httpResponse: _err.message,
+          message: _err.error?.title,
+        });
+        return of();
+      })
+    )
+  );
+
+  modifyRequirementForm = new FormGroup({
     // We allow alphanumeric input and limit the length for name.
     name: new FormControl('', Validators.compose([
       Validators.required,
@@ -205,59 +231,129 @@ export class AddRequirementComponent {
   };
 
   formControlHasError(controlName: string): boolean {
-    return this.addRequirementForm.get(controlName).invalid &&
-      (this.addRequirementForm.get(controlName).dirty || this.addRequirementForm.get(controlName).touched);
+    return this.modifyRequirementForm.get(controlName).invalid &&
+      (this.modifyRequirementForm.get(controlName).dirty || this.modifyRequirementForm.get(controlName).touched);
   }
 
   getErrorMessage(name: keyof typeof this.addItemValidationMessages): string {
     for(const {type, message} of this.addItemValidationMessages[name]) {
-      if (this.addRequirementForm.get(name).hasError(type)) {
+      if (this.modifyRequirementForm.get(name).hasError(type)) {
         return message;
       }
     }
     return 'Unknown error';
   }
 
-  submitForm() {
-    if (this.finished) { //Ensures form is only submitted once!
-      this.snackBar.open(
-        `Loading. Hold your horses!`,
-        null,
-        { duration: 2000 }
-      );
-    } else {
-      this.finished = true;
-      this.gradeService.addItem(this.addRequirementForm.value).subscribe({
-        next: () => { //newId
+  resetForm() {
+    this.modifyRequirementForm.setValue({
+      name:this.item().name,
+      school:this.item().school,
+      grade:this.item().grade,
+      desc:this.item().desc,
+      required:this.item().required,
+      type:this.item().type,
+      pack:this.item().pack
+    },
+    {
+      emitEvent:true
+    });
+    this.snackBar.open(
+      `Reset changes to ${this.item().name} ${this.item().desc}`,
+      'OK',
+      { duration: 3000 }
+    );
+  }
+
+  deleteForm() {
+    this.gradeService.deleteItem(this.item()._id).subscribe({
+      next: () => { //newId
+        this.snackBar.open(
+          `Removed ${this.modifyRequirementForm.value.name}`,
+          null,
+          { duration: 3000 }
+        );
+        this.router.navigate(['/inventory']);
+      },
+      error: err => {
+        if (err.status === 400) {
           this.snackBar.open(
-            `Added x${this.addRequirementForm.value.required} ${this.addRequirementForm.value.name} to ${this.addRequirementForm.value.school} grade ${this.addRequirementForm.value.grade}`,
-            null,
-            { duration: 2000 }
+            `Tried to delete an illegal item – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
           );
-          this.router.navigate(['/grade_list']);
-        },
-        error: err => {
-          if (err.status === 400) {
-            this.snackBar.open(
-              `Tried to add an illegal new item – Error Code: ${err.status}\nMessage: ${err.message}`,
-              'OK',
-              { duration: 5000 }
-            );
-          } else if (err.status === 500) {
-            this.snackBar.open(
-              `The server failed to process your request to add a new item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
-              'OK',
-              { duration: 5000 }
-            );
-          } else {
-            this.snackBar.open(
-              `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
-              'OK',
-              { duration: 5000 }
-            );
-          }
-        },
-      });
-    }
+        } else if (err.status === 500) {
+          this.snackBar.open(
+            `The server failed to process your request to delete a item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else {
+          this.snackBar.open(
+            `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        }
+      },
+    });
+  }
+
+  submitForm() {
+    //Delete original item and add the new item specified in the form.
+    this.gradeService.deleteItem(this.item()._id).subscribe({
+      error: err => {
+        if (err.status === 400) {
+          this.snackBar.open(
+            `Tried to change an illegal item – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else if (err.status === 500) {
+          this.snackBar.open(
+            `The server failed to process your request to change a item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else {
+          this.snackBar.open(
+            `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        }
+      },
+    });
+    //...Then add the new item if there wasn't an error deleting.
+    this.gradeService.addItem(this.modifyRequirementForm.value).subscribe({
+      next: () => { //newId
+        this.snackBar.open(
+          `Saved Changes to ${this.modifyRequirementForm.value.name}`,
+          null,
+          { duration: 3000 }
+        );
+        this.router.navigate(['/inventory']);
+      },
+      error: err => {
+        if (err.status === 400) {
+          this.snackBar.open(
+            `Tried to add an illegal new item – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else if (err.status === 500) {
+          this.snackBar.open(
+            `The server failed to process your request to add a new item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else {
+          this.snackBar.open(
+            `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        }
+      },
+    });
   }
 }
