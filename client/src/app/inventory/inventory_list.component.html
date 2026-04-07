@@ -138,13 +138,6 @@
                 @for (item of collection.items; track item._id) {
                   @if (item.stocked > 0) {
                     <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
-
-                      <mat-checkbox matListItemMeta
-                       [checked]="isSelected(item._id)"
-                       (click)="$event.stopPropagation()"
-                       (change)="selectionToggle(item._id, $event)">
-                      </mat-checkbox>
-
                     <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.stocked}}</strong> ~ {{item.name}}</span>
                     @if (item.location === "N/A") {
                       <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not provided</span>
@@ -155,22 +148,43 @@
                     @if (item.pack > 1) {
                       <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
                     }
+                    <span matListItemMeta class="stock-buttons">
+                      <button mat-stroked-button (click)="handleStockButtonClick($event, item, -5)">-5</button>
+                      <button mat-stroked-button (click)="handleStockButtonClick($event, item, -1)">-1</button>
+                      <button mat-stroked-button (click)="handleStockButtonClick($event, item, +1)">+1</button>
+                      <button mat-stroked-button (click)="handleStockButtonClick($event, item, +5)">+5</button>
+                    </span>
+                    <mat-checkbox matListItemMeta
+                      [checked]="isSelected(item._id)"
+                      (click)="$event.stopPropagation()"
+                      (change)="selectionToggle(item._id, $event)">
+                    </mat-checkbox>
                     </a>
                   } @else {
                     <a mat-list-item disabled="true" [routerLink]="['/inventory', item._id]" class="item-list-item">
-
-                      <mat-checkbox matListItemMeta
-                       [disabled]="true"
-                       [checked]="isSelected(item._id)"
-                       (click)="$event.stopPropagation()"
-                       (change)="selectionToggle(item._id, $event)">
-                      </mat-checkbox>
-
                     <span matListItemTitle mat-line class="item-list-name"> <strong>Unstocked</strong> ~ {{item.name}}</span>
                     <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not available</span>
                     @if (item.pack > 1) {
                       <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
                     }
+                    <span matListItemMeta class="stock-buttons">
+                      <button mat-stroked-button
+                          [disabled]="item.stocked === 0"
+                        (click)="handleStockButtonClick($event, item, -5)">-5</button>
+                      <button mat-stroked-button
+                          [disabled]="item.stocked === 0"
+                        (click)="handleStockButtonClick($event, item, -1)">-1</button>
+                      <button mat-stroked-button
+                        (click)="handleStockButtonClick($event, item, +1)">+1</button>
+                      <button mat-stroked-button
+                        (click)="handleStockButtonClick($event, item, +5)">+5</button>
+                    </span>
+                    <mat-checkbox matListItemMeta
+                      [disabled]="true"
+                      [checked]="isSelected(item._id)"
+                      (click)="$event.stopPropagation()"
+                      (change)="selectionToggle(item._id, $event)">
+                    </mat-checkbox>
                     </a>
                   }
                 }
@@ -186,13 +200,6 @@
               @for (item of filteredItems(); track item._id) {
                 @if (item.stocked > 0) {
                   <a mat-list-item [routerLink]="['/inventory', item._id]" class="item-list-item">
-
-                    <mat-checkbox matListItemMeta
-                     [checked]="isSelected(item._id)"
-                     (click)="$event.stopPropagation()"
-                     (change)="selectionToggle(item._id, $event)">
-                    </mat-checkbox>
-
                   <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.stocked}}</strong> ~ {{item.name}}</span>
                   @if (item.location === "N/A") {
                       <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not provided</span>
@@ -203,22 +210,43 @@
                     @if (item.pack > 1) {
                       <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
                     }
+                  <span matListItemMeta class="stock-buttons">
+                    <button mat-stroked-button (click)="handleStockButtonClick($event, item, -5)">-5</button>
+                    <button mat-stroked-button (click)="handleStockButtonClick($event, item, -1)">-1</button>
+                    <button mat-stroked-button (click)="handleStockButtonClick($event, item, +1)">+1</button>
+                    <button mat-stroked-button (click)="handleStockButtonClick($event, item, +5)">+5</button>
+                  </span>
+                  <mat-checkbox matListItemMeta
+                    [checked]="isSelected(item._id)"
+                    (click)="$event.stopPropagation()"
+                    (change)="selectionToggle(item._id, $event)">
+                  </mat-checkbox>
                   </a>
                 } @else {
                   <a mat-list-item disabled="true" [routerLink]="['/inventory', item._id]" class="item-list-item">
-
-                    <mat-checkbox matListItemMeta
-                     [disabled]="true"
-                     [checked]="isSelected(item._id)"
-                     (click)="$event.stopPropagation()"
-                     (change)="selectionToggle(item._id, $event)">
-                    </mat-checkbox>
-
                   <span matListItemTitle mat-line class="item-list-name"> <strong>Unstocked</strong> ~ {{item.name}}</span>
                   <span matListItemLine class="item-list-desc"> {{item.desc}} ~ location not availible</span>
                   @if (item.pack > 1) {
                       <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
                     }
+                  <span matListItemMeta class="stock-buttons">
+                    <button mat-stroked-button
+                        [disabled]="item.stocked === 0"
+                      (click)="handleStockButtonClick($event, item, -5)">-5</button>
+                    <button mat-stroked-button
+                        [disabled]="item.stocked === 0"
+                      (click)="handleStockButtonClick($event, item, -1)">-1</button>
+                    <button mat-stroked-button
+                      (click)="handleStockButtonClick($event, item, +1)">+1</button>
+                    <button mat-stroked-button
+                      (click)="handleStockButtonClick($event, item, +5)">+5</button>
+                  </span>
+                  <mat-checkbox matListItemMeta
+                    [disabled]="true"
+                    [checked]="isSelected(item._id)"
+                    (click)="$event.stopPropagation()"
+                    (change)="selectionToggle(item._id, $event)">
+                  </mat-checkbox>
                   </a>
                 }
               }
