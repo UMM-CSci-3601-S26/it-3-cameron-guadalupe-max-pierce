@@ -252,4 +252,8 @@ export class InventoryService {
       })
     ).pipe(map(() => void 0));
   }
+
+  updateItem(updatedItem: Partial<InventoryItem>): Observable<void> {
+    return this.httpClient.put(`${this.inventoryUrl}/${updatedItem._id}`, updatedItem).pipe(map(() => void 0));
+  }
 }
