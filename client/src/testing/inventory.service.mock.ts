@@ -12,7 +12,7 @@ import { InventoryService } from 'src/app/inventory/inventory.service';
 @Injectable({
   providedIn: AppComponent
 })
-export class MockInventoryService implements Pick<InventoryService, 'getItems' | 'filterItems' | 'addItem' | 'deleteItem'| 'updateSavedSearch'| 'modifyMass' | 'updateItem'> {
+export class MockInventoryService implements Pick<InventoryService, 'getItems' | 'filterItems' | 'addItem' | 'deleteItem'| 'updateSavedSearch'| 'modifyMass' | 'updateItem' | 'deleteAll'> {
   savedInventoryName = ''; //Per-session saved value for name search bar.
   savedInventoryLocation = ''; //Per-session saved value for location search bar.
   savedInventoryStocked = 0; //Per-session saved value for stocked search bar.
@@ -137,6 +137,13 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
         );
       })
     ).pipe(switchMap(() => of(void 0)));
+  }
+
+  deleteAll(oldItems:InventoryItem[]) {
+    //Same as inventory items. Not sure when we'd ever need to use this, but it's here.
+    for (let i = 0; i < oldItems.length; i ++) {
+      this.deleteItem(oldItems[i]._id).subscribe();
+    }
   }
 
   filterItems(items: InventoryItem[], filters: {

@@ -415,4 +415,19 @@ describe('InventoryService', () => {
       });
     }));
   });
+
+  describe('When deleteAll() is called', () => {
+    it('talks to correct Endpoints', waitForAsync(() => {
+      // Checking whether the item was actually deleted should happen in E2E probably
+      const targetItems: InventoryItem[] = testItems; //This will be a duplicate
+
+      const mockedDelete = spyOn(httpClient, 'delete').and.returnValue(of(targetItems));
+
+      inventoryService.deleteAll(targetItems);
+
+      expect(mockedDelete)
+        .withContext('calls delete')
+        .toHaveBeenCalledTimes(3);
+    }));
+  });
 });

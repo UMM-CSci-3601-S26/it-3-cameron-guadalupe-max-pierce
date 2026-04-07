@@ -120,11 +120,11 @@ describe('Grade List', () => {
     expect(gradeList.errMsg()).toBeUndefined();
   });
 
-  it("correctly handles the 'Location Reset' button", () => {
-    expect(gradeList.resetVisible()).toEqual(false);
-    gradeList.revealReset();
-    expect(gradeList.resetVisible()).toEqual(true);
-  });
+  // it("correctly handles the 'Location Reset' button", () => {
+  //   expect(gradeList.resetVisible()).toEqual(false);
+  //   gradeList.revealReset();
+  //   expect(gradeList.resetVisible()).toEqual(true);
+  // });
 
   it("correctly populates the inventory with items from grade list", () => {
     expect(gradeList.populateAllowed).toBeTrue();

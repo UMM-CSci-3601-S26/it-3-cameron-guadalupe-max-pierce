@@ -230,6 +230,22 @@ export class InventoryService {
     return this.httpClient.delete<InventoryItem>(`${this.inventoryUrl}/${id}`);
   }
 
+  deleteAll(oldItems:InventoryItem[]) {
+    //Same as inventory items. Not sure when we'd ever need to use this, but it's here.
+    if (oldItems.length > 0) {
+      for (let i = 0; i < oldItems.length; i ++) {
+        this.deleteItem(oldItems[i]._id).subscribe();
+      }
+    }
+  }
+
+  reloadPage() { //Not really a good way to test this.
+    setTimeout(() => {
+      window.location.reload();
+      //Why on Earth does it need such a long delay to handle this???
+    }, 2000);
+  }
+
   modifyMass(newProps:InventoryItem,oldItems:InventoryItem[]): Observable<void> {
     if (oldItems.length === 0) {
       return of(void 0);

@@ -14,7 +14,7 @@ import { GradeListService } from 'src/app/grade_list/grade_list.service';
 @Injectable({
   providedIn: AppComponent
 })
-export class MockGradeListService implements Pick<GradeListService, 'getItems' | 'filterItems' | 'addItem' | 'addItemToInventory' | 'deleteItem'| 'updateSavedSearch'| 'modifyMass'|'getSchools'|'reloadPage'|'alreadyInInventory'> {
+export class MockGradeListService implements Pick<GradeListService, 'getItems' | 'filterItems' | 'addItem' | 'addItemToInventory' | 'deleteItem'| 'updateSavedSearch'| 'modifyMass'|'getSchools'|'reloadPage'|'alreadyInInventory'|'deleteAll'> {
   savedInventoryName = ''; //Per-session saved value for name search bar.
   savedInventoryGrade = ''; //Per-session saved value for location search bar.
   savedInventorySchool = ''; //Per-session saved value for location search bar.
@@ -115,6 +115,13 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
   /* eslint-disable @typescript-eslint/no-unused-vars */
   getItems(_filters: { name?: string; stocked?: number; desc?: string; location?: string; type?: string;}): Observable<RequiredItem[]> {
     return of(MockGradeListService.testItems);
+  }
+
+  deleteAll(oldItems:RequiredItem[]) {
+    //Same as inventory items. Not sure when we'd ever need to use this, but it's here.
+    for (let i = 0; i < oldItems.length; i ++) {
+      this.deleteItem(oldItems[i]._id).subscribe();
+    }
   }
 
   reloadPage() {

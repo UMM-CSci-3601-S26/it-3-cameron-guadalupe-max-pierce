@@ -70,7 +70,7 @@ export class FamilyListComponent {
   itemStudents = signal<number|undefined>(this.familyService.savedFamilyStudents);
   itemTime = signal<string|undefined>(this.familyService.savedFamilyTime);
   sortBy = signal<string|undefined>(this.familyService.savedFamilySortBy); //When undefined, sorts by name.
-  resetVisible = signal<boolean|undefined>(false);//Reset button is initially hidden.
+  //resetVisible = signal<boolean|undefined>(false);//Reset button is initially hidden.
 
 
   filteredGradeOptions = computed(() => {
@@ -303,15 +303,28 @@ export class FamilyListComponent {
     return schooledArray;
   })
 
-  revealReset() {
-    this.resetVisible.set(true);
-    this.snackBar.open(
-      `Press 'Clear all Families' to proceed. This CANNOT be undone. `,
-      'OK',
-      { duration: 6000 }
-    );
-  }
+  // revealReset() {
+  //   this.resetVisible.set(true);
+  //   this.snackBar.open(
+  //     `Press 'Clear all Families' to proceed. This CANNOT be undone. `,
+  //     'OK',
+  //     { duration: 6000 }
+  //   );
+  // }
 
+  //Not a great way to test this since it reloads the page...
+  resetStudents() {
+    const warning = confirm("This will delete ALL families. Are you sure?");
+    if (warning == true) {
+      this.familyService.deleteAll(this.filteredFamilies());
+      this.snackBar.open(
+        `Family List reset. Please wait for page to reload...`,
+        'OK',
+        { duration: 6000 }
+      );
+      this.familyService.reloadPage();
+    }
+  }
 
   //Not relevant for families? Will still want a clear all families button.
   // resetLocations() {
