@@ -80,9 +80,10 @@ export class ModifyRequirementComponent {
     );
 
   filteredSchoolOptions = computed(() => {
-    const input = (this.schoolInput() || '').toLowerCase();
-    if (!input) return this.serverFilteredSchools();
-    return this.serverFilteredSchools(); //No filtering, short list.
+    return this.serverFilteredSchools();
+    // const input = (this.schoolInput() || '').toLowerCase();
+    // if (!input) return this.serverFilteredSchools();
+    // return this.serverFilteredSchools(); //No filtering, short list.
   });
 
   //All that work, and turns out it was simpler to just put in a dropdown menu...
@@ -107,11 +108,11 @@ export class ModifyRequirementComponent {
   };
 
   //Necessary?
-  displaySchoolLabel = (value: string | null): string => {
-    if (!value) return '';
-    const match = this.filteredSchoolOptions().find(option => option.value === value);
-    return match ? match.label : value;
-  };
+  // displaySchoolLabel = (value: string | null): string => {
+  //   if (!value) return '';
+  //   const match = this.filteredSchoolOptions().find(option => option.value === value);
+  //   return match ? match.label : value;
+  // };
 
   error = signal({ help: '', httpResponse: '', message: '' });
 
