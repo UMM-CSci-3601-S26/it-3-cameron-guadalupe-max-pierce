@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { Observable, forkJoin, of, switchMap } from 'rxjs';
 import { AppComponent } from 'src/app/app.component';
 import { InventoryItem } from '../app/inventory/inventory_item';
 import { InventoryService } from 'src/app/inventory/inventory.service';
@@ -112,62 +112,27 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
     return of(MockInventoryService.emptyItem);
   }
 
-  modifyMass(newProps:InventoryItem,oldItems:InventoryItem[]) {
-    //Copied from Inventory Service for testing purposes.
-    const newItems: InventoryItem[] = [];
-    for (let i = 0; i < oldItems.length -1; i ++) {
-      //Location is probably the only one this will be used for, but you never know.
-      //id is never overwritten; necessary to delete and replace.
-      const baseItem: InventoryItem = {
-        _id:undefined,
-        name:undefined,
-        location:undefined,
-        desc:undefined,
-        stocked:undefined,
-        type:undefined,
-        pack:undefined,
-      }
-      //Create a new array of items, initialized as empty.
-      newItems.push(baseItem);
-
-      if (newProps.name != undefined) {
-        newItems[i].name = newProps.name;
-      } else {
-        newItems[i].name = oldItems[i].name;
-      }
-
-      if (newProps.stocked != undefined) {
-        newItems[i].stocked = newProps.stocked;
-      } else {
-        newItems[i].stocked = oldItems[i].stocked;
-      }
-
-      if (newProps.pack != undefined) {
-        newItems[i].pack = newProps.pack;
-      } else {
-        newItems[i].pack = oldItems[i].pack;
-      }
-
-      if (newProps.location != undefined) {
-        newItems[i].location = newProps.location;
-      } else {
-        newItems[i].location = oldItems[i].location;
-      }
-
-      if (newProps.desc != undefined) {
-        newItems[i].desc = newProps.desc;
-      } else {
-        newItems[i].desc = oldItems[i].desc;
-      }
-
-      if (newProps.type != undefined) {
-        newItems[i].type = newProps.type;
-      } else {
-        newItems[i].type = oldItems[i].type;
-      }
-      this.addItem(newItems[i]).subscribe(); //Need to subscribe for changes to take effect
-      this.deleteItem(oldItems[i]._id).subscribe();
+  modifyMass(newProps:InventoryItem,oldItems:InventoryItem[]): Observable<void> {
+    if (oldItems.length === 0) {
+      return of(void 0);
     }
+
+    return forkJoin(
+      oldItems.map((oldItem) => {
+        const newItem: Partial<InventoryItem> = {
+          name: newProps.name != undefined ? newProps.name : oldItem.name,
+          location: newProps.location != undefined ? newProps.location : oldItem.location,
+          desc: newProps.desc != undefined ? newProps.desc : oldItem.desc,
+          stocked: newProps.stocked != undefined ? newProps.stocked : oldItem.stocked,
+          type: newProps.type != undefined ? newProps.type : oldItem.type,
+          pack: newProps.pack != undefined ? newProps.pack : oldItem.pack,
+        };
+
+        return this.addItem(newItem).pipe(
+          switchMap(() => this.deleteItem(oldItem._id))
+        );
+      })
+    ).pipe(switchMap(() => of(void 0)));
   }
 
   filterItems(items: InventoryItem[], filters: {
