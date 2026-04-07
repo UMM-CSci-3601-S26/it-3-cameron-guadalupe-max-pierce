@@ -46,4 +46,11 @@ class StudentSpec {
         student1._id = FAKE_ID1;
         assertFalse(student1.equals("some string"));
     }
+
+    @Test
+    void hashCodesAreBasedOnId() {
+        student1._id = FAKE_ID1;
+        student2._id = FAKE_ID1;
+        assertTrue(student1.hashCode() == student2.hashCode());
+    }
 }

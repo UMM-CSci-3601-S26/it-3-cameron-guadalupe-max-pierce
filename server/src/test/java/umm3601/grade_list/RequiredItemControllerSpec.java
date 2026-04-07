@@ -159,8 +159,8 @@ class RequiredItemControllerSpec {
         Javalin mockServer = mock(Javalin.class);
         requiredItemController.addRoutes(mockServer);
         verify(mockServer, Mockito.atLeast(2)).get(any(), any()); //getItem, get Items
-        // verify(mockServer, Mockito.atLeastOnce()).post(any(), any());
-        // verify(mockServer, Mockito.atLeastOnce()).delete(any(), any());
+      verify(mockServer, Mockito.atLeastOnce()).post(any(), any());
+      verify(mockServer, Mockito.atLeastOnce()).delete(any(), any());
     }
 
     @Test
@@ -173,6 +173,37 @@ class RequiredItemControllerSpec {
         assertEquals(
             testDatabase.getCollection("required_items").countDocuments(),
             requiredItemArrayCaptor.getValue().size());
+    }
+
+    @Test
+    void getItemsSupportsDescendingSortOrder() throws IOException {
+      when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
+      when(ctx.queryParam("sortby")).thenReturn("name");
+      when(ctx.queryParam("sortorder")).thenReturn("desc");
+
+      requiredItemController.getItems(ctx);
+
+      verify(ctx).json(requiredItemArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+      List<RequiredItem> sortedItems = requiredItemArrayCaptor.getValue();
+      assertEquals("Pencil", sortedItems.get(0).name);
+      assertEquals("Eraser", sortedItems.get(sortedItems.size() - 1).name);
+    }
+
+    @Test
+    void canGetAllSchools() throws IOException {
+      MongoCollection<Document> schools = testDatabase.getCollection("schools");
+      schools.drop();
+      schools.insertOne(new Document().append("value", "A School").append("label", "A School"));
+      schools.insertOne(new Document().append("value", "B School").append("label", "B School"));
+
+      requiredItemController.getSchools(ctx);
+
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<ArrayList<School>> schoolArrayCaptor = ArgumentCaptor.forClass(ArrayList.class);
+      verify(ctx).json(schoolArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+      assertEquals(2, schoolArrayCaptor.getValue().size());
     }
 
     @Test
@@ -302,6 +333,31 @@ class RequiredItemControllerSpec {
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
 
     assertTrue(exceptionMessage.contains("This is not a number!"));
+  }
+
+  @Test
+  void addInvalidTypeItem() throws IOException {
+    String newItemJson = """
+      {
+        "name": "This is a Test",
+        "required": 4,
+        "desc": "This should fail!",
+        "school": "Over there",
+        "type": "",
+        "grade": "2"
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(RequiredItem.class))
+      .thenReturn(new BodyValidator<RequiredItem>(newItemJson, RequiredItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, RequiredItem.class)));
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      requiredItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty type"));
   }
 
   @Test

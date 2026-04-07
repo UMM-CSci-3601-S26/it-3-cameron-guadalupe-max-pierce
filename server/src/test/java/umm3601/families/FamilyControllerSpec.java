@@ -199,6 +199,21 @@ class FamilyControllerSpec {
     }
 
     @Test
+    void getFamiliesSupportsDescendingSortOrder() throws IOException {
+      when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
+      when(ctx.queryParam("sortby")).thenReturn("name");
+      when(ctx.queryParam("sortorder")).thenReturn("desc");
+
+      familyController.getFamilies(ctx);
+
+      verify(ctx).json(inventoryItemArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+      List<Family> sortedFamilies = inventoryItemArrayCaptor.getValue();
+      assertEquals("Richards", sortedFamilies.get(0).name);
+      assertEquals("Hendersons", sortedFamilies.get(sortedFamilies.size() - 1).name);
+    }
+
+    @Test
     void getFamilyWithExistentId() throws IOException {
       String id = testItemId1.toHexString();
       when(ctx.pathParam("id")).thenReturn(id);

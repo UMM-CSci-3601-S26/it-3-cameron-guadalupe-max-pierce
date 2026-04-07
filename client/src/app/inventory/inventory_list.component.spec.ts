@@ -140,6 +140,45 @@ describe('Inventory list', () => {
     expect(modifiedItems[0]._id).toBe(selectedId);
     expect(inventoryList.selectedItems().size).toBe(0);
   });
+
+  it('increments stock and calls updateItem with incremented value', () => {
+    const updateSpy = spyOn(inventoryService, 'updateItem').and.returnValue(of(void 0));
+    const baseItem = inventoryList.serverFilteredItems()[0];
+
+    inventoryList.adjustStock(baseItem, 1);
+
+    expect(updateSpy).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+      _id: baseItem._id,
+      stocked: baseItem.stocked + 1
+    }));
+  });
+
+  it('clamps decremented stock to zero when decrement is too large', () => {
+    const updateSpy = spyOn(inventoryService, 'updateItem').and.returnValue(of(void 0));
+    const baseItem = { ...inventoryList.serverFilteredItems()[1], stocked: 2 };
+
+    inventoryList.adjustStock(baseItem, -10);
+
+    expect(updateSpy).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+      _id: baseItem._id,
+      stocked: 0
+    }));
+  });
+
+  it('prevents navigation on stock button clicks and delegates to adjustStock', () => {
+    const adjustSpy = spyOn(inventoryList, 'adjustStock');
+    const baseItem = inventoryList.serverFilteredItems()[0];
+    const mockEvent = {
+      preventDefault: jasmine.createSpy('preventDefault'),
+      stopPropagation: jasmine.createSpy('stopPropagation')
+    } as unknown as MouseEvent;
+
+    inventoryList.handleStockButtonClick(mockEvent, baseItem, 5);
+
+    expect((mockEvent.preventDefault as jasmine.Spy)).toHaveBeenCalled();
+    expect((mockEvent.stopPropagation as jasmine.Spy)).toHaveBeenCalled();
+    expect(adjustSpy).toHaveBeenCalledOnceWith(baseItem, 5);
+  });
 });
 
 describe('Misbehaving Item List', () => {

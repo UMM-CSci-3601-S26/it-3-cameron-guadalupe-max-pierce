@@ -22,6 +22,7 @@ import org.mongojack.JacksonMongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
 
 import io.javalin.Javalin;
 import io.javalin.http.BadRequestResponse;
@@ -238,6 +239,41 @@ public class InventoryItemController implements Controller {
     ctx.status(HttpStatus.OK);
   }
 
+  /**
+   * Update the item specified by the `id` parameter in the request
+   * using fields from the JSON body.
+   *
+   * @param ctx a Javalin HTTP context
+   */
+  public void updateItem(Context ctx) {
+    String id = ctx.pathParam("id");
+    String body = ctx.body();
+
+    InventoryItem updatedItem = ctx.bodyValidator(InventoryItem.class)
+      .check(itm -> itm.name != null && itm.name.length() >= 4,
+        "Item must have a non-empty name; body was " + body)
+      .check(itm -> itm.stocked >= 0,
+        "Stocked value must be greater than or equal to zero; body was " + body)
+      .check(itm -> itm.type != null && itm.type.length() > 0,
+        "Item must have a non-empty type; body was " + body)
+      .check(itm -> itm.location != null && itm.location.length() > 0,
+        "Item must have a non-empty location; body was " + body)
+      .get();
+
+    try {
+      updatedItem._id = id;
+      UpdateResult updateResult = inventoryCollection.replaceOne(eq("_id", new ObjectId(id)), updatedItem);
+
+      if (updateResult.getMatchedCount() != 1) {
+        ctx.status(HttpStatus.NOT_FOUND);
+        throw new NotFoundResponse("The requested item was not found");
+      }
+      ctx.status(HttpStatus.OK);
+    } catch (IllegalArgumentException e) {
+      throw new BadRequestResponse("The requested item id wasn't a legal Mongo Object ID.");
+    }
+  }
+
   // /**
   //  * Utility function to generate the md5 hash for a given string
   //  * ...Wtf is this for?
@@ -299,5 +335,8 @@ public class InventoryItemController implements Controller {
 
     // Delete the specified item
      server.delete(API_INVENTORY_BY_ID, this::deleteItem);
+
+    // Update the specified item
+    server.put(API_INVENTORY_BY_ID, this::updateItem);
   }
 }

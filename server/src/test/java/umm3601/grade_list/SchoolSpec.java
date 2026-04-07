@@ -1,6 +1,7 @@
 package umm3601.grade_list;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,5 +53,11 @@ class SchoolSpec {
     void equalsReturnsFalseForDifferentType() {
         item1._id = FAKE_ID1;
         assertFalse(item1.equals("some string"));
+    }
+
+    @Test
+    void toStringReturnsSchoolName() {
+        item1.value = "Hancock Elementary";
+        assertEquals("Hancock Elementary", item1.toString());
     }
 }

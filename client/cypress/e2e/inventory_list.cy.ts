@@ -100,4 +100,22 @@ describe('Item list', () => {
     page.relocateSelectedButton().should('not.exist');
   });
 
+  it('Should quick-increment stocked quantity and stay on inventory page', () => {
+    cy.intercept('PUT', '**/api/inventory/*').as('updateStock');
+
+    page.getItemListItems().first().as('firstItem');
+    cy.get('@firstItem').find('.item-list-name strong').invoke('text').then((beforeText) => {
+      const beforeValue = Number(beforeText.replace(/[^0-9]/g, ''));
+
+      cy.get('@firstItem').contains('.stock-buttons button', '+1').click();
+      cy.wait('@updateStock').its('response.statusCode').should('eq', 200);
+      cy.url().should('include', '/inventory');
+
+      cy.get('@firstItem').find('.item-list-name strong').should(($strong) => {
+        const afterValue = Number($strong.text().replace(/[^0-9]/g, ''));
+        expect(afterValue).to.equal(beforeValue + 1);
+      });
+    });
+  });
+
 });

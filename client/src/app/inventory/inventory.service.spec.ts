@@ -394,4 +394,25 @@ describe('InventoryService', () => {
       expect(payload.pack).toBe(testItems[0].pack);
     }));
   });
+
+  describe('When updateItem() is called', () => {
+    it('sends a PUT to the correct endpoint with the update payload', waitForAsync(() => {
+      const targetItem: InventoryItem = testItems[0];
+      const updatedPayload: Partial<InventoryItem> = {
+        ...targetItem,
+        stocked: targetItem.stocked + 1
+      };
+
+      const mockedMethod = spyOn(httpClient, 'put').and.returnValue(of(void 0));
+
+      inventoryService.updateItem(updatedPayload).subscribe(() => {
+        expect(mockedMethod)
+          .withContext('one call')
+          .toHaveBeenCalledTimes(1);
+        expect(mockedMethod)
+          .withContext('talks to the correct endpoint with payload')
+          .toHaveBeenCalledWith(`${inventoryService.inventoryUrl}/${targetItem._id}`, updatedPayload);
+      });
+    }));
+  });
 });
