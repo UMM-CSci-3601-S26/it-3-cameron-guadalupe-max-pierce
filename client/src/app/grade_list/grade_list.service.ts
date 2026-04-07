@@ -57,6 +57,9 @@ export class GradeListService {
   savedGradeListSchool = ''; //Per-session saved value for description search bar.
   savedGradeListSortBy = 'school'; //Per-session saved value for sort-order search bar. School is probably the most useful default.
 
+  originSchool = ''; //Special value, records which school was associated with the 'add requirement' button, for prefill.
+  originGrade = ''; //Special value, records which grade was associated with the 'add requirement' button, for prefill.
+
   //TODO - is this the correct way to do this? Better than copying the type lists in multiple places?
   inventoryService = new InventoryService;
   typeOptions = this.inventoryService.typeOptions;

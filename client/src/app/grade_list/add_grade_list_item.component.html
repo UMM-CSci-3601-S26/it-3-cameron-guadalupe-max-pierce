@@ -1,17 +1,16 @@
 <div class="flex-row">
   <div class="flex-1">
-    <form [formGroup]="modifyInventoryForm" (ngSubmit)="submitForm();">
+    <form [formGroup]="addRequirementForm" (ngSubmit)="submitForm();">
       <mat-card class="add-item-card">
         <mat-card-header>
-          <mat-card-title class="add-item-title">Modify {{item().name}}</mat-card-title>
+          <mat-card-title class="add-item-title">New Requirement</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="flex-col">
 
             <mat-form-field>
               <mat-label>Name</mat-label>
-              <input matInput formControlName="name"
-                required [ngModel]="item().name">
+              <input matInput formControlName="name" required>
               @if (formControlHasError('name')) {
                 <mat-error data-test="nameError">
                   {{getErrorMessage('name')}}
@@ -21,39 +20,59 @@
             </mat-form-field>
 
             <mat-form-field>
-              <mat-label>Location</mat-label>
-              <input matInput formControlName="location"
-                required [ngModel]="item().location">
-              @if (formControlHasError('location')) {
-                <mat-error data-test="locationError">
-                  {{getErrorMessage('location')}}
+              <mat-label>School</mat-label>
+              <!-- <input matInput
+              formControlName="school"
+              required
+              [(ngModel)]="localOriginSchool"
+              > -->
+              <mat-select
+              placeholder="School"
+              formControlName="school"
+              [(ngModel)]="gradeService.originSchool">
+                @for (school of filteredSchoolOptions(); track school.label) {
+                <mat-option [value]="school.label">{{school.label}}</mat-option>
+                }
+              </mat-select>
+            <mat-hint>School that requires this</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Grade</mat-label>
+              <input matInput
+              formControlName="grade"
+              [(ngModel)]="gradeService.originGrade"
+              required>
+              @if (formControlHasError('grade')) {
+                <mat-error data-test="gradeError">
+                  {{getErrorMessage('grade')}}
                 </mat-error>
               }
-            <mat-hint>Storage location of item</mat-hint>
+            <mat-hint>Grade that requires this</mat-hint>
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Description</mat-label>
-              <input matInput formControlName="desc" [ngModel]="item().desc">
+              <input matInput formControlName="desc">
             <mat-hint>Optional description of item (brand, color, etc.)</mat-hint>
             </mat-form-field>
 
             <mat-form-field>
-              <mat-label>Stocked</mat-label>
+              <mat-label>Required</mat-label>
               <input matInput type="number"
-                formControlName="stocked" required [ngModel]="item().stocked">
-              @if (formControlHasError('stocked')) {
-                <mat-error data-test="stockedError">
-                  {{getErrorMessage('stocked')}}
+                formControlName="required" required>
+              @if (formControlHasError('required')) {
+                <mat-error data-test="requiredError">
+                  {{getErrorMessage('required')}}
                 </mat-error>
               }
-            <mat-hint>Number currently in stock</mat-hint>
+            <mat-hint>Number required per student</mat-hint>
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Pack</mat-label>
               <input matInput type="number"
-                formControlName="pack" required [ngModel]="item().pack">
+                formControlName="pack" required>
               @if (formControlHasError('pack')) {
                 <mat-error data-test="packError">
                   {{getErrorMessage('pack')}}
@@ -70,13 +89,13 @@
                 [matAutocomplete]="typeAuto"
                 (input)="typeInput.set($any($event.target).value)"
                 required
-                [ngModel]="item().type"
               >
               <mat-autocomplete #typeAuto="matAutocomplete" [displayWith]="displayTypeLabel">
                 @for (option of filteredTypeOptions(); track option.value) {
                   <mat-option [value]="option.value">{{ option.label }}</mat-option>
                 }
               </mat-autocomplete>
+
               @if (formControlHasError('type')) {
                 <mat-error data-test="typeError">
                   {{getErrorMessage('type')}}
@@ -88,18 +107,16 @@
 
         </mat-card-content>
         <mat-card-actions align="start">
-
           <button
             mat-raised-button
             type="button"
-            color="primary"
-            [disabled]="!modifyInventoryForm.valid"
+            color="accent"
+            [disabled]="!addRequirementForm.valid"
             type="submit"
             data-test="confirmAddItemButton"
             >
-            Save Changes
+            Add Requirement!
           </button>
-
         </mat-card-actions>
       </mat-card>
     </form>
@@ -108,35 +125,11 @@
       mat-raised-button
       type="button"
       color="warn-dark"
-      [disabled]="false"
       type="back"
-      routerLink="/inventory"
-      data-test="backToInventoryButton"
+      routerLink="/grade_list"
+      data-test="backToGradeListButton"
       >
-      Back to Inventory
-    </button>
-    <button
-      mat-raised-button
-      type="button"
-      color="primary"
-      [disabled]="false"
-      type="back"
-      data-test="backToInventoryButton"
-      (click)="resetForm()"
-      >
-      Reset Changes
-    </button>
-    <button
-      mat-raised-button
-      type="button"
-      color="warn"
-      [disabled]="false"
-      type="delete"
-      routerLink="/inventory"
-      data-test="deleteItemButton"
-      (click)="deleteForm()"
-      >
-      Delete Item
+      Back to Grade List
     </button>
     </mat-card-actions>
   </div>

@@ -147,6 +147,17 @@
                         [style.height.px]=30
                         data-test="populateButton"
                         [disabled]="!populateAllowed"
+                        routerLink="/grade_list/new"
+                        (click)="updateOrigin(school.school_val, grade.grade_val)"
+                      >
+                      New Requirement
+                      </button>
+                      <button mat-raised-button
+                        type="button"
+                        color="warn"
+                        [style.height.px]=30
+                        data-test="populateButton"
+                        [disabled]="!populateAllowed"
                         (click)="populateInventory(serverFilteredItems(),school.school_val, grade.grade_val)"
                       >
                       Add {{grade.grade_header}} requirements to Inventory
@@ -224,7 +235,11 @@
 
 </div>
 
-<button mat-fab class="add-item-fab" matTooltip="Add Item" matTooltipPosition="left" routerLink="/grade_list/new"
+<button mat-fab class="add-item-fab"
+  matTooltip="Add Requirement"
+  matTooltipPosition="left"
+  routerLink="/grade_list/new"
+  (click)="updateOrigin()"
   data-test="addItemButton">
   <mat-icon class="md-24" aria-label="Add Item">add</mat-icon>
 </button>
