@@ -2,6 +2,7 @@ import { Component, computed, signal, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatOptionModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,6 +21,7 @@ import { InventoryService } from './inventory.service';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatToolbar } from '@angular/material/toolbar';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 /**
  * A component that displays a list of users, either as a grid
@@ -38,6 +40,7 @@ import { MatToolbar } from '@angular/material/toolbar';
   providers: [],
   imports: [
     MatCardModule,
+    MatCheckboxModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
@@ -193,4 +196,21 @@ export class InventoryListComponent {
       { duration: 6000 }
     );
   }
+
+  selectedItems = signal(new Set<string>());
+
+  selectionToggle(id: string, event: MatCheckboxChange) {
+    const updated = new Set(this.selectedItems());
+    if (event.checked) {
+      updated.add(id);
+    } else {
+      updated.delete(id);
+    }
+    this.selectedItems.set(updated);
+  }
+
+  isSelected(id: string): boolean {
+    return this.selectedItems().has(id);
+  }
+
 }
