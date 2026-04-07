@@ -170,6 +170,21 @@ class InventoryItemControllerSpec {
     }
 
     @Test
+    void getItemsSupportsDescendingSortOrder() throws IOException {
+      when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
+      when(ctx.queryParam("sortby")).thenReturn("name");
+      when(ctx.queryParam("sortorder")).thenReturn("desc");
+
+      inventoryItemController.getItems(ctx);
+
+      verify(ctx).json(inventoryItemArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+      List<InventoryItem> sortedItems = inventoryItemArrayCaptor.getValue();
+      assertEquals("Pencil", sortedItems.get(0).name);
+      assertEquals("Eraser", sortedItems.get(sortedItems.size() - 1).name);
+    }
+
+    @Test
     void getItemWithExistentId() throws IOException {
       String id = testItemId1.toHexString();
       when(ctx.pathParam("id")).thenReturn(id);
@@ -313,6 +328,31 @@ class InventoryItemControllerSpec {
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
 
     assertTrue(exceptionMessage.contains("This is not a number!"));
+  }
+
+  @Test
+  void addInvalidTypeItem() throws IOException {
+    String newItemJson = """
+      {
+        "name": "This is a Test",
+        "stocked": 10,
+        "desc": "This should fail!",
+        "location": "Over there",
+        "type": ""
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty type"));
   }
 
   @Test
