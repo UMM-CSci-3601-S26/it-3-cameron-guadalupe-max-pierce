@@ -218,7 +218,7 @@ export class InventoryListComponent {
     return this.selectedItems().has(id);
   }
 
-  modifySelected() {
+  relocateSelected() {
     const newLocation = prompt("Enter new location for selected items:");
     if (newLocation !== null) {
       const tempItem: InventoryItem = { _id:undefined, location:newLocation, stocked:undefined, name:undefined, type:undefined, desc:undefined, pack:undefined };
