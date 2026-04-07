@@ -236,4 +236,32 @@ export class InventoryListComponent {
     }
   }
 
+  adjustStock(item: InventoryItem, delta: number) {
+    const newStocked = (item.stocked ?? 0) + delta;
+    let updatedItem: Partial<InventoryItem>;
+
+    if (newStocked < 0) {
+      updatedItem = {
+        ...item,
+        stocked: 0
+      };
+    } else {
+      updatedItem = {
+        ...item,
+        stocked: newStocked
+      };
+    }
+
+    this.inventoryService.updateItem(updatedItem).subscribe(() => {
+      this.refreshToken.update(value => value + 1);
+    });
+  }
+
+  handleStockButtonClick(event: MouseEvent, item: InventoryItem, delta: number) {
+    // Buttons are nested inside a router link; block the link navigation.
+    event.preventDefault();
+    event.stopPropagation();
+    this.adjustStock(item, delta);
+  }
+
 }
