@@ -22,16 +22,18 @@ import { toSignal, toObservable } from '@angular/core/rxjs-interop';
   imports: [FormsModule, ReactiveFormsModule, RouterLink, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule, MatAutocompleteModule]
 })
 export class AddRequirementComponent {
-  private gradeService = inject(GradeListService);
+  public gradeService = inject(GradeListService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
   private finished = false;
 
   typeInput = signal<string>('');
   gradeInput = signal<string>('');
-  schoolInput = signal<string>('');
-  errMsg = signal<string | undefined>(undefined);
 
+  errMsg = signal<string | undefined>(undefined);
+  // localOriginSchool = this.gradeService.originSchool; //See grade service
+  // localOriginGrade = this.gradeService.originGrade;
+  schoolInput = signal<string>('');
 
   filteredTypeOptions = computed(() => {
     const input = (this.typeInput() || '').toLowerCase();
@@ -80,21 +82,20 @@ export class AddRequirementComponent {
     return this.serverFilteredSchools(); //No filtering, short list.
   });
 
-  //Generates a regex filter that only allows for names that match existing schools.
-  //Needs to use raw server data, NOT filtered.
-  schoolRegex = computed(() => {
-    let expression = '^(';
-    if (this.filteredSchoolOptions() != undefined) {
-      for (let i = 0; i < this.filteredSchoolOptions().length; i++) {
-        expression = expression.concat(this.filteredSchoolOptions()[i].label.replace("'","\\'")); //Saint Mary's, good lord...
-        if (i < this.filteredSchoolOptions().length - 1) { //Last one doesn't need a '|'
-          expression = expression.concat('|');
-        }
-      }
-    }
-    expression = expression.concat(')$');
-    return expression;
-  });
+  //All that work, and turns out it was simpler to just put in a dropdown menu...
+  // schoolRegex = computed(() => {
+  //   let expression = '^(';
+  //   if (this.serverFilteredSchools() != undefined) {
+  //     for (let i = 0; i < this.serverFilteredSchools().length; i++) {
+  //       expression = expression.concat(this.serverFilteredSchools()[i].label.replace("'","\\'")); //Doesn't actually work?
+  //       if (i < this.serverFilteredSchools().length - 1) { //Last one doesn't need a '|'
+  //         expression = expression.concat('|');
+  //       }
+  //     }
+  //   }
+  //   expression = expression.concat(')$');
+  //   return expression;
+  // });
 
   displayTypeLabel = (value: string | null): string => {
     if (!value) return '';
@@ -119,7 +120,7 @@ export class AddRequirementComponent {
 
     required: new FormControl<number>(null, Validators.compose([
       Validators.required,
-      Validators.min(0),
+      Validators.min(1),
       Validators.max(9999),
       Validators.pattern('^[0-9]+$')
     ])),
@@ -150,8 +151,10 @@ export class AddRequirementComponent {
       Validators.minLength(3),
       Validators.maxLength(100),
       //'^(MAES|Hancock|Saint Mary\'s)$'
-      //TODO, fix this! This returns an identical string, why TF doesn't it work with St. Mary's?
-      Validators.pattern('^(MAES|Hancock|Saint Mary\'s)$') //this.schoolRegex()
+      //'^(MAES|Hancock|Saint Mary)$'
+      //TODO, fix this! No clue why it isn't working, literally returns the same value.
+      //Validators.pattern(this.schoolRegex())
+      //Validators.pattern('^(Hancock|Saint Mary|MAES)$')
     ])),
   });
 
@@ -168,7 +171,7 @@ export class AddRequirementComponent {
 
     required: [
       {type: 'required', message: 'Required # is required!'},
-      {type: 'min', message: 'Required must be at least 0. No imaginary pencils allowed.'},
+      {type: 'min', message: 'Required must be at least 1. No imaginary pencils allowed.'},
       {type: 'max', message: 'Required may not be greater than 9999. Teacher needs to calm down'},
       {type: 'pattern', message: 'Required must be a whole number! Half a pencil is not a thing.'}
     ],

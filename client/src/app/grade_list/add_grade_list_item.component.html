@@ -3,7 +3,7 @@
     <form [formGroup]="addRequirementForm" (ngSubmit)="submitForm();">
       <mat-card class="add-item-card">
         <mat-card-header>
-          <mat-card-title class="add-item-title">New Requirement {{schoolRegex()}} vs. ^(MAES|Hancock|Saint Mary\'s)$</mat-card-title>
+          <mat-card-title class="add-item-title">New Requirement</mat-card-title>
         </mat-card-header>
         <mat-card-content>
           <div class="flex-col">
@@ -21,28 +21,28 @@
 
             <mat-form-field>
               <mat-label>School</mat-label>
-              <input matInput
+              <!-- <input matInput
               formControlName="school"
               required
-              [matAutocomplete]="schoolAuto">
-
-              <mat-autocomplete #schoolAuto="matAutocomplete" [displayWith]="displaySchoolLabel">
-                @for (option of filteredSchoolOptions(); track option.label) {
-                  <mat-option [value]="option.label">{{ option.value }}</mat-option>
+              [(ngModel)]="localOriginSchool"
+              > -->
+              <mat-select
+              placeholder="School"
+              formControlName="school"
+              [(ngModel)]="gradeService.originSchool">
+                @for (school of filteredSchoolOptions(); track school.label) {
+                <mat-option [value]="school.label">{{school.label}}</mat-option>
                 }
-              </mat-autocomplete>
-
-              @if (formControlHasError('school')) {
-                <mat-error data-test="schoolError">
-                  {{getErrorMessage('school')}}
-                </mat-error>
-              }
+              </mat-select>
             <mat-hint>School that requires this</mat-hint>
             </mat-form-field>
 
             <mat-form-field>
               <mat-label>Grade</mat-label>
-              <input matInput formControlName="grade" required>
+              <input matInput
+              formControlName="grade"
+              [(ngModel)]="gradeService.originGrade"
+              required>
               @if (formControlHasError('grade')) {
                 <mat-error data-test="gradeError">
                   {{getErrorMessage('grade')}}

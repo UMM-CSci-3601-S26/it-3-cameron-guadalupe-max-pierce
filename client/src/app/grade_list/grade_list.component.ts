@@ -274,6 +274,17 @@ export class GradeListComponent {
     );
   }
 
+  //Helper function to autofill grade/school for per-grade addition.
+  updateOrigin(school_val?: string, grade_val?: string) {
+    if (school_val && grade_val) {
+      this.gradeListService.originGrade = grade_val;
+      this.gradeListService.originSchool = school_val;
+    } else { //Reset
+      this.gradeListService.originGrade = '';
+      this.gradeListService.originSchool = '';
+    }
+  }
+
   populateInventory(items: RequiredItem[], school_val: string, grade_val?: string ): number {
     let popArray: RequiredItem[] = [];
     let itemCount = 0;
