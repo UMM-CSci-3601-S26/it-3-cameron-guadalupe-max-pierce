@@ -71,6 +71,7 @@ export class InventoryListComponent {
   itemType = signal<string|undefined>(this.inventoryService.savedInventoryType);
   sortBy = signal<string|undefined>(this.inventoryService.savedInventorySortBy);
   resetVisible = signal<boolean|undefined>(false);//Reset button is initially hidden.
+  private refreshToken = signal(0);
 
   filteredTypeOptions = computed(() => {
     const input = (this.itemType() || '').toLowerCase();
@@ -96,11 +97,12 @@ export class InventoryListComponent {
   private itemDesc$ = toObservable(this.itemDesc);
   private itemLocation$ = toObservable(this.itemLocation);
   private itemType$ = toObservable(this.itemType);
+  private refreshToken$ = toObservable(this.refreshToken);
 
   serverFilteredItems =
     toSignal(
       //Not actually doing any filtering on the server, just need to get Items.
-      combineLatest([this.itemName$,this.itemStock$,this.itemDesc$,this.itemLocation$,this.itemType$]).pipe(
+      combineLatest([this.itemName$,this.itemStock$,this.itemDesc$,this.itemLocation$,this.itemType$,this.refreshToken$]).pipe(
         switchMap(() =>
           this.inventoryService.getItems({}) //If we decide to filter on server, args go her
         ),
@@ -188,13 +190,16 @@ export class InventoryListComponent {
       desc:undefined,
       pack:undefined,
     }
-    this.inventoryService.modifyMass(tempItem,this.filteredItems());
-    //TODO, We need to update something, such that the page doesn't need manual reloading...
-    this.snackBar.open(
-      `Locations reset. Please reload this page to see your changes. `,
-      'OK',
-      { duration: 6000 }
-    );
+    this.inventoryService.modifyMass(tempItem,this.filteredItems()).subscribe({
+      complete: () => {
+        this.refreshToken.update(value => value + 1);
+        this.snackBar.open(
+          `Locations reset.`,
+          'OK',
+          { duration: 6000 }
+        );
+      }
+    });
   }
 
   selectedItems = signal(new Set<string>());
@@ -211,6 +216,24 @@ export class InventoryListComponent {
 
   isSelected(id: string): boolean {
     return this.selectedItems().has(id);
+  }
+
+  modifySelected() {
+    const newLocation = prompt("Enter new location for selected items:");
+    if (newLocation !== null) {
+      const tempItem: InventoryItem = { _id:undefined, location:newLocation, stocked:undefined, name:undefined, type:undefined, desc:undefined, pack:undefined };
+      this.inventoryService.modifyMass(tempItem, this.filteredItems().filter(item => this.selectedItems().has(item._id))).subscribe({
+        complete: () => {
+          this.selectedItems.set(new Set());
+          this.refreshToken.update(value => value + 1);
+          this.snackBar.open(
+            `Selected items updated.`,
+            'OK',
+            { duration: 6000 }
+          );
+        }
+      });
+    }
   }
 
 }
