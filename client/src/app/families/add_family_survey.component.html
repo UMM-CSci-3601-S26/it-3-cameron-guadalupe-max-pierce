@@ -56,7 +56,7 @@
               placeholder="School"
               [(ngModel)]="child.school"
               name="school{{i}}">
-                @for (school of filteredSchoolOptions(); track school.label) {
+                @for (school of filteredSchoolOptions() | async; track school.label) {
                 <mat-option [value]="school.label">{{school.label}}</mat-option>
                 }
               </mat-select>
