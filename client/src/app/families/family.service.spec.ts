@@ -403,6 +403,21 @@ describe('FamilyService', () => {
     }));
   });
 
+  describe('When deleteAll() is called', () => {
+    it('talks to correct Endpoints', waitForAsync(() => {
+      // Checking whether the item was actually deleted should happen in E2E probably
+      const targetItems: Family[] = testFamilies; //This will be a duplicate
+
+      const mockedDelete = spyOn(httpClient, 'delete').and.returnValue(of(targetItems));
+
+      familyService.deleteAll(targetItems);
+
+      expect(mockedDelete)
+        .withContext('calls delete')
+        .toHaveBeenCalledTimes(3);
+    }));
+  });
+
   // describe('When modifyMass() is called', () => {
   //   let copiedItems = [];
   //   let emptyItem: Family = {

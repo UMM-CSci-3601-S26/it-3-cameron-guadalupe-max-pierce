@@ -236,6 +236,19 @@ export class InventoryListComponent {
     }
   }
 
+  resetInventory() {
+    const warning = confirm("This will delete ALL items. Are you sure?");
+    if (warning == true) {
+      this.inventoryService.deleteAll(this.filteredItems());
+      this.snackBar.open(
+        `Inventory reset. Please wait for page to reload...`,
+        'OK',
+        { duration: 6000 }
+      );
+      this.inventoryService.reloadPage();
+    }
+  }
+
   adjustStock(item: InventoryItem, delta: number) {
     const newStocked = (item.stocked ?? 0) + delta;
     let updatedItem: Partial<InventoryItem>;

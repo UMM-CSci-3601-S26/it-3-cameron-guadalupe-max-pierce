@@ -88,11 +88,11 @@ describe('Family list', () => {
     expect(familyList.errMsg()).toBeUndefined();
   });
 
-  it("correctly handles the 'Location Reset' button", () => {
-    expect(familyList.resetVisible()).toEqual(false);
-    familyList.revealReset();
-    expect(familyList.resetVisible()).toEqual(true);
-  });
+  // it("correctly handles the 'Location Reset' button", () => {
+  //   expect(familyList.resetVisible()).toEqual(false);
+  //   familyList.revealReset();
+  //   expect(familyList.resetVisible()).toEqual(true);
+  // });
 
   //Irellevant, eventually add a test for list clear.
 

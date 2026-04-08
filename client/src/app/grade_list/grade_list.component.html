@@ -64,24 +64,11 @@
             color="accent"
             type="back"
             [style.height.px]=55
-            (click)="revealReset()"
+            (click)="resetFamilies()"
             data-test="resetLocationButton"
             >
             List Reset
           </button>
-          @if (resetVisible()) {
-              <button
-              mat-raised-button
-              type="button"
-              color="warn"
-              type="back"
-              [style.height.px]=55
-              data-test="resetListButton"
-              >
-            Clear All Lists
-            </button>
-          }
-
         </div>
 
         <div class="flex-row gap-8 flex-wrap">

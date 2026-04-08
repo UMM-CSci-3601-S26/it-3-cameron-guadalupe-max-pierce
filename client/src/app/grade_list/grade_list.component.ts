@@ -264,15 +264,28 @@ export class GradeListComponent {
     return schooledArray;
   })
 
-  revealReset() {
-    // this.resetVisible = true;
-    this.resetVisible.set(true);
-    this.snackBar.open(
-      `Press 'Clear all Lists' to proceed. This CANNOT be undone. `,
-      'OK',
-      { duration: 6000 }
-    );
+  resetFamilies() {
+    const warning = confirm("This will delete ALL grade lists. Are you sure?");
+    if (warning == true) {
+      this.gradeListService.deleteAll(this.filteredItems());
+      this.snackBar.open(
+        `Grade Lists reset. Please wait for page to reload...`,
+        'OK',
+        { duration: 6000 }
+      );
+      this.gradeListService.reloadPage();
+    }
   }
+
+  // revealReset() {
+  //   // this.resetVisible = true;
+  //   this.resetVisible.set(true);
+  //   this.snackBar.open(
+  //     `Press 'Clear all Lists' to proceed. This CANNOT be undone. `,
+  //     'OK',
+  //     { duration: 6000 }
+  //   );
+  // }
 
   //Helper function to autofill grade/school for per-grade addition.
   updateOrigin(school_val?: string, grade_val?: string) {

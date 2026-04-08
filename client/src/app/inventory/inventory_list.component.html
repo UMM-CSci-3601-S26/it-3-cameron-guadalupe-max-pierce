@@ -73,24 +73,11 @@
             color="accent"
             type="back"
             [style.height.px]=55
-            (click)="revealReset()"
+            (click)="resetInventory()"
             data-test="resetLocationButton"
             >
-            Location Reset
+            Reset Inventory
           </button>
-          @if (resetVisible()) {
-              <button
-              mat-raised-button
-              type="button"
-              color="warn"
-              type="back"
-              [style.height.px]=55
-              data-test="resetLocationButton"
-              (click)="resetLocations()"
-              >
-            Clear All Locations
-            </button>
-          }
 
         </div>
 
