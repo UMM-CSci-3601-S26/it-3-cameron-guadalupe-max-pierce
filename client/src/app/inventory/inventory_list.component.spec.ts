@@ -100,6 +100,37 @@ describe('Inventory list', () => {
       originalItems
     );
   });
+
+  it('announceSortChange announces when direction is set', () => {
+    const spy = spyOn(inventoryList['liveAnnouncer'], 'announce');
+    inventoryList.announceSortChange({ active: 'name', direction: 'asc' });
+    expect(spy).toHaveBeenCalledWith('Sorted ascending');
+  });
+
+  it('announceSortChange announces sort cleared when direction is empty', () => {
+    const spy = spyOn(inventoryList['liveAnnouncer'], 'announce');
+    inventoryList.announceSortChange({ active: '', direction: '' });
+    expect(spy).toHaveBeenCalledWith('Sorting cleared');
+  });
+
+  it('filteredTypeOptions filters correctly when itemType is set', () => {
+    inventoryList.itemType.set('pen');
+    const result = inventoryList.filteredTypeOptions();
+    expect(result.length).toBeGreaterThan(0);
+    expect(result.every(opt =>
+      opt.label.toLowerCase().includes('pen') || opt.value.toLowerCase().includes('pen')
+    )).toBeTrue();
+  });
+
+  it('displayTypeLabel returns label when value matches a typeOption', () => {
+    const label = inventoryList.displayTypeLabel('pencils');
+    expect(label).toBe('Pencils');
+  });
+
+  it('displayTypeLabel returns the value itself when no match is found', () => {
+    const label = inventoryList.displayTypeLabel('nonexistent_type');
+    expect(label).toBe('nonexistent_type');
+  });
 });
 
 describe('Misbehaving Item List', () => {
