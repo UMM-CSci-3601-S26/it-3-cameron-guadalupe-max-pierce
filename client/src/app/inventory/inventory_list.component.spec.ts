@@ -90,13 +90,7 @@ describe('Inventory list', () => {
     fixture.detectChanges();
     expect(spy).toHaveBeenCalledOnceWith(
       {
-        _id:undefined,
         location:"N/A",
-        stocked:undefined,
-        name:undefined,
-        type:undefined,
-        desc:undefined,
-        pack:undefined
       },
       originalItems
     );
