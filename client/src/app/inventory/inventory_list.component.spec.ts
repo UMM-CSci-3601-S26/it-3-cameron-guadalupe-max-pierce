@@ -131,6 +131,8 @@ describe('Inventory list', () => {
   it('displayTypeLabel returns the value itself when no match is found', () => {
     const label = inventoryList.displayTypeLabel('nonexistent_type');
     expect(label).toBe('nonexistent_type');
+  });
+
   it('gets items after location reset completes', () => {
     const getItemsSpy = spyOn(inventoryService, 'getItems').and.callThrough();
     spyOn(inventoryService, 'modifyMass').and.returnValue(of(void 0));
