@@ -246,7 +246,7 @@ export class InventoryService {
     }, 2000);
   }
 
-  modifyMass(newProps:InventoryItem,oldItems:InventoryItem[]): Observable<void> {
+  modifyMass(newProps:Partial<InventoryItem>,oldItems:InventoryItem[]): Observable<void> {
     if (oldItems.length === 0) {
       return of(void 0);
     }

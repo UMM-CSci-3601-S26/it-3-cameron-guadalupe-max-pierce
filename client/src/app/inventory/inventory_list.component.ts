@@ -212,14 +212,8 @@ export class InventoryListComponent implements AfterViewInit {
   }
 
   resetLocations() {
-    const tempItem: InventoryItem = {
-      _id:undefined,
+    const tempItem: Partial<InventoryItem> = {
       location:'N/A',
-      stocked:undefined,
-      name:undefined,
-      type:undefined,
-      desc:undefined,
-      pack:undefined,
     }
     this.inventoryService.modifyMass(tempItem,this.filteredItems()).subscribe({
       complete: () => {
@@ -252,7 +246,7 @@ export class InventoryListComponent implements AfterViewInit {
   relocateSelected() {
     const newLocation = prompt("Enter new location for selected items:");
     if (newLocation !== null) {
-      const tempItem: InventoryItem = { _id:undefined, location:newLocation, stocked:undefined, name:undefined, type:undefined, desc:undefined, pack:undefined };
+      const tempItem: Partial<InventoryItem> = { location:newLocation };
       this.inventoryService.modifyMass(tempItem, this.filteredItems().filter(item => this.selectedItems().has(item._id))).subscribe({
         complete: () => {
           this.selectedItems.set(new Set());
