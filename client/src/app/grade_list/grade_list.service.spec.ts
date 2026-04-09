@@ -523,6 +523,21 @@ describe('GradeListService', () => {
     }));
   });
 
+  describe('When deleteAll() is called', () => {
+    it('talks to correct Endpoints', waitForAsync(() => {
+      // Checking whether the item was actually deleted should happen in E2E probably
+      const targetItems: RequiredItem[] = testItems; //This will be a duplicate
+
+      const mockedDelete = spyOn(httpClient, 'delete').and.returnValue(of(targetItems));
+
+      gradeService.deleteAll(targetItems);
+
+      expect(mockedDelete)
+        .withContext('calls delete')
+        .toHaveBeenCalledTimes(3);
+    }));
+  });
+
   describe('When modifyMass() is called', () => {
     let copiedItems = [];
     let copiedItemsIDless = [];
@@ -580,7 +595,7 @@ describe('GradeListService', () => {
 
       expect(mockedDelete)
         .withContext('calls delete')
-        .toHaveBeenCalledTimes(1);
+        .toHaveBeenCalledTimes(2);
 
       //Obviously we could do more testing here...
       // but it at least gets us to coverage, and it works for now.
@@ -616,7 +631,7 @@ describe('GradeListService', () => {
 
       expect(mockedDelete)
         .withContext('calls delete')
-        .toHaveBeenCalledTimes(1);
+        .toHaveBeenCalledTimes(2);
 
       //Obviously we could do more testing here...
       // but it at least gets us to coverage, and it works for now.

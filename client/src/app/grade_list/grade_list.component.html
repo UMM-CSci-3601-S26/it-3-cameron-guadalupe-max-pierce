@@ -64,24 +64,11 @@
             color="accent"
             type="back"
             [style.height.px]=55
-            (click)="revealReset()"
+            (click)="resetFamilies()"
             data-test="resetLocationButton"
             >
             List Reset
           </button>
-          @if (resetVisible()) {
-              <button
-              mat-raised-button
-              type="button"
-              color="warn"
-              type="back"
-              [style.height.px]=55
-              data-test="resetListButton"
-              >
-            Clear All Lists
-            </button>
-          }
-
         </div>
 
         <div class="flex-row gap-8 flex-wrap">
@@ -144,6 +131,17 @@
                       <button mat-raised-button
                         type="button"
                         color="accent"
+                        [style.height.px]=30
+                        data-test="populateButton"
+                        [disabled]="!populateAllowed"
+                        routerLink="/grade_list/new"
+                        (click)="updateOrigin(school.school_val, grade.grade_val)"
+                      >
+                      New Requirement
+                      </button>
+                      <button mat-raised-button
+                        type="button"
+                        color="warn"
                         [style.height.px]=30
                         data-test="populateButton"
                         [disabled]="!populateAllowed"
@@ -224,7 +222,11 @@
 
 </div>
 
-<button mat-fab class="add-item-fab" matTooltip="Add Item" matTooltipPosition="left" routerLink="/grade_list/new"
+<button mat-fab class="add-item-fab"
+  matTooltip="Add Requirement"
+  matTooltipPosition="left"
+  routerLink="/grade_list/new"
+  (click)="updateOrigin()"
   data-test="addItemButton">
   <mat-icon class="md-24" aria-label="Add Item">add</mat-icon>
 </button>

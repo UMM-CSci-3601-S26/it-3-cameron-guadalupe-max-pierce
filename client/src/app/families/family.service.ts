@@ -226,39 +226,19 @@ export class FamilyService {
     return this.httpClient.delete<Family>(`${this.familyUrl}/${id}`);
   }
 
-  // modifyMass(newProps:Family,oldItems:Family[]) {
-  //   //Same as inventory items. Not sure when we'd ever need to use this, but it's here.
-  //   const newItems: Family[] = [];
-  //   for (let i = 0; i < oldItems.length -1; i ++) {
-  //     const baseItem: Family = {
-  //       _id:undefined,
-  //       name:undefined,
-  //       students:undefined,
-  //       time:undefined
-  //     }
-  //     //Create a new array of items, initialized as empty.
-  //     newItems.push(baseItem);
+  reloadPage() { //Not really a good way to test this.
+    setTimeout(() => {
+      window.location.reload();
+      //Why on Earth does it need such a long delay to handle this???
+    }, 2000);
+  }
 
-  //     if (newProps.name != undefined) {
-  //       newItems[i].name = newProps.name;
-  //     } else {
-  //       newItems[i].name = oldItems[i].name;
-  //     }
-
-  //     if (newProps.students != undefined) {
-  //       newItems[i].students = newProps.students;
-  //     } else {
-  //       newItems[i].students = oldItems[i].students;
-  //     }
-
-  //     if (newProps.time != undefined) {
-  //       newItems[i].time = newProps.time;
-  //     } else {
-  //       newItems[i].time = oldItems[i].time;
-  //     }
-
-  //     this.addFamily(newItems[i]).subscribe(); //Need to subscribe for changes to take effect
-  //     this.deleteFamily(oldItems[i]._id).subscribe();
-  //   }
-  // }
+  deleteAll(oldItems:Family[]) {
+    //Same as inventory items. Not sure when we'd ever need to use this, but it's here.
+    if (oldItems.length > 0) {
+      for (let i = 0; i < oldItems.length; i ++) {
+        this.deleteFamily(oldItems[i]._id).subscribe();
+      }
+    }
+  }
 }

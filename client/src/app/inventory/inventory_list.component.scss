@@ -25,3 +25,23 @@ mat-radio-button {
   bottom: 15px;
   right: 30px;
 }
+
+.demo-table {
+  width: 100%;
+}
+
+th.mat-sort-header-sorted {
+  color: rgb(3, 3, 3);
+}
+
+.stock-buttons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.stock-buttons button {
+  min-width: 36px;
+  padding: 0 6px;
+  font-size: 12px;
+}

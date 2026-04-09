@@ -1,4 +1,4 @@
-import { Component, computed, signal, inject } from '@angular/core';
+import { Component, computed, signal, inject, ViewChild, AfterViewInit, effect } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -20,6 +20,9 @@ import { InventoryItem } from './inventory_item';
 import { InventoryService } from './inventory.service';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatSort, Sort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { MatToolbar } from '@angular/material/toolbar';
 import { MatCheckboxChange } from '@angular/material/checkbox';
 
@@ -48,6 +51,8 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
     MatAutocompleteModule,
     MatOptionModule,
     MatRadioModule,
+    MatTableModule,
+    MatSortModule,
     MatToolbar,
     // MatTableModule,
     //InventoryCardComponent,
@@ -58,10 +63,36 @@ import { MatCheckboxChange } from '@angular/material/checkbox';
     MatIconModule
   ],
 })
-export class InventoryListComponent {
+export class InventoryListComponent implements AfterViewInit {
   private inventoryService = inject(InventoryService);
   // snackBar the `MatSnackBar` used to display feedback
   private snackBar = inject(MatSnackBar);
+
+  private liveAnnouncer = inject(LiveAnnouncer);
+
+  @ViewChild(MatSort) sort!: MatSort;
+
+  displayedColumns: string[] = ['name', 'type', 'desc', 'location', 'stocked'];
+  dataSource = new MatTableDataSource<InventoryItem>([]);
+  viewMode = signal<'list' | 'grid'>('list');
+
+  constructor() {
+    effect(() => {
+      this.dataSource.data = this.filteredItems() ?? [];
+    });
+  }
+
+  ngAfterViewInit() {
+    this.dataSource.sort = this.sort;
+  }
+
+  announceSortChange(sortState: Sort) {
+    if (sortState.direction) {
+      this.liveAnnouncer.announce(`Sorted ${sortState.direction}ending`);
+    } else {
+      this.liveAnnouncer.announce('Sorting cleared');
+    }
+  }
 
   //dataSource = new MatTableDataSource<InventoryItem>([]);
   itemName = signal<string|undefined>(this.inventoryService.savedInventoryName);
@@ -112,7 +143,7 @@ export class InventoryListComponent {
               `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
             );
           }
-          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
+          this.snackBar.open(this.errMsg() ?? 'Unknown error', 'OK', { duration: 6000 });
           return of<InventoryItem[]>([]);
         }),
         tap(() => {
@@ -126,14 +157,14 @@ export class InventoryListComponent {
     //Whenever we sort, we also update saved search.
     //Since this is through service, should be saved between pages.
     this.inventoryService.updateSavedSearch({
-      name: this.itemName(),
-      stocked: this.itemStock(),
-      desc: this.itemDesc(),
-      location: this.itemLocation(),
-      type: this.itemType(),
-      sortby: this.sortBy()
+      name: this.itemName() ?? '',
+      stocked: this.itemStock() ?? 0,
+      desc: this.itemDesc() ?? '',
+      location: this.itemLocation() ?? '',
+      type: this.itemType() ?? '',
+      sortby: this.sortBy() ?? ''
     });
-    return this.inventoryService.filterItems(currentItems, {
+    return this.inventoryService.filterItems(currentItems ?? [], {
       name: this.itemName(),
       type: this.itemType(),
       stocked: this.itemStock(),
@@ -145,7 +176,7 @@ export class InventoryListComponent {
   });
 
   typeFilteredItems = computed(() => {
-    const currentItems = this.serverFilteredItems();
+    const currentItems = this.serverFilteredItems() ?? [];
     const typedArray: { header: string, items: InventoryItem[] }[] = [];
     let matchingItems = [];
     for (let i = 0; i < this.inventoryService.typeOptions.length; i++) {
@@ -181,14 +212,8 @@ export class InventoryListComponent {
   }
 
   resetLocations() {
-    const tempItem: InventoryItem = {
-      _id:undefined,
-      location:"N/A",
-      stocked:undefined,
-      name:undefined,
-      type:undefined,
-      desc:undefined,
-      pack:undefined,
+    const tempItem: Partial<InventoryItem> = {
+      location:'N/A',
     }
     this.inventoryService.modifyMass(tempItem,this.filteredItems()).subscribe({
       complete: () => {
@@ -221,7 +246,7 @@ export class InventoryListComponent {
   relocateSelected() {
     const newLocation = prompt("Enter new location for selected items:");
     if (newLocation !== null) {
-      const tempItem: InventoryItem = { _id:undefined, location:newLocation, stocked:undefined, name:undefined, type:undefined, desc:undefined, pack:undefined };
+      const tempItem: Partial<InventoryItem> = { location:newLocation };
       this.inventoryService.modifyMass(tempItem, this.filteredItems().filter(item => this.selectedItems().has(item._id))).subscribe({
         complete: () => {
           this.selectedItems.set(new Set());
@@ -236,4 +261,47 @@ export class InventoryListComponent {
     }
   }
 
+  resetInventory() {
+    const warning = confirm("This will delete ALL items. Are you sure?");
+    if (warning == true) {
+      this.inventoryService.deleteAll(this.filteredItems());
+      this.snackBar.open(
+        `Inventory reset. Please wait for page to reload...`,
+        'OK',
+        { duration: 6000 }
+      );
+      this.inventoryService.reloadPage();
+    }
+  }
+
+  adjustStock(item: InventoryItem, delta: number) {
+    const newStocked = (item.stocked ?? 0) + delta;
+    let updatedItem: Partial<InventoryItem>;
+
+    if (newStocked < 0) {
+      updatedItem = {
+        ...item,
+        stocked: 0
+      };
+    } else {
+      updatedItem = {
+        ...item,
+        stocked: newStocked
+      };
+    }
+
+    this.inventoryService.updateItem(updatedItem).subscribe(() => {
+      this.refreshToken.update(value => value + 1);
+    });
+  }
+
+  handleStockButtonClick(event: MouseEvent, item: InventoryItem, delta: number) {
+    // Buttons are nested inside a router link; block the link navigation.
+    event.preventDefault();
+    event.stopPropagation();
+    this.adjustStock(item, delta);
+  }
+
 }
+
+

@@ -90,16 +90,41 @@ describe('Inventory list', () => {
     fixture.detectChanges();
     expect(spy).toHaveBeenCalledOnceWith(
       {
-        _id:undefined,
         location:"N/A",
-        stocked:undefined,
-        name:undefined,
-        type:undefined,
-        desc:undefined,
-        pack:undefined
       },
       originalItems
     );
+  });
+
+  it('announceSortChange announces when direction is set', () => {
+    const spy = spyOn(inventoryList['liveAnnouncer'], 'announce');
+    inventoryList.announceSortChange({ active: 'name', direction: 'asc' });
+    expect(spy).toHaveBeenCalledWith('Sorted ascending');
+  });
+
+  it('announceSortChange announces sort cleared when direction is empty', () => {
+    const spy = spyOn(inventoryList['liveAnnouncer'], 'announce');
+    inventoryList.announceSortChange({ active: '', direction: '' });
+    expect(spy).toHaveBeenCalledWith('Sorting cleared');
+  });
+
+  it('filteredTypeOptions filters correctly when itemType is set', () => {
+    inventoryList.itemType.set('pen');
+    const result = inventoryList.filteredTypeOptions();
+    expect(result.length).toBeGreaterThan(0);
+    expect(result.every(opt =>
+      opt.label.toLowerCase().includes('pen') || opt.value.toLowerCase().includes('pen')
+    )).toBeTrue();
+  });
+
+  it('displayTypeLabel returns label when value matches a typeOption', () => {
+    const label = inventoryList.displayTypeLabel('pencils');
+    expect(label).toBe('Pencils');
+  });
+
+  it('displayTypeLabel returns the value itself when no match is found', () => {
+    const label = inventoryList.displayTypeLabel('nonexistent_type');
+    expect(label).toBe('nonexistent_type');
   });
 
   it('gets items after location reset completes', () => {
@@ -139,6 +164,45 @@ describe('Inventory list', () => {
     expect(modifiedItems.length).toBe(1);
     expect(modifiedItems[0]._id).toBe(selectedId);
     expect(inventoryList.selectedItems().size).toBe(0);
+  });
+
+  it('increments stock and calls updateItem with incremented value', () => {
+    const updateSpy = spyOn(inventoryService, 'updateItem').and.returnValue(of(void 0));
+    const baseItem = inventoryList.serverFilteredItems()[0];
+
+    inventoryList.adjustStock(baseItem, 1);
+
+    expect(updateSpy).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+      _id: baseItem._id,
+      stocked: baseItem.stocked + 1
+    }));
+  });
+
+  it('clamps decremented stock to zero when decrement is too large', () => {
+    const updateSpy = spyOn(inventoryService, 'updateItem').and.returnValue(of(void 0));
+    const baseItem = { ...inventoryList.serverFilteredItems()[1], stocked: 2 };
+
+    inventoryList.adjustStock(baseItem, -10);
+
+    expect(updateSpy).toHaveBeenCalledOnceWith(jasmine.objectContaining({
+      _id: baseItem._id,
+      stocked: 0
+    }));
+  });
+
+  it('prevents navigation on stock button clicks and delegates to adjustStock', () => {
+    const adjustSpy = spyOn(inventoryList, 'adjustStock');
+    const baseItem = inventoryList.serverFilteredItems()[0];
+    const mockEvent = {
+      preventDefault: jasmine.createSpy('preventDefault'),
+      stopPropagation: jasmine.createSpy('stopPropagation')
+    } as unknown as MouseEvent;
+
+    inventoryList.handleStockButtonClick(mockEvent, baseItem, 5);
+
+    expect((mockEvent.preventDefault as jasmine.Spy)).toHaveBeenCalled();
+    expect((mockEvent.stopPropagation as jasmine.Spy)).toHaveBeenCalled();
+    expect(adjustSpy).toHaveBeenCalledOnceWith(baseItem, 5);
   });
 });
 

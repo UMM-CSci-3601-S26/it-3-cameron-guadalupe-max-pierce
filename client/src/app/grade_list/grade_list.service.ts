@@ -57,6 +57,9 @@ export class GradeListService {
   savedGradeListSchool = ''; //Per-session saved value for description search bar.
   savedGradeListSortBy = 'school'; //Per-session saved value for sort-order search bar. School is probably the most useful default.
 
+  originSchool = ''; //Special value, records which school was associated with the 'add requirement' button, for prefill.
+  originGrade = ''; //Special value, records which grade was associated with the 'add requirement' button, for prefill.
+
   //TODO - is this the correct way to do this? Better than copying the type lists in multiple places?
   inventoryService = new InventoryService;
   typeOptions = this.inventoryService.typeOptions;
@@ -183,7 +186,7 @@ export class GradeListService {
     setTimeout(() => {
       window.location.reload();
       //Why on Earth does it need such a long delay to handle this???
-    }, 3500);
+    }, 2000);
   }
 
   alreadyInInventory( newItem: RequiredItem, inventory: InventoryItem[]): boolean {
@@ -309,11 +312,20 @@ export class GradeListService {
     return this.httpClient.delete<RequiredItem>(`${this.gradeListUrl}/${id}`);
   }
 
+  deleteAll(oldItems:RequiredItem[]) {
+    //Same as inventory items. Not sure when we'd ever need to use this, but it's here.
+    if (oldItems.length > 0) {
+      for (let i = 0; i < oldItems.length; i ++) {
+        this.deleteItem(oldItems[i]._id).subscribe();
+      }
+    }
+  }
+
   modifyMass(newProps:RequiredItem,oldItems:RequiredItem[]) {
     //We first need to copy the items into a new array. oldItems is connected to a signal or something.
     //Redoing the whole database is not a great way to do this. For now we're doing it anyways.
     const newItems: RequiredItem[] = [];
-    for (let i = 0; i < oldItems.length -1; i ++) {
+    for (let i = 0; i < oldItems.length; i ++) {
       //Location is probably the only one this will be used for, but you never know.
       //id is never overwritten; necessary to delete and replace.
       const baseItem: RequiredItem = {
