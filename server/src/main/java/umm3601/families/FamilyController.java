@@ -196,8 +196,10 @@ public class FamilyController implements Controller {
   public void addNewFamily(Context ctx) {
     String body = ctx.body();
     Family newFamily = ctx.bodyValidator(Family.class)
-      .check(itm -> itm.name != null && itm.name.length() >= 4,
-        "Family must have a non-empty name; body was " + body)
+      .check(itm -> itm.first_name != null && itm.first_name.length() >= 4,
+        "Family must have a non-empty first name; body was " + body)
+      .check(itm -> itm.last_name != null && itm.last_name.length() >= 4,
+        "Family must have a non-empty last name; body was " + body)
       .check(itm -> itm.students.size() >= 0, //TODO, is this the correct way to do this?
         "Family must have at least one student; body was " + body)
       .check(itm -> itm.time != "",

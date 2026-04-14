@@ -15,7 +15,10 @@ public class Family {
   @SuppressWarnings({"MemberName"})
   public String _id;
 
-  public String name; //Last name
+  public String first_name; //Main pickup person
+  public String last_name; //Main pickup person last name
+  public String first_name_alt; //Alternate pickup person
+  public String last_name_alt; //Alternate pickup person last name.
   //public Student[] students; //Array of students in family
   public List<Student> students; //Parseable string of data
   public String time; //Time of appointment
@@ -38,6 +41,6 @@ public class Family {
 
   @Override
   public String toString() {
-    return name;
+    return first_name;
   }
 }

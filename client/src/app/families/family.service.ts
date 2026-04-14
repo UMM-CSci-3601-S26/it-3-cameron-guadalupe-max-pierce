@@ -159,7 +159,7 @@ export class FamilyService {
     // Filter by name
     if (filters.name) {
       filters.name = filters.name.toLowerCase();
-      filteredFamilies = filteredFamilies.filter(item => item.name.toLowerCase().indexOf(filters.name) !== -1);
+      filteredFamilies = filteredFamilies.filter(item => item.last_name.toLowerCase().indexOf(filters.name) !== -1);
     }
 
     if (filters.grade) {
@@ -193,12 +193,12 @@ export class FamilyService {
       break;
     case "name":
       filteredFamilies = filteredFamilies.sort((i1,i2) => {
-        return i1.name.localeCompare(i2.name);
+        return i1.last_name.localeCompare(i2.last_name);
       });
       break;
     case "name_des":
       filteredFamilies = filteredFamilies.sort((i1,i2) => {
-        return i2.name.localeCompare(i1.name);
+        return i2.last_name.localeCompare(i1.last_name);
       });
       break;
     case "time":

@@ -36,12 +36,12 @@
             <mat-card-content>
               <div class="flex-row gap-8 flex-wrap">
                 <mat-form-field class="input-field">
-                  <input matInput placeholder="Child First Name" [(ngModel)]="child.firstName" name="childFirstName{{i}}" required>
+                  <input matInput placeholder="Child First Name" [(ngModel)]="child.first_name" name="childFirstName{{i}}" required>
                   <mat-hint>Child first name</mat-hint>
                 </mat-form-field>
 
                 <mat-form-field class="input-field">
-                  <input matInput placeholder="Child Last Name" [(ngModel)]="child.lastName" name="childLastName{{i}}" required>
+                  <input matInput placeholder="Child Last Name" [(ngModel)]="child.last_name" name="childLastName{{i}}" required>
                   <mat-hint>Child last name</mat-hint>
                 </mat-form-field>
 
@@ -60,22 +60,22 @@
                 <mat-option [value]="school.label">{{school.label}}</mat-option>
                 }
               </mat-select>
-            <mat-hint>School that requires this</mat-hint>
+            <mat-hint>School child is enrolled in</mat-hint>
             </mat-form-field>
 
 
                 <mat-form-field class="input-field">
                   <mat-label>Grade</mat-label>
                   <mat-select [(ngModel)]="child.grade" name="grade{{i}}" required>
-                    @for (grade of ['K','1','2','3','4','5','6','7','8','9','10','11','12']; track grade) {
-                      <mat-option [value]="grade">{{grade}}</mat-option>
+                    @for (grade of gradeOptions; track grade) {
+                      <mat-option [value]="grade.value">{{grade.label}}</mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
 
                 <div class="radio-group">
                   <h3>Backpack Needed?</h3>
-                  <mat-radio-group [(ngModel)]="child.backpackNeeded" name="backpackNeeded{{i}}" required>
+                  <mat-radio-group [(ngModel)]="child.backpack" name="backpack{{i}}" required>
                     <mat-radio-button value="yes">Yes</mat-radio-button>
                     <mat-radio-button value="no">No</mat-radio-button>
                   </mat-radio-group>

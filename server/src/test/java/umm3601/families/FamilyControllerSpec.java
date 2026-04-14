@@ -209,8 +209,8 @@ class FamilyControllerSpec {
       verify(ctx).json(inventoryItemArrayCaptor.capture());
       verify(ctx).status(HttpStatus.OK);
       List<Family> sortedFamilies = inventoryItemArrayCaptor.getValue();
-      assertEquals("Richards", sortedFamilies.get(0).name);
-      assertEquals("Hendersons", sortedFamilies.get(sortedFamilies.size() - 1).name);
+      assertEquals("Richards", sortedFamilies.get(0).last_name);
+      assertEquals("Hendersons", sortedFamilies.get(sortedFamilies.size() - 1).last_name);
     }
 
     @Test
@@ -222,7 +222,7 @@ class FamilyControllerSpec {
 
       verify(ctx).json(familyCaptor.capture());
       verify(ctx).status(HttpStatus.OK);
-      assertEquals("Obamas", familyCaptor.getValue().name);
+      assertEquals("Obamas", familyCaptor.getValue().last_name);
       assertEquals(testItemId1.toHexString(), familyCaptor.getValue()._id);
     }
 
@@ -258,16 +258,27 @@ class FamilyControllerSpec {
     Student student1 = new Student();
     student1.grade = "K";
     student1.backpack = false;
+    student1.first_name = "Ted";
+    student1.last_name = "Hendrix";
+    student1.headphones = false;
+    student1.teacher = "Mrs.Brown";
 
     Student student2 = new Student();
     student2.grade = "2";
     student2.backpack = true;
+    student1.first_name = "Tod";
+    student1.last_name = "Hendrix";
+    student1.headphones = false;
+    student1.teacher = "Mrs.Greene";
 
     List<Student> newStudents = new ArrayList<Student>(); //Why are java arrays like this???
     newStudents.add(student1);
     newStudents.add(student2);
 
-    newFamily.name = "Hendrixes";
+    newFamily.first_name = "Jimmy";
+    newFamily.last_name = "Hendrix";
+    newFamily.first_name = "";
+    newFamily.last_name = "";
     newFamily.time = "2:50";
     newFamily.students = newStudents;
 
@@ -298,7 +309,7 @@ class FamilyControllerSpec {
     assertNotEquals("", addedItem.get("_id"));
     // The new user in the database (`addedUser`) should have the same
     // field values as the user we asked it to add (`newUser`).
-    assertEquals(newFamily.name, addedItem.get("name"));
+    assertEquals(newFamily.first_name, addedItem.get("first_name"));
     assertEquals(newFamily.time, addedItem.get("time"));
     //TODO, actually add some meaningful tests for student equality;
     //An array of structs does not automatically equal a student.

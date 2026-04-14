@@ -118,7 +118,7 @@
                       <mat-card class="sub-sub-section-card">
                       <mat-card-content>
                       <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
-                      <span matListItemTitle mat-line class="item-list-name">{{family.name}}</span>
+                      <span matListItemTitle mat-line class="item-list-name">{{family.first_name}} {{family.last_name}}</span>
                       </a>
                       </mat-card-content>
                       </mat-card>
@@ -142,7 +142,7 @@
                 <!--Sublist for each grade-->
                 @for (family of grade.families; track family._id) {
                   <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.first_name}} {{family.last_name}}</strong></span>
                   </a>
                 }
                 </mat-card-content>
@@ -161,7 +161,7 @@
                 <!--Sublist for each item grade-->
                 @for (family of school.families; track family._id) {
                   <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.first_name}} {{family.last_name}}</strong></span>
                   </a>
                 }
                 </mat-card-content>
@@ -175,15 +175,21 @@
             <mat-nav-list class="item-nav-list" color="accent">
               @for (family of filteredFamilies(); track family._id) {
                   <a mat-list-item [routerLink]="['/families', family._id]" class="item-list-item">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.first_name}} {{family.last_name}}</strong></span>
                   @for (student of family.students; track student.grade) {
+                    <span matListItemTitle mat-line class="item-list-name">{{student.first_name}} {{student.last_name}} - {{student.teacher}}, Grade {{student.grade}}</span>
+                    @if (student.backpack && student.headphones) {
+                       <span>Needs a backpack and headphones</span>
+                    }
+                    @else {
                       @if (student.backpack) {
-                        <span matListItemTitle mat-line class="item-list-name">👤- Student needs a backpack</span>
+                        <span>Needs a backpack</span>
                       }
-                      @else {
-                        <span matListItemTitle mat-line class="item-list-name">👤- Student does not need a backpack</span>
+                      @if (student.headphones) {
+                          <span>Needs headphones</span>
                       }
-                      <br>
+                    }
+                    <br>
                     }
                 </a>
               }

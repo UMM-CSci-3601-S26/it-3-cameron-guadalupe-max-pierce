@@ -3,18 +3,29 @@
     "_id": {
       "$oid": "588935f57546a2daea44de7c"
     },
-    "name": "Richards",
+    "first_name": "Steve",
+    "last_name":"Richards",
+    "first_name_alt":"",
+    "last_name_alt":"",
     "time":"12:00pm",
     "students":[
       {
+        "first_name":"Ted",
+        "last_name":"Richards",
         "grade":"P",
+        "teacher":"Mrs.Greene",
         "school":"MAES",
-        "backpack":true
+        "backpack":true,
+        "headphones":false
       },
       {
+        "first_name":"Tod",
+        "last_name":"Richards",
         "grade":"3",
+        "teacher":"Mrs.Ulrich",
         "school":"MAES",
-        "backpack":false
+        "backpack":false,
+        "headphones":true
       }
     ]
   },
@@ -22,13 +33,20 @@
     "_id": {
       "$oid": "588935f5597715f06f3e8f6c"
     },
-    "name": "Smith",
+    "first_name": "John",
+    "last_name":"Smith",
+    "first_name_alt":"Jane",
+    "last_name_alt":"Smith",
     "time":"1:00pm",
     "students":[
       {
+        "first_name":"Joe",
+        "last_name":"Smith",
         "grade":"2",
+        "teacher":"Mrs.Brown",
         "school":"Hancock",
-        "backpack":false
+        "backpack":false,
+        "headphones":false
       }
     ]
   },
@@ -36,23 +54,38 @@
     "_id": {
       "$oid": "588935f51c55b55c75a84848"
     },
-    "name": "Baudelaires",
+    "first_name": "Bertrand",
+    "last_name":"Baudelaire",
+    "first_name_alt":"Beatrice",
+    "last_name_alt":"Baudelaire",
     "time":"9:00am",
     "students":[
       {
+        "first_name": "Sunny",
+        "last_name":"Baudelaire",
         "grade":"P",
         "school":"MAES",
-        "backpack":false
+        "teacher":"Count Olaf",
+        "backpack":false,
+        "headphones":true
       },
-       {
+      {
+        "first_name": "Klaus",
+        "last_name":"Baudelaire",
         "grade":"6",
         "school":"MAES",
-        "backpack":true
+        "teacher":"Count Olaf",
+        "backpack":true,
+        "headphones":false
       },
-       {
+      {
+        "first_name": "Violet",
+        "last_name":"Baudelaire",
         "grade":"10",
         "school":"MAES",
-        "backpack":false
+        "teacher":"Count Olaf",
+        "backpack":false,
+        "headphones":true
       }
     ]
   },
@@ -60,23 +93,29 @@
     "_id": {
       "$oid": "58af3a600343927e48e87212"
     },
-    "name": "Turnpikes",
-    "time":"2:00am",
+    "first_name": "Michelle",
+    "last_name":"Obama",
+    "first_name_alt":"Barak",
+    "last_name_alt":"Obama",
+    "time":"7:00am",
     "students":[
       {
+        "first_name": "Mike",
+        "last_name":"Sasha",
         "grade":"5",
-        "school":"Saint Mary's",
-        "backpack":true
+        "teacher":"Mrs.Oaks",
+        "school":"Saint Marys",
+        "backpack":true,
+        "headphones":false
       },
       {
+        "first_name": "Malia",
+        "last_name":"Obama",
         "grade":"5",
-        "school":"Saint Mary's",
-        "backpack":false
-      },
-      {
-        "grade":"5",
-        "school":"Saint Mary's",
-        "backpack":false
+        "teacher":"Mrs.Oaks",
+        "school":"Saint Marys",
+        "backpack":false,
+        "headphones":false
       }
     ]
   },
@@ -84,18 +123,74 @@
     "_id": {
       "$oid": "58af3a600343927e48e87213"
     },
-    "name": "Jacksons",
-    "time":"7:00am",
+    "first_name": "Koopa",
+    "last_name":"Clan",
+    "first_name_alt":"Lord",
+    "last_name_alt":"Bowser",
+    "time":"2:00am",
     "students":[
       {
-        "grade":"1",
-        "school":"Saint Mary's",
-        "backpack":true
+        "first_name": "Larry",
+        "last_name":"Koopa",
+        "grade":"6",
+        "teacher":"Mrs.Smith",
+        "school":"Saint Marys",
+        "backpack":true,
+        "headphones":true
       },
       {
-        "grade":"12",
+        "first_name": "Lemmy",
+        "last_name":"Koopa",
+        "grade":"2",
+        "teacher":"Maggy Koopa",
+        "school":"Saint Marys",
+        "backpack":false,
+        "headphones":true
+      },
+      {
+        "first_name": "Wendy",
+        "last_name":"Koopa",
+        "grade":"6",
+        "teacher":"Mrs.Smith",
         "school":"MAES",
-        "backpack":false
+        "backpack":false,
+        "headphones":true
+      },
+      {
+        "first_name": "Morton",
+        "last_name":"Koopa",
+        "grade":"12",
+        "teacher":"Mrs.Johnson",
+        "school":"MAES",
+        "backpack":false,
+        "headphones":true
+      },
+      {
+        "first_name": "Roy",
+        "last_name":"Koopa",
+        "grade":"10",
+        "teacher":"MAES",
+        "school":"Saint Marys",
+        "backpack":false,
+        "headphones":true
+      },
+      {
+        "first_name": "Iggy",
+        "last_name":"Koopa",
+        "grade":"10",
+        "teacher":"MAES",
+        "school":"Saint Marys",
+        "backpack":false,
+        "headphones":true
+      },
+      {
+        "first_name": "Ludwig",
+        "last_name":"Von Koopa",
+        "grade":"10",
+        "teacher":"MAES",
+        "school":"Saint Marys",
+        "backpack":false,
+        "headphones":true
       }
     ]
   }
