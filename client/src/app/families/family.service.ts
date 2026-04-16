@@ -47,7 +47,7 @@ export class FamilyService {
   savedFamilyGrade = '';
   savedFamilyStudents = 0;
   savedFamilyTime = '';
-  savedFamilySortBy = 'grade_school'; //Per-session saved value for sort-order search bar. Defaults to grade and school
+  savedFamilySortBy = 'name'; //Per-session saved value for sort-order search bar. Defaults to grade and school
 
   gradeOptions = [
     { value: 'P', label: 'Pre-School' },
@@ -66,12 +66,25 @@ export class FamilyService {
     { value: '12', label: '12th Grade' }
   ];
 
+  //Helper function for display
   getGradeLabel(grade: string) {
     for (let g = 0; g < this.gradeOptions.length; g ++) {
       if (this.gradeOptions[g].value == grade) {
         return this.gradeOptions[g].label;
       }
     }
+  }
+
+  //Another helper function for display
+  familyCount(family:Family, grade?: string, school?: string): number {
+    let count = 0;
+    for (let s = 0; s < family.students.length; s ++) {
+      if (((!grade) || (family.students[s].grade == grade))
+      && (!school) || (family.students[s].school == school)) {
+        count ++;
+      }
+    }
+    return count;
   }
 
   /**
@@ -170,7 +183,7 @@ export class FamilyService {
       filteredFamilies = filteredFamilies.filter(item => item.last_name.toLowerCase().indexOf(filters.name) !== -1);
     }
 
-    if ((filters.grade) && (!filters.grade)) {
+    if ((filters.grade) && (!filters.school)) {
       filteredFamilies = filteredFamilies.filter(item => item.students.some(student => student.grade == filters.grade));
     }
 
