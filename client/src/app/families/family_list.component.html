@@ -134,41 +134,6 @@
               </mat-expansion-panel>
               }
              </mat-nav-list>
-
-            <!-- <mat-nav-list class="item-nav-list" color="accent">
-              @for (school of gradeAndSchoolFilteredFamilies(); track school.grades) {
-                <mat-card class="section-card">
-                <mat-card-content>
-                <mat-toolbar color="primary">
-                <h2 matSubheader><strong>{{ school.school_header }}</strong> - x{{school.school_total}} Students</h2>
-                </mat-toolbar>
-                @for (grade of school.grades; track grade.grade_header) {
-                    <mat-card class="sub-section-card">
-                    <mat-card-content>
-                    <mat-toolbar color="primary">
-                    <h3 matSubheader><strong>{{school.school_value}} {{ grade.grade_header }}</strong> - x{{grade.grade_total}} Students</h3>
-                    </mat-toolbar>
-                    @for (family of grade.families; track family._id) {
-                      <mat-card class="sub-sub-section-card">
-                      <mat-card-content>
-                      <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
-                      <span matListItemTitle mat-line class="item-list-name"><strong>{{family.first_name}} {{family.last_name}}</strong> - {{family.time}} Pickup</span>
-                      @for (student of family.students; track student.first_name) {
-                        @if ((student.grade === grade.grade_value) && (student.school === school.school_value)){
-                          <span matListItemLine class="student name line">{{student.first_name}} {{student.last_name}}</span>
-                        }
-                      }
-                      </a>
-                      </mat-card-content>
-                      </mat-card>
-                    }
-                    </mat-card-content>
-                    </mat-card>
-                }
-                </mat-card-content>
-                </mat-card>
-              }
-            </mat-nav-list> -->
           }
           @else if (sortBy() === "grade") { <!-- Special sectioned list for grade -->
             <mat-nav-list class="item-nav-list" color="accent">
@@ -213,26 +178,19 @@
             <mat-card-content>
             <mat-nav-list class="item-nav-list" color="accent">
               @for (family of filteredFamilies(); track family._id) {
-                  <a mat-list-item [routerLink]="['/families', family._id]" class="item-list-item">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.first_name}} {{family.last_name}}</strong></span>
-
-                  @for (student of family.students; track student.grade) {
-                    <span matListItemTitle mat-line class="item-list-name">{{student.first_name}} {{student.last_name}} - {{student.teacher}}, Grade {{student.grade}}</span>
-                    @if (student.backpack && student.headphones) {
-                       <span>Needs a backpack and headphones</span>
-                    }
-                    @else {
-                      @if (student.backpack) {
-                        <span>Needs a backpack</span>
+                        <mat-expansion-panel class="sub-sub-section-card">
+                          <mat-expansion-panel-header>
+                          <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                          <mat-panel-description> {{family.email}}  -  {{family.time}} Pickup </mat-panel-description>
+                          </mat-expansion-panel-header>
+                          @for (student of family.students; track student.first_name) {
+                              <p><strong>👤 - {{student.first_name}} {{student.last_name}}</strong>   -   {{student.teacher}}'s {{this.familyService.getGradeLabel(student.grade)}} class
+                                @if (student.backpack) {   -   🎒}
+                                @if (student.headphones) {   -   🎧}
+                              </p>
+                          }
+                        </mat-expansion-panel>
                       }
-                      @if (student.headphones) {
-                          <span>Needs headphones</span>
-                      }
-                    }
-                    <br>
-                    }
-                </a>
-              }
             </mat-nav-list>
             </mat-card-content>
             </mat-card>

@@ -66,6 +66,14 @@ export class FamilyService {
     { value: '12', label: '12th Grade' }
   ];
 
+  getGradeLabel(grade: string) {
+    for (let g = 0; g < this.gradeOptions.length; g ++) {
+      if (this.gradeOptions[g].value == grade) {
+        return this.gradeOptions[g].label;
+      }
+    }
+  }
+
   /**
    * @param fields a map that specifies which search terms to save
   */

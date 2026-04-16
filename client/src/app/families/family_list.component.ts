@@ -62,7 +62,7 @@ import { MatToolbar } from '@angular/material/toolbar';
 })
 
 export class FamilyListComponent {
-  private familyService = inject(FamilyService);
+  public familyService = inject(FamilyService);
   // snackBar the `MatSnackBar` used to display feedback
   private snackBar = inject(MatSnackBar);
 
