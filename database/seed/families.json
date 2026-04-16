@@ -8,6 +8,7 @@
     "first_name_alt":"",
     "last_name_alt":"",
     "time":"12:00pm",
+    "email":"prcrichards@gmail.com",
     "students":[
       {
         "first_name":"Ted",
@@ -30,6 +31,126 @@
     ]
   },
   {
+    "first_name": "Frank",
+    "last_name":"Krosschell",
+    "first_name_alt":"",
+    "last_name_alt":"",
+    "time":"9:00pm",
+    "email":"gkross@gmail.com",
+    "students":[
+      {
+        "first_name":"Bob",
+        "last_name":"Krosschell",
+        "grade":"1",
+        "teacher":"Mr.Greene",
+        "school":"MAES",
+        "backpack":true,
+        "headphones":false
+      },
+      {
+        "first_name":"Kevin",
+        "last_name":"Krosschell",
+        "grade":"3",
+        "teacher":"Mrs.Ulrich",
+        "school":"MAES",
+        "backpack":true,
+        "headphones":true
+      },
+      {
+        "first_name":"Kyle",
+        "last_name":"Krosschell",
+        "grade":"3",
+        "teacher":"Mrs.Ulrich",
+        "school":"MAES",
+        "backpack":true,
+        "headphones":true
+      },
+      {
+        "first_name":"Mitchel",
+        "last_name":"Krosschell",
+        "grade":"7",
+        "teacher":"Mr.Cannon",
+        "school":"Hancock",
+        "backpack":true,
+        "headphones":true
+      }
+    ]
+  },
+  {
+    "first_name": "Nadine",
+    "last_name":"Tucker",
+    "first_name_alt":"Judith",
+    "last_name_alt":"Mahoney",
+    "time":"7:00pm",
+    "email":"ntucker@gmail.com",
+    "students":[
+      {
+        "first_name":"Thomas",
+        "last_name":"Tucker",
+        "grade":"K",
+        "teacher":"Mr.Greene",
+        "school":"MAES",
+        "backpack":true,
+        "headphones":false
+      },
+      {
+        "first_name":"Omer",
+        "last_name":"Tucker",
+        "grade":"3",
+        "teacher":"Mrs.Ulrich",
+        "school":"MAES",
+        "backpack":true,
+        "headphones":true
+      },
+      {
+        "first_name":"Larry",
+        "last_name":"Mahoney",
+        "grade":"7",
+        "teacher":"Mr.Cannon",
+        "school":"Hancock",
+        "backpack":true,
+        "headphones":true
+      }
+    ]
+  },
+  {
+    "first_name": "Isabel",
+    "last_name":"Goodman",
+    "first_name_alt":"",
+    "last_name_alt":"",
+    "time":"12:00pm",
+    "email":"igoodman@gmail.net",
+    "students":[
+      {
+        "first_name":"Wilfred",
+        "last_name":"Goodman",
+        "grade":"1",
+        "teacher":"Mr.Greene",
+        "school":"MAES",
+        "backpack":true,
+        "headphones":false
+      },
+      {
+        "first_name":"Dominic",
+        "last_name":"Goodman",
+        "grade":"4",
+        "teacher":"Mrs.Ulrich",
+        "school":"MAES",
+        "backpack":true,
+        "headphones":true
+      },
+      {
+        "first_name":"Salma",
+        "last_name":"Goodman",
+        "grade":"3",
+        "teacher":"Mr.Brown",
+        "school":"MAES",
+        "backpack":true,
+        "headphones":true
+      }
+    ]
+  },
+  {
     "_id": {
       "$oid": "588935f5597715f06f3e8f6c"
     },
@@ -38,6 +159,7 @@
     "first_name_alt":"Jane",
     "last_name_alt":"Smith",
     "time":"1:00pm",
+    "email":"jsmith@arpnet.net",
     "students":[
       {
         "first_name":"Joe",
@@ -45,6 +167,82 @@
         "grade":"2",
         "teacher":"Mrs.Brown",
         "school":"Hancock",
+        "backpack":false,
+        "headphones":false
+      }
+    ]
+  },
+  {
+    "first_name": "Catherine",
+    "last_name":"Weiss",
+    "first_name_alt":"Jim",
+    "last_name_alt":"Weiss",
+    "time":"1:00pm",
+    "email":"cweiss@arpnet.net",
+    "students":[
+      {
+        "first_name":"Callum",
+        "last_name":"Weiss",
+        "grade":"2",
+        "teacher":"Mrs.Brown",
+        "school":"Hancock",
+        "backpack":false,
+        "headphones":false
+      }
+    ]
+  },
+  {
+    "first_name": "Joseph",
+    "last_name":"Byrd",
+    "first_name_alt":"Linda",
+    "last_name_alt":"Byrd",
+    "time":"1:00pm",
+    "email":"cweiss@arpnet.net",
+    "students":[
+      {
+        "first_name":"Tim",
+        "last_name":"Byrd",
+        "grade":"2",
+        "teacher":"Mrs.Brown",
+        "school":"Hancock",
+        "backpack":false,
+        "headphones":false
+      }
+    ]
+  },
+  {
+    "first_name": "Melinda",
+    "last_name":"Thomson",
+    "first_name_alt":"Morton",
+    "last_name_alt":"Thomson",
+    "time":"12:00pm",
+    "email":"mthomson@itsanemail.gov",
+    "students":[
+      {
+        "first_name":"Maurice",
+        "last_name":"Thomson",
+        "grade":"2",
+        "teacher":"Mrs.Ulrich",
+        "school":"MAES",
+        "backpack":false,
+        "headphones":false
+      }
+    ]
+  },
+  {
+    "first_name": "Fred",
+    "last_name":"Mcgrath",
+    "first_name_alt":"",
+    "last_name_alt":"",
+    "time":"2:00pm",
+    "email":"fred@fred.edu",
+    "students":[
+      {
+        "first_name":"Fred",
+        "last_name":"Mcgrath Jr.",
+        "grade":"2",
+        "teacher":"Mrs.Ulrich",
+        "school":"MAES",
         "backpack":false,
         "headphones":false
       }
@@ -59,6 +257,7 @@
     "first_name_alt":"Beatrice",
     "last_name_alt":"Baudelaire",
     "time":"9:00am",
+    "email":"nichereference@gmail.vfd",
     "students":[
       {
         "first_name": "Sunny",
@@ -98,6 +297,7 @@
     "first_name_alt":"Barak",
     "last_name_alt":"Obama",
     "time":"7:00am",
+    "email":"bobama@gmail.gov",
     "students":[
       {
         "first_name": "Sasha",
@@ -128,6 +328,7 @@
     "first_name_alt":"Lord",
     "last_name_alt":"Bowser",
     "time":"2:00am",
+    "email":"lbowser@koopa.kom",
     "students":[
       {
         "first_name": "Larry",
