@@ -100,11 +100,11 @@
     "time":"7:00am",
     "students":[
       {
-        "first_name": "Mike",
-        "last_name":"Sasha",
+        "first_name": "Sasha",
+        "last_name":"Obama",
         "grade":"5",
         "teacher":"Mrs.Oaks",
-        "school":"Saint Marys",
+        "school":"Saint Mary",
         "backpack":true,
         "headphones":false
       },
@@ -113,7 +113,7 @@
         "last_name":"Obama",
         "grade":"5",
         "teacher":"Mrs.Oaks",
-        "school":"Saint Marys",
+        "school":"Saint Mary",
         "backpack":false,
         "headphones":false
       }
@@ -134,7 +134,7 @@
         "last_name":"Koopa",
         "grade":"6",
         "teacher":"Mrs.Smith",
-        "school":"Saint Marys",
+        "school":"MAES",
         "backpack":true,
         "headphones":true
       },
@@ -143,7 +143,7 @@
         "last_name":"Koopa",
         "grade":"2",
         "teacher":"Maggy Koopa",
-        "school":"Saint Marys",
+        "school":"MAES",
         "backpack":false,
         "headphones":true
       },
@@ -152,7 +152,7 @@
         "last_name":"Koopa",
         "grade":"6",
         "teacher":"Mrs.Smith",
-        "school":"MAES",
+        "school":"Saint Mary",
         "backpack":false,
         "headphones":true
       },
@@ -161,7 +161,7 @@
         "last_name":"Koopa",
         "grade":"12",
         "teacher":"Mrs.Johnson",
-        "school":"MAES",
+        "school":"Saint Mary",
         "backpack":false,
         "headphones":true
       },
@@ -169,8 +169,8 @@
         "first_name": "Roy",
         "last_name":"Koopa",
         "grade":"10",
-        "teacher":"MAES",
-        "school":"Saint Marys",
+        "teacher":"Mrs.Marris",
+        "school":"Saint Mary",
         "backpack":false,
         "headphones":true
       },
@@ -178,8 +178,8 @@
         "first_name": "Iggy",
         "last_name":"Koopa",
         "grade":"10",
-        "teacher":"MAES",
-        "school":"Saint Marys",
+        "teacher":"Mrs.Marris",
+        "school":"Saint Mary",
         "backpack":false,
         "headphones":true
       },
@@ -187,8 +187,8 @@
         "first_name": "Ludwig",
         "last_name":"Von Koopa",
         "grade":"10",
-        "teacher":"MAES",
-        "school":"Saint Marys",
+        "teacher":"Mrs.Marris",
+        "school":"Saint Mary",
         "backpack":false,
         "headphones":true
       }

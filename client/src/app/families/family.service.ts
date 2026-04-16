@@ -162,13 +162,24 @@ export class FamilyService {
       filteredFamilies = filteredFamilies.filter(item => item.last_name.toLowerCase().indexOf(filters.name) !== -1);
     }
 
-    if (filters.grade) {
-      //Inclusive- if a family has any students in this grade, they show up in the filter.
+    if ((filters.grade) && (!filters.grade)) {
       filteredFamilies = filteredFamilies.filter(item => item.students.some(student => student.grade == filters.grade));
     }
 
-    if (filters.school) {
+    if ((filters.school) && (!filters.grade)) {
       filteredFamilies = filteredFamilies.filter(item => item.students.some(student => student.school == filters.school));
+    }
+
+    if ((filters.school) && (filters.grade)) {
+      //Necessary to do this seperate, since families can have students at different schools.
+      //...In the test data, Koopa Clan has a 2nd grader who goes to MAES, and 10th graders at Saint Mary's...
+      //With the independent filters, they pass the grade filter, (10th), and the school filter, (the 2nd graders count),
+      //And so show up for MAES 10th grade, even though all their 10th graders go to Saint Marys.
+      //...This appears to resolve that issue.
+      filteredFamilies = filteredFamilies.filter(item => item.students.some(student =>
+        (student.grade == filters.grade)
+        && (student.school == filters.school))
+      );
     }
 
     if (filters.students) {

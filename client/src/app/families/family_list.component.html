@@ -118,7 +118,12 @@
                       <mat-card class="sub-sub-section-card">
                       <mat-card-content>
                       <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
-                      <span matListItemTitle mat-line class="item-list-name">{{family.first_name}} {{family.last_name}}</span>
+                      <span matListItemTitle mat-line class="item-list-name"><strong>{{family.first_name}} {{family.last_name}}</strong></span>
+                      @for (student of family.students; track student.first_name) {
+                        @if ((student.grade === grade.grade_value) && (student.school === school.school_value)){
+                          <span matListItemLine class="student name line">{{student.first_name}} {{student.last_name}}</span>
+                        }
+                      }
                       </a>
                       </mat-card-content>
                       </mat-card>
@@ -176,6 +181,7 @@
               @for (family of filteredFamilies(); track family._id) {
                   <a mat-list-item [routerLink]="['/families', family._id]" class="item-list-item">
                   <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.first_name}} {{family.last_name}}</strong></span>
+
                   @for (student of family.students; track student.grade) {
                     <span matListItemTitle mat-line class="item-list-name">{{student.first_name}} {{student.last_name}} - {{student.teacher}}, Grade {{student.grade}}</span>
                     @if (student.backpack && student.headphones) {
