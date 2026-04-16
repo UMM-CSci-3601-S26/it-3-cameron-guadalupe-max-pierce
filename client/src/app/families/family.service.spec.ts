@@ -108,7 +108,7 @@ describe('FamilyService', () => {
           "last_name":"Tucker",
           "grade":"3",
           "teacher":"Mrs.Ulrich",
-          "school":"MAES",
+          "school":"Hancock",
           "backpack":true,
           "headphones":true
         },
@@ -275,6 +275,21 @@ describe('FamilyService', () => {
           .toEqual('1:00am');
       });
     });
+  });
+
+  describe('Display helper functions', () => {
+    it('correctly fetches grade labels', waitForAsync(() => {
+      expect(familyService.getGradeLabel('1')).toEqual('1st Grade');
+      expect(familyService.getGradeLabel('P')).toEqual('Pre-School');
+      expect(familyService.getGradeLabel('K')).toEqual('Kindergarten');
+    }));
+    it('correctly counts valid students', waitForAsync(() => {
+      const testFamily: Family = testFamilies[1];
+      expect(familyService.familyCount(testFamily,undefined,undefined)).toEqual(3);
+      expect(familyService.familyCount(testFamily,undefined,'MAES')).toEqual(1);
+      expect(familyService.familyCount(testFamily,'3',undefined)).toEqual(1);
+      expect(familyService.familyCount(testFamily,'3','MAES')).toEqual(1);
+    }));
   });
 
   describe('When getFamilyById() is given an ID', () => {

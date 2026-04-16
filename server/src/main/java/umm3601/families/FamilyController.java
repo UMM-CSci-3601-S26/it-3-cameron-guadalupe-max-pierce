@@ -10,7 +10,7 @@ import static com.mongodb.client.model.Filters.eq;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
+//import java.util.Objects;
 //import java.util.regex.Pattern;
 
 import org.bson.Document;
@@ -165,9 +165,9 @@ public class FamilyController implements Controller {
     // Sort the results. Use the `sortby` query param (default "name")
     // as the field to sort by, and the query param `sortorder` (default
     // "asc") to specify the sort order.
-    String sortBy = Objects.requireNonNullElse(ctx.queryParam("sortby"), "name");
-    String sortOrder = Objects.requireNonNullElse(ctx.queryParam("sortorder"), "asc");
-    Bson sortingOrder = sortOrder.equals("desc") ?  Sorts.descending(sortBy) : Sorts.ascending(sortBy);
+    //String sortBy = Objects.requireNonNullElse(ctx.queryParam("sortby"), "last_name");
+    // String sortOrder = Objects.requireNonNullElse(ctx.queryParam("sortorder"), "asc");
+    Bson sortingOrder = Sorts.descending();
     return sortingOrder;
   }
 

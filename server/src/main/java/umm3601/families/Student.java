@@ -5,11 +5,10 @@ import org.mongojack.ObjectId;
 
 //import umm3601.families.Student;
 
-@SuppressWarnings({"VisibilityModifier"})
+@SuppressWarnings({"VisibilityModifier", "MemberName"})
 public class Student {
 
   @ObjectId @Id
-  @SuppressWarnings({"MemberName"})
   public String _id;
 
   public String first_name;
