@@ -15,7 +15,7 @@ import { FamilyService } from 'src/app/families/family.service';
 })
 
 //'modifyMass'
-export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'|'getSchools' | 'deleteAll'> {
+export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'|'getSchools' | 'deleteAll'|'getGradeLabel'|'familyCount'> {
   savedFamilyName = ''; //Per-session saved value for name search bar.
   savedFamilySchool = '';
   savedFamilyGrade = '';
@@ -44,64 +44,115 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'f
   static testItems: Family[] = [
     {
       "_id": "richards_id",
-      "name": "Richards",
+      "first_name": "Steve",
+      "last_name":"Richards",
+      "first_name_alt":"",
+      "last_name_alt":"",
       "time":"12:00pm",
+      "email":"prcrichards@gmail.com",
       "students":[
         {
-          "grade": "P",
-          "school": "MAES",
-          "backpack": true,
-          firstName: '',
-          lastName: ''
+          "first_name":"Ted",
+          "last_name":"Richards",
+          "grade":"P",
+          "teacher":"Mrs.Greene",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":false
         },
         {
-          "grade": "3",
-          "school": "MAES",
-          "backpack": false,
-          firstName: '',
-          lastName: ''
+          "first_name":"Tod",
+          "last_name":"Richards",
+          "grade":"3",
+          "teacher":"Mrs.Ulrich",
+          "school":"MAES",
+          "backpack":false,
+          "headphones":true
         }
       ]
     },
     {
-      "_id": "jones_id",
-      "name": "Smith",
-      "time":"1:00pm",
+      "_id": "krosschell_id",
+      "first_name": "Frank",
+      "last_name":"Krosschell",
+      "first_name_alt":"",
+      "last_name_alt":"",
+      "time":"9:00pm",
+      "email":"gkross@gmail.com",
       "students":[
         {
-          "grade": "2",
-          "school": "Hancock",
-          "backpack": false,
-          firstName: '',
-          lastName: ''
+          "first_name":"Bob",
+          "last_name":"Krosschell",
+          "grade":"1",
+          "teacher":"Mr.Greene",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":false
+        },
+        {
+          "first_name":"Kevin",
+          "last_name":"Krosschell",
+          "grade":"3",
+          "teacher":"Mrs.Ulrich",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":true
+        },
+        {
+          "first_name":"Kyle",
+          "last_name":"Krosschell",
+          "grade":"3",
+          "teacher":"Mrs.Ulrich",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":true
+        },
+        {
+          "first_name":"Mitchel",
+          "last_name":"Krosschell",
+          "grade":"7",
+          "teacher":"Mr.Cannon",
+          "school":"Hancock",
+          "backpack":true,
+          "headphones":true
         }
       ]
     },
     {
-      "_id": "baudelaires_id",
-      "name": "Baudelaires",
-      "time":"9:00am",
+      "_id": "tucker_id",
+      "first_name": "Nadine",
+      "last_name":"Tucker",
+      "first_name_alt":"Judith",
+      "last_name_alt":"Mahoney",
+      "time":"7:00pm",
+      "email":"ntucker@gmail.com",
       "students":[
         {
-          "grade": "P",
-          "school": "MAES",
-          "backpack": false,
-          firstName: '',
-          lastName: ''
+          "first_name":"Thomas",
+          "last_name":"Tucker",
+          "grade":"K",
+          "teacher":"Mr.Greene",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":false
         },
         {
-          "grade": "6",
-          "school": "MAES",
-          "backpack": true,
-          firstName: '',
-          lastName: ''
+          "first_name":"Omer",
+          "last_name":"Tucker",
+          "grade":"3",
+          "teacher":"Mrs.Ulrich",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":true
         },
         {
-          "grade": "10",
-          "school": "MAES",
-          "backpack": false,
-          firstName: '',
-          lastName: ''
+          "first_name":"Larry",
+          "last_name":"Mahoney",
+          "grade":"7",
+          "teacher":"Mr.Cannon",
+          "school":"Hancock",
+          "backpack":true,
+          "headphones":true
         }
       ]
     }
@@ -109,7 +160,11 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'f
 
   static emptyFamily: Family = {
     _id: '',
-    name: '',
+    first_name: '',
+    last_name: '',
+    first_name_alt: "",
+    last_name_alt: "",
+    email: "",
     time: '',
     students: [],
   }
@@ -117,6 +172,27 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'f
   //Probably terrible form, but best way I could figure to get the tests working.
   realService = new FamilyService;
   gradeOptions = this.realService.gradeOptions;
+
+  //Helper function for display
+  getGradeLabel(grade: string) {
+    for (let g = 0; g < this.gradeOptions.length; g ++) {
+      if (this.gradeOptions[g].value == grade) {
+        return this.gradeOptions[g].label;
+      }
+    }
+  }
+
+  //Another helper function for display
+  familyCount(family:Family, grade?: string, school?: string): number {
+    let count = 0;
+    for (let s = 0; s < family.students.length; s ++) {
+      if (((!grade) || (family.students[s].grade == grade))
+      && (!school) || (family.students[s].school == school)) {
+        count ++;
+      }
+    }
+    return count;
+  }
 
   //For testing purposes, this is identical to the actual service. (Otherwise linting is mad about not using fields.)
   updateSavedSearch(fields: {name: string; grade: string; school: string; students: number; time: string; sortby: string;}) {
