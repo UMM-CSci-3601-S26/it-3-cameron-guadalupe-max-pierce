@@ -108,7 +108,7 @@ export class AddFamilySurveyComponent {
   addChild(): void {
     this.surveyChildren.push({
       first_name: '',
-      last_name: '',
+      last_name: this.surveyFamilyLastName,
       school: '',
       grade: '',
       teacher: '',
@@ -125,7 +125,11 @@ export class AddFamilySurveyComponent {
 
   resetSurvey(): void {
     this.surveyFamilyLastName = '';
+    this.surveyFamilyFirstName = '';
+    this.surveyFamilyLastNameAlt = '';
+    this.surveyFamilyFirstNameAlt = '';
     this.surveyParentEmail = '';
+    this.surveyFamilyTime = '';
     this.surveyChildren = [
       { first_name: '', last_name: '', school: '', grade: '', backpack: false, headphones: false, teacher: '' }
     ];
@@ -166,7 +170,7 @@ export class AddFamilySurveyComponent {
       teacher: c.teacher,
       grade: c.grade,
       backpack: c.backpack,
-      headphones: c.backpack
+      headphones: c.headphones
     }));
 
     this.familyService.addFamily({
@@ -179,14 +183,14 @@ export class AddFamilySurveyComponent {
       students
     }).subscribe({
       next: () => {
-        this.snackBar.open('Family added successfully!', 'OK', {
+        this.snackBar.open('Survey submitted successfully!', 'OK', {
           duration: 5000
         });
         this.resetSurvey();
         this.router.navigate(['/families']);
       },
       error: (err: Error) => {
-        this.snackBar.open(`Error adding family: ${err.message}`, 'OK', {
+        this.snackBar.open(`Error submitting survey: ${err.message}`, 'OK', {
           duration: 5000
         });
       }
