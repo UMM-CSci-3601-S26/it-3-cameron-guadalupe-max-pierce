@@ -20,7 +20,7 @@ public class Time {
 
   @Override
   public boolean equals(Object obj) {
-    if (!(obj instanceof School)) {
+    if (!(obj instanceof Time)) {
       return false;
     }
     Time other = (Time) obj;
