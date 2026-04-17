@@ -67,6 +67,7 @@ export class AddFamilySurveyComponent {
   surveyFamilyFirstNameAlt = '';
   surveyParentEmail = '';
   surveyFamilyTime = '';
+  espanol = false; //If true, spanish version is used.
 
 
   serverFilteredSchools = signal(

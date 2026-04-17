@@ -3,7 +3,8 @@
 
     <mat-card class = "section-card center-title"> <!-- whatever -->
       <mat-card-header>
-      <mat-card-title><h2><strong>FAMILY SURVEY</strong></h2></mat-card-title>
+      @if (espanol) {<mat-card-title><h2><strong>ENCUESTA FAMILIAR</strong></h2></mat-card-title>}
+      @else {<mat-card-title><h2><strong>FAMILY SURVEY</strong></h2></mat-card-title>}
       </mat-card-header>
     </mat-card>
 
@@ -18,6 +19,13 @@
     <mat-card class="survey-card">
       <mat-card-content>
         <div class="flex-col">
+          <div class="radio-group">
+            <strong>Language/Idioma</strong>
+            <mat-radio-group [(ngModel)]="espanol" name="espanol" required>
+              <mat-radio-button [value]="false">English</mat-radio-button>
+              <mat-radio-button [value]="true">Espanol</mat-radio-button>
+            </mat-radio-group>
+          </div>
 
           <mat-form-field>
             <input matInput placeholder="First Name" [(ngModel)]="surveyFamilyFirstName" name="familyFirstName" required #familyFirstName="ngModel">
@@ -141,16 +149,16 @@
               <div class="radio-group">
                 <strong>Does this student need a backpack?</strong>
                 <mat-radio-group [(ngModel)]="child.backpack" name="backpack{{i}}" required aria-label="Testing">
-                  <mat-radio-button [value]="child.backpack">Yes</mat-radio-button>
-                  <mat-radio-button [value]="!child.backpack">No</mat-radio-button>
+                  <mat-radio-button [value]="true">Yes</mat-radio-button>
+                  <mat-radio-button [value]="false">No</mat-radio-button>
                 </mat-radio-group>
               </div>
 
               <div class="radio-group">
                 <strong>Does this student need headphones?</strong>
                 <mat-radio-group [(ngModel)]="child.headphones" name="headphones{{i}}" required aria-label="Testing">
-                  <mat-radio-button [value]="child.headphones">Yes</mat-radio-button>
-                  <mat-radio-button [value]="!child.headphones">No</mat-radio-button>
+                  <mat-radio-button [value]="true">Yes</mat-radio-button>
+                  <mat-radio-button [value]="false">No</mat-radio-button>
                 </mat-radio-group>
               </div>
 
