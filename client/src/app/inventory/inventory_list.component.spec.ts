@@ -268,4 +268,13 @@ describe('Misbehaving Item List', () => {
       .withContext('the error message will be')
       .toContain('Problem contacting the server – Error Code:');
   });
+  it('it returns an error message when getItems throws an error during export', () => {
+    spyOn(inventoryServiceStub, 'getItems').and.returnValue(
+      new Observable((observer) => {
+        observer.error('getItems() Observer generates an error');
+      })
+    );
+    itemList.exportToCSV();
+    expect(itemList.errMsg()).toContain('Problem contacting the server – Error Code:');
+  });
 });
