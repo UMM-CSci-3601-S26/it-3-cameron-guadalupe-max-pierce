@@ -19,7 +19,7 @@ import { ModifyItemComponent } from './inventory/modify_inventory_item.component
 const routes: Routes = [
   {path: '', component: HomeComponent, title: 'Home'},
   {path: 'families', component: FamilyListComponent, title: 'Families'},
-  {path: 'families/survey', component: AddFamilySurveyComponent, title: 'Backpack Survey'},
+  {path: 'families/survey', component: AddFamilySurveyComponent, title: 'Family Survey'},
   {path: 'grade_list', component: GradeListComponent, title: 'Requirements'},
   {path: 'grade_list/new', component: AddRequirementComponent, title: 'Add Requirement'},
   {path: 'grade_list/:id', component: ModifyRequirementComponent, title: 'Requirement Profile'},

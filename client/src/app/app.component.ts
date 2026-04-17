@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core'; //OnInit
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
@@ -13,13 +13,19 @@ import { RouterLink, RouterLinkActive, RouterOutlet, Router } from '@angular/rou
   styleUrls: ['./app.component.scss'],
   imports: [MatSidenavModule, MatToolbarModule, MatListModule, RouterLink, RouterLinkActive, MatIconModule, MatButtonModule, RouterOutlet]
 })
-export class AppComponent implements OnInit{
+export class AppComponent {//implements OnInit
   title = 'Ready4Learning';
   route: string;
 
-  constructor(location: Location, router: Router) {
-    router.events.subscribe((val) => {
-      if(location.path() != ''){
+  // /** Inserted by Angular inject() migration for backwards compatibility */
+  // constructor(...args: unknown[]);
+
+  constructor() {
+    const location = inject(Location);
+    const router = inject(Router);
+
+    router.events.subscribe(() => {
+      if(location.path() != '') {
         this.route = location.path();
       } else {
         this.route = 'Home'
@@ -27,6 +33,6 @@ export class AppComponent implements OnInit{
     });
   }
 
-  ngOnInit() {
-  }
+  // ngOnInit() {
+  // }
 }
