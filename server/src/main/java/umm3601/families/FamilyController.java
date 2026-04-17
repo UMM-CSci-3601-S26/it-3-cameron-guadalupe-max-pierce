@@ -39,6 +39,7 @@ import umm3601.Controller;
 public class FamilyController implements Controller {
 
   private static final String API_FAMILIES = "/api/families";
+  private static final String API_TIMES = "/api/times";
   private static final String API_FAMILY_BY_ID = "/api/families/{id}";
   // static final String NAME_KEY = "name";
   // static final String TYPE_KEY = "type";
@@ -47,6 +48,7 @@ public class FamilyController implements Controller {
   // static final String STOCKED_KEY = "stocked";
 
   private final JacksonMongoCollection<Family> familyCollection;
+  private final JacksonMongoCollection<Time> timeCollection;
 
   /**
    * Construct a controller for users.
@@ -58,6 +60,11 @@ public class FamilyController implements Controller {
         database,
         "families",
         Family.class,
+        UuidRepresentation.STANDARD);
+      timeCollection = JacksonMongoCollection.builder().build(
+        database,
+        "times",
+        Time.class,
         UuidRepresentation.STANDARD);
   }
 
@@ -97,6 +104,22 @@ public class FamilyController implements Controller {
     ArrayList<Family> matchingItems = familyCollection
       .find(combinedFilter)
       .sort(sortingOrder)
+      .into(new ArrayList<>());
+
+    ctx.json(matchingItems);
+
+    // Explicitly set the context status to OK
+    ctx.status(HttpStatus.OK);
+  }
+
+
+  /**
+   * @param ctx a Javalin HTTP context
+   */
+  public void getTimes(Context ctx) {
+
+    ArrayList<Time> matchingItems = timeCollection
+      .find() //No sorting required
       .into(new ArrayList<>());
 
     ctx.json(matchingItems);
@@ -266,6 +289,9 @@ public class FamilyController implements Controller {
 
     // List items, filtered using query parameters
     server.get(API_FAMILIES, this::getFamilies);
+
+    // List items, filtered using query parameters
+    server.get(API_TIMES, this::getTimes);
 
     // Get the users, possibly filtered, grouped by company
     // server.get("/api/usersByCompany", this::getUsersGroupedByCompany);

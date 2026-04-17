@@ -83,11 +83,27 @@ export class AddFamilySurveyComponent {
     )
   );
 
+  serverFilteredTimes = signal(
+    this.familyService.getTimes().pipe(
+      catchError((err) => {
+        if (!(err.error instanceof ErrorEvent)) {
+          this.errMsg.set(
+            `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
+          );
+        }
+        this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
+        return of<School[]>([]);
+      })
+    )
+  );
+
+  filteredTimeOptions = computed(() => {
+    return this.serverFilteredTimes();
+
+  });
+
   filteredSchoolOptions = computed(() => {
     return this.serverFilteredSchools();
-    // const input = (this.schoolInput() || '').toLowerCase();
-    // if (!input) return this.serverFilteredSchools();
-    // return this.serverFilteredSchools(); //No filtering, short list.
   });
 
   gradeOptions = this.familyService.gradeOptions;

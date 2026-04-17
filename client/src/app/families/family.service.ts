@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Family } from './family';
+import { Time } from './time';
 import { School } from '../grade_list/school';
 //import { Company } from '../company-list/company';
 //import { Signal } from '@angular/core/rxjs-interop';
@@ -28,6 +29,7 @@ export class FamilyService {
   // The URL for the users part of the server API.
   readonly familyUrl: string = `${environment.apiUrl}families`;
   readonly schoolUrl: string = `${environment.apiUrl}schools`;
+  readonly timeUrl: string = `${environment.apiUrl}times`;
   //readonly usersByCompanyUrl: string = `${environment.apiUrl}usersByCompany`;
 
   private readonly schoolKey = 'school'; //school filtering
@@ -146,6 +148,11 @@ export class FamilyService {
   //Helper function
   getSchools(): Observable<School[]> {
     return this.httpClient.get<School[]>(this.schoolUrl);
+  }
+
+  //Helper function
+  getTimes(): Observable<Time[]> {
+    return this.httpClient.get<Time[]>(this.timeUrl);
   }
 
   /**

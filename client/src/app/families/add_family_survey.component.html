@@ -71,12 +71,18 @@
           </mat-form-field>
 
           <mat-form-field>
+            <mat-label>Time</mat-label>
+            <mat-select placeholder="Time" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
+              @for (time of filteredTimeOptions() | async; track time.value) {
+              <mat-option [value]="time.value">{{time.value}}</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Desired time for supplies pickup</mat-hint>
+          </mat-form-field>
+
+          <!-- <mat-form-field>
             <mat-label>Time Slot</mat-label>
-            <mat-select placeholder="Select Time" [(ngModel)]="surveyFamilyTime" required>
-              <!-- TODO, this needs to be drawn from settings! -->
-              <!-- @for (school of filteredSchoolOptions() | async; track school.label) {
-                <mat-option [value]="school.label">{{school.label}}</mat-option>
-              } -->
+            <mat-select placeholder="Select Time" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
               <mat-option value="9:00am">9:00am</mat-option>
               <mat-option value="11:00am">11:00am</mat-option>
               <mat-option value="1:00pm">1:00pm</mat-option>
@@ -85,7 +91,7 @@
               <mat-option value="7:00pm">7:00pm</mat-option>
             </mat-select>
             <mat-hint>Timeslot for supplies pickup</mat-hint>
-          </mat-form-field>
+          </mat-form-field> -->
 
           @for (child of surveyChildren; track child; let i = $index) {
           <mat-card class="child-card">
