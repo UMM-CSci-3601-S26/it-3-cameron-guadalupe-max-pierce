@@ -82,7 +82,7 @@ export class FamilyService {
     let count = 0;
     for (let s = 0; s < family.students.length; s ++) {
       if (((!grade) || (family.students[s].grade == grade))
-      && (!school) || (family.students[s].school == school)) {
+      && ((!school) || (family.students[s].school == school))) {
         count ++;
       }
     }

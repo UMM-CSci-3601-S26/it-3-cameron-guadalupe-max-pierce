@@ -284,10 +284,56 @@ describe('FamilyService', () => {
       expect(familyService.getGradeLabel('K')).toEqual('Kindergarten');
     }));
     it('correctly counts valid students', waitForAsync(() => {
-      const testFamily: Family = testFamilies[1];
-      expect(familyService.familyCount(testFamily,undefined,undefined)).toEqual(3);
-      expect(familyService.familyCount(testFamily,undefined,'MAES')).toEqual(1);
-      expect(familyService.familyCount(testFamily,'3',undefined)).toEqual(1);
+      const testFamily: Family = { //Can't rely on test Family array, may be deleted.
+        "_id": "krosschell_id",
+        "first_name": "Frank",
+        "last_name":"Krosschell",
+        "first_name_alt":"",
+        "last_name_alt":"",
+        "time":"9:00pm",
+        "email":"gkross@gmail.com",
+        "students":[
+          {
+            "first_name":"Bob",
+            "last_name":"Krosschell",
+            "grade":"1",
+            "teacher":"Mr.Greene",
+            "school":"MAES",
+            "backpack":true,
+            "headphones":false
+          },
+          {
+            "first_name":"Kevin",
+            "last_name":"Krosschell",
+            "grade":"3",
+            "teacher":"Mrs.Ulrich",
+            "school":"Hancock",
+            "backpack":true,
+            "headphones":true
+          },
+          {
+            "first_name":"Kyle",
+            "last_name":"Krosschell",
+            "grade":"3",
+            "teacher":"Mrs.Ulrich",
+            "school":"MAES",
+            "backpack":true,
+            "headphones":true
+          },
+          {
+            "first_name":"Mitchel",
+            "last_name":"Krosschell",
+            "grade":"7",
+            "teacher":"Mr.Cannon",
+            "school":"Hancock",
+            "backpack":true,
+            "headphones":true
+          }
+        ]
+      }
+      expect(familyService.familyCount(testFamily,undefined,undefined)).toEqual(4);
+      expect(familyService.familyCount(testFamily,undefined,'MAES')).toEqual(2);
+      expect(familyService.familyCount(testFamily,'3',undefined)).toEqual(2);
       expect(familyService.familyCount(testFamily,'3','MAES')).toEqual(1);
     }));
   });
