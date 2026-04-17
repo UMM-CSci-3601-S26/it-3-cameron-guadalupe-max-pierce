@@ -326,7 +326,7 @@ export class FamilyListComponent {
   resetStudents() {
     const warning = confirm("This will delete ALL families. Are you sure?");
     if (warning == true) {
-      this.familyService.deleteAll(this.filteredFamilies());
+      this.familyService.deleteAll(this.serverFilteredItems());
       this.snackBar.open(
         `Family List reset. Please wait for page to reload...`,
         'OK',
