@@ -5,16 +5,17 @@ import org.mongojack.ObjectId;
 
 //import umm3601.families.Student;
 
-@SuppressWarnings({"VisibilityModifier"})
+@SuppressWarnings({"VisibilityModifier", "MemberName"})
 public class Student {
 
   @ObjectId @Id
-  @SuppressWarnings({"MemberName"})
   public String _id;
 
-  public String firstName;
-  public String lastName;
+  public String first_name;
+  public String last_name;
   public boolean backpack; //If true, student also needs a backpack.
+  public boolean headphones; //If true, student also needs headphones.
+  public String teacher; //Not used for anything besides display.
   public String grade; //Just need grade, not name.
   public String school;
   //Tracked as a string to account for kindergarten and preschool.

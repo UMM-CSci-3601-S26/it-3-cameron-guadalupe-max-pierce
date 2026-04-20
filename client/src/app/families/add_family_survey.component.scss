@@ -3,6 +3,7 @@
   max-width: 800px;
   margin: 0 auto;
 
+  // why is this like this??? Shouldn't h1 just use default color?
   h1 {
     color: #000;
     margin-bottom: 20px;
@@ -12,6 +13,19 @@
 .survey-card {
   margin-bottom: 20px;
 }
+
+.center-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.section-card {
+  margin-bottom: 8px;
+  padding-bottom: 10px;
+  padding-left: 15px;
+  padding-top: 10px;
+}
+
 
 .flex-row {
   display: flex;
