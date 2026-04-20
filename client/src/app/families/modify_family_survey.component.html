@@ -44,17 +44,17 @@
           </mat-form-field>
 
           <mat-form-field>
-            <input matInput placeholder="First Name (Optional)" [(ngModel)]="surveyFamilyFirstNameAlt" name="familyFirstNameAlt">
+            <input matInput placeholder="First Name (Optional)" [ngModel]="family().first_name_alt" name="familyFirstNameAlt">
             <mat-hint>Alternative pickup person. (Optional)</mat-hint>
           </mat-form-field>
 
           <mat-form-field>
-            <input matInput placeholder="Last Name (Optional)" [(ngModel)]="surveyFamilyLastNameAlt" name="familyLastNameAlt">
+            <input matInput placeholder="Last Name (Optional)" [ngModel]="family().last_name_alt" name="familyLastNameAlt">
             <mat-hint>Alternative pickup person. (Optional)</mat-hint>
           </mat-form-field>
 
           <mat-form-field>
-            <input matInput placeholder="Email" [(ngModel)]="surveyParentEmail" name="parentEmail" required email #parentEmail="ngModel">
+            <input matInput placeholder="Email" [ngModel]="family().email" name="parentEmail" required email #parentEmail="ngModel">
             <mat-hint>Guardian Email address</mat-hint>
             @if (parentEmail.invalid && (parentEmail.dirty || parentEmail.touched)) {
             <mat-error>
@@ -147,8 +147,13 @@
             </mat-card-actions>
           </mat-card>
           }
+          @if (studentsShown) {
+            <button mat-button type="button" (click)="addChild()">Add Another Student</button>
+          }
+          @else {
+            <button mat-button type="button" (click)="revealStudents()">Show Students</button>
+          }
 
-          <button mat-button type="button" (click)="addChild()">Add Another Student</button>
 
         </div>
       </mat-card-content>

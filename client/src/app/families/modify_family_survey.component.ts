@@ -16,6 +16,7 @@ import { of, combineLatest, tap } from 'rxjs';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { School } from '../grade_list/school';
 import { Family } from './family';
+//import { Location } from '@angular/common';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 //import { Family } from './family';
 import { Student } from './student';
@@ -51,12 +52,15 @@ export class ModifyFamilySurveyComponent {
 
   errMsg = signal('');
 
+  //Good lord, why aren't these form controls? Syncing these is a nuisance...
   surveyFamilyLastName = '';
   surveyFamilyFirstName = '';
   surveyFamilyLastNameAlt = '';
   surveyFamilyFirstNameAlt = '';
   surveyParentEmail = '';
   surveyFamilyTime = '';
+  studentsShown = false; //Once the old student data loads, the user should be able to modify it.
+  surveyFinished = false;
 
   //Get schools from the database to allow for autofill and limiting inputs.
   private schoolInput$ = toObservable(this.schoolInput);
@@ -137,17 +141,27 @@ export class ModifyFamilySurveyComponent {
     )
   );
 
-  surveyChildren: {
-    first_name: string;
-    last_name: string;
-    school: string;
-    grade: string;
-    teacher: string;
-    backpack: boolean;
-    headphones: boolean;
-  }[] = [
-      { first_name: '', last_name: '', school: '', grade: '', teacher: '', backpack: false, headphones: false}
-    ];
+  //All the following stupid BS is necessary because this stupid thing isn't instalized beforehand.
+  // surveyChildren: Student[] = this.family().students;
+  surveyChildren: Student[] = [];
+
+  revealStudents(): void { //Screw it all, I'm done with this.
+    this.studentsShown = true;
+    this.surveyChildren = this.family().students;
+  }
+
+  // constructor() {
+  //   const location = inject(Location);
+  //   const router = inject(Router);
+
+  //   router.events.subscribe(() => {
+  //     if ((location.path() != '') && (!this.surveyInit) && (!this.surveyFinished)) {
+  //       //this.route = location.path();
+  //       this.surveyChildren = this.family().students;
+  //       this.surveyInit = true;
+  //     }
+  //   });
+  // }
 
   addChild(): void {
     this.surveyChildren.push({
@@ -168,15 +182,13 @@ export class ModifyFamilySurveyComponent {
   }
 
   resetSurvey(): void {
-    this.surveyFamilyLastName = '';
-    this.surveyFamilyFirstName = '';
-    this.surveyFamilyLastNameAlt = '';
-    this.surveyFamilyFirstNameAlt = '';
-    this.surveyParentEmail = '';
-    this.surveyFamilyTime = '';
-    this.surveyChildren = [
-      { first_name: '', last_name: '', school: '', grade: '', backpack: false, headphones: false, teacher: '' }
-    ];
+    this.surveyFamilyLastName = this.family().last_name;
+    this.surveyFamilyFirstName = this.family().first_name;
+    this.surveyFamilyLastNameAlt = this.family().last_name_alt;
+    this.surveyFamilyFirstNameAlt = this.family().first_name_alt;
+    this.surveyParentEmail = this.family().email;
+    this.surveyFamilyTime = this.family().time;
+    this.surveyChildren = this.family().students;
   }
 
   private isValidEmail(email: string): boolean {
@@ -185,59 +197,76 @@ export class ModifyFamilySurveyComponent {
     return Boolean(normalized && emailPattern.test(normalized));
   }
 
-  submitSurvey(): void {
-    if (
-      !this.surveyFamilyLastName ||
-      !this.surveyFamilyFirstName ||
-      !this.surveyParentEmail ||
-      !this.isValidEmail(this.surveyParentEmail) ||
-      this.surveyChildren.some(
-        c => !c.first_name || !c.last_name || !c.school || !c.grade
-      )
-    ) {
-      this.snackBar.open(
-        !this.surveyParentEmail || !this.isValidEmail(this.surveyParentEmail)
-          ? 'Please enter a valid parent email address'
-          : 'Please fill in all required fields',
-        'OK',
-        {
-          duration: 5000
+  submitSurvey() {
+    //Reveal students FIRST to ensure the correct default values are loaded... lord this is janky
+    this.revealStudents();
+
+    //Delete original item and add the new item specified in the form.
+    this.familyService.deleteFamily(this.family()._id).subscribe({
+      error: err => {
+        if (err.status === 400) {
+          this.snackBar.open(
+            `Tried to change an illegal item – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else if (err.status === 500) {
+          this.snackBar.open(
+            `The server failed to process your request to change a item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else {
+          this.snackBar.open(
+            `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
         }
-      );
-      return;
-    }
-
-    const students: Student[] = this.surveyChildren.map(c => ({
-      first_name: c.first_name,
-      last_name: c.last_name,
-      school: c.school,
-      teacher: c.teacher,
-      grade: c.grade,
-      backpack: c.backpack,
-      headphones: c.headphones
-    }));
-
-    this.familyService.addFamily({
-      first_name: this.surveyFamilyFirstName,
-      last_name: this.surveyFamilyLastName,
-      first_name_alt: this.surveyFamilyFirstNameAlt,
-      last_name_alt: this.surveyFamilyLastNameAlt,
-      time: this.surveyFamilyTime,
-      email: this.surveyParentEmail,
-      students
-    }).subscribe({
-      next: () => {
-        this.snackBar.open('Survey submitted successfully!', 'OK', {
-          duration: 5000
-        });
-        this.resetSurvey();
-        this.router.navigate(['/families']);
       },
-      error: (err: Error) => {
-        this.snackBar.open(`Error submitting survey: ${err.message}`, 'OK', {
-          duration: 5000
-        });
+    });
+    //...Then add the new item if there wasn't an error deleting.
+    this.familyService.addFamily(
+      {
+        first_name:this.surveyFamilyFirstName,
+        last_name:this.surveyFamilyLastName,
+        first_name_alt:this.surveyFamilyFirstNameAlt,
+        last_name_alt:this.surveyFamilyLastNameAlt,
+        time:this.surveyFamilyTime,
+        email:this.surveyParentEmail,
+        students:this.surveyChildren
       }
+
+    ).subscribe({
+      next: () => { //newId
+        this.snackBar.open(
+          `Saved Changes to ${this.surveyFamilyLastName}`,
+          null,
+          { duration: 3000 }
+        );
+        this.router.navigate(['/inventory']);
+      },
+      error: err => {
+        if (err.status === 400) {
+          this.snackBar.open(
+            `Tried to add an illegal new item – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else if (err.status === 500) {
+          this.snackBar.open(
+            `The server failed to process your request to add a new item. Is the server up? – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        } else {
+          this.snackBar.open(
+            `An unexpected error occurred – Error Code: ${err.status}\nMessage: ${err.message}`,
+            'OK',
+            { duration: 5000 }
+          );
+        }
+      },
     });
   }
 }
