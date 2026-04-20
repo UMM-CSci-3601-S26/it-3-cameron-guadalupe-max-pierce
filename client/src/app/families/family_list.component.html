@@ -63,6 +63,17 @@
             >
             List Reset
           </button>
+          <button
+            mat-raised-button
+            type="button"
+            color="primary"
+            type="back"
+            [style.height.px]=55
+            (click)="exportToCSV()"
+            data-test="exportCSVButton"
+            >
+            Export CSV
+          </button>
         </div>
 
         <div class="flex-row gap-8 flex-wrap">
@@ -75,15 +86,15 @@
           <mat-form-field [style.width.px]=250 class="input-field">
             <!-- <mat-label>Desc</mat-label> -->
             <mat-select placeholder="Sort by Name" [(ngModel)]="sortBy" data-test="sortBySelect">
+              <mat-option value="name">Sort by Name (A-Z)</mat-option>
+              <mat-option value="name_des">Sort by Name (Z-A)</mat-option>
               <mat-option value="grade_school">Sort by Grade & School</mat-option>
               <mat-option value="grade">Sort by Grade</mat-option>
               <mat-option value="school">Sort by School</mat-option>
-              <mat-option value="name">Sort by Name</mat-option>
-              <mat-option value="name_des">Sort by Name (Des)</mat-option>
-              <mat-option value="time">Sort by Time</mat-option>
-              <mat-option value="time_des">Sort by Time (Des)</mat-option>
-              <mat-option value="students">Sort by Students</mat-option>
-              <mat-option value="students_des">Sort by Students (Des)</mat-option>
+              <mat-option value="time">Sort by Time (1-9)</mat-option>
+              <mat-option value="time_des">Sort by Time (9-1)</mat-option>
+              <mat-option value="students">Sort by Students (1-9)</mat-option>
+              <mat-option value="students_des">Sort by Students (9-1)</mat-option>
             </mat-select>
             <mat-hint>Select Sort Order</mat-hint>
           </mat-form-field>
@@ -100,72 +111,106 @@
     <!-- The actual family list -->
     <div>
           @if (sortBy() === "grade_school") {
-            <mat-nav-list class="item-nav-list" color="accent">
+             <mat-nav-list class="item-nav-list" color="primary">
               @for (school of gradeAndSchoolFilteredFamilies(); track school.grades) {
-                <mat-card class="section-card">
-                <mat-card-content>
-                <mat-toolbar color="primary">
-                <h2 matSubheader><strong>{{ school.school_header }}</strong> - x{{school.school_total}} Students</h2>
-                </mat-toolbar>
-                <!--Sublist for each grade-->
-                @for (grade of school.grades; track grade.grade_header) {
-                    <mat-card class="sub-section-card">
-                    <mat-card-content>
-                    <mat-toolbar color="primary">
-                    <h3 matSubheader><strong>{{ grade.grade_header }}</strong> - x{{grade.grade_total}} Students</h3>
-                    </mat-toolbar>
-                    @for (family of grade.families; track family._id) {
-                      <mat-card class="sub-sub-section-card">
-                      <mat-card-content>
-                      <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
-                      <span matListItemTitle mat-line class="item-list-name">{{family.name}}</span>
-                      </a>
-                      </mat-card-content>
-                      </mat-card>
-                    }
-                    </mat-card-content>
-                    </mat-card>
-                }
-                </mat-card-content>
-                </mat-card>
+                <mat-expansion-panel class="section-card"> <!-- hideToggle -->
+                  <mat-expansion-panel-header>
+                  <mat-panel-title> <h2 matSubheader><strong>{{school.school_header}}</strong></h2></mat-panel-title>
+                  <mat-panel-description> x{{school.school_total}} Students </mat-panel-description>
+                  </mat-expansion-panel-header>
+                  @for (grade of school.grades; track grade.grade_header) {
+                    <mat-expansion-panel class="sub-section-card">
+                      <mat-expansion-panel-header>
+                      <mat-panel-title> <h3 matSubheader><strong>{{school.school_value}} {{grade.grade_header}}</strong></h3></mat-panel-title>
+                      <mat-panel-description> x{{grade.grade_total}} Students </mat-panel-description>
+                      </mat-expansion-panel-header>
+                      @for (family of grade.families; track family._id) {
+                        <mat-expansion-panel class="sub-sub-section-card">
+                          <mat-expansion-panel-header>
+                          <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                          <mat-panel-description>  {{family.email}}  -  {{family.time}} Pickup</mat-panel-description>
+                          </mat-expansion-panel-header>
+                          @for (student of family.students; track student.first_name) {
+                            @if ((student.grade === grade.grade_value) && (student.school === school.school_value)){
+                              <p><strong>👤 - {{student.first_name}} {{student.last_name}}</strong>   -   {{student.teacher}}'s {{grade.grade_header}} class
+                                @if (student.backpack) {   -   🎒}
+                                @if (student.headphones) {   -   🎧}
+                              </p>
+                            }
+                          }
+                        </mat-expansion-panel>
+                      }
+                    </mat-expansion-panel>
+                  }
+              </mat-expansion-panel>
               }
-            </mat-nav-list>
+             </mat-nav-list>
           }
           @else if (sortBy() === "grade") { <!-- Special sectioned list for grade -->
             <mat-nav-list class="item-nav-list" color="accent">
-              @for (grade of gradeFilteredFamilies(); track grade.families) {
-                <mat-card class = "section-card">
-                <mat-card-content>
-                <mat-toolbar color="primary">
-                <h2 matSubheader><strong>{{ grade.header }}</strong> - x{{grade.grade_total}} Students</h2>
-                </mat-toolbar>
-                <!--Sublist for each grade-->
+                @for (grade of gradeFilteredFamilies(); track grade.header) {
+                <mat-expansion-panel class="section-card"> <!-- hideToggle -->
+                  <mat-expansion-panel-header>
+                  <mat-panel-title> <h2 matSubheader><strong>{{grade.header}}</strong></h2></mat-panel-title>
+                  <mat-panel-description> x{{grade.grade_total}} Students </mat-panel-description>
+                  </mat-expansion-panel-header>
+                <!--Sublist for each item grade-->
                 @for (family of grade.families; track family._id) {
-                  <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
-                  </a>
+                  <mat-expansion-panel class="sub-sub-section-card">
+                    <mat-expansion-panel-header>
+                    <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                    <mat-panel-description> x{{this.familyService.familyCount(family,grade.value,undefined)}} Children Enrolled
+                      @if (family.students.length !== this.familyService.familyCount(family,grade.value,undefined)) {
+                        , x{{family.students.length}} Total
+                      }
+                       - {{family.email}}  -  {{family.time}} Pickup </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    @for (student of family.students; track student.first_name) {
+                        @if (student.grade === grade.value) {
+                          <p><strong>👤 - {{student.first_name}} {{student.last_name}}</strong>
+                          -   {{student.teacher}}'s {{this.familyService.getGradeLabel(student.grade)}} class
+                          -   {{student.school}}
+                          @if (student.backpack) {   -   🎒}
+                          @if (student.headphones) {   -   🎧}
+                        </p>
+                        }
+                    }
+                  </mat-expansion-panel>
                 }
-                </mat-card-content>
-                </mat-card>
+                </mat-expansion-panel>
               }
             </mat-nav-list>
           }
           @else if (sortBy() === "school") { <!-- Special sectioned list for grade -->
             <mat-nav-list class="item-nav-list" color="accent">
-              @for (school of schoolFilteredFamilies(); track school.families) {
-                <mat-card class = "section-card">
-                <mat-card-content>
-                <mat-toolbar color="primary">
-                <h2 matSubheader><strong>{{ school.header }}</strong> - x{{school.school_total}} Students</h2>
-                </mat-toolbar>
+                @for (school of schoolFilteredFamilies(); track school.header) {
+                <mat-expansion-panel class="section-card"> <!-- hideToggle -->
+                  <mat-expansion-panel-header>
+                  <mat-panel-title> <h2 matSubheader><strong>{{school.header}}</strong></h2></mat-panel-title>
+                  <mat-panel-description> x{{school.school_total}} Students </mat-panel-description>
+                  </mat-expansion-panel-header>
                 <!--Sublist for each item grade-->
                 @for (family of school.families; track family._id) {
-                  <a mat-list-item [routerLink]="['/families', family._id]" class="family-list-family">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
-                  </a>
+                  <mat-expansion-panel class="sub-sub-section-card">
+                    <mat-expansion-panel-header>
+                    <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                    <mat-panel-description> x{{this.familyService.familyCount(family,undefined,school.value)}} Children Enrolled
+                      @if (family.students.length !== this.familyService.familyCount(family,undefined,school.value)) {
+                        , x{{family.students.length}} Total
+                      }
+                       - {{family.email}}  -  {{family.time}} Pickup </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    @for (student of family.students; track student.first_name) {
+                      @if (student.school === school.value) {
+                      <p><strong>👤 - {{student.first_name}} {{student.last_name}}</strong>   -   {{student.teacher}}'s {{this.familyService.getGradeLabel(student.grade)}} class
+                        @if (student.backpack) {   -   🎒}
+                        @if (student.headphones) {   -   🎧}
+                      </p>
+                      }
+                    }
+                  </mat-expansion-panel>
                 }
-                </mat-card-content>
-                </mat-card>
+                </mat-expansion-panel>
               }
             </mat-nav-list>
           }
@@ -174,19 +219,21 @@
             <mat-card-content>
             <mat-nav-list class="item-nav-list" color="accent">
               @for (family of filteredFamilies(); track family._id) {
-                  <a mat-list-item [routerLink]="['/families', family._id]" class="item-list-item">
-                  <span matListItemTitle mat-line class="item-list-name"> <strong>{{family.name}}</strong></span>
-                  @for (student of family.students; track student.grade) {
-                      @if (student.backpack) {
-                        <span matListItemTitle mat-line class="item-list-name">👤- Student needs a backpack</span>
-                      }
-                      @else {
-                        <span matListItemTitle mat-line class="item-list-name">👤- Student does not need a backpack</span>
-                      }
-                      <br>
+                  <mat-expansion-panel class="sub-sub-section-card">
+                    <mat-expansion-panel-header>
+                    <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                    <mat-panel-description> {{family.email}}  -  {{family.time}} Pickup </mat-panel-description>
+                    </mat-expansion-panel-header>
+                    @for (student of family.students; track student.first_name) {
+                        <p><strong>👤 - {{student.first_name}} {{student.last_name}}</strong>
+                          -   {{student.teacher}}'s {{this.familyService.getGradeLabel(student.grade)}} class
+                          -   {{student.school}}
+                          @if (student.backpack) {   -   🎒}
+                          @if (student.headphones) {   -   🎧}
+                        </p>
                     }
-                </a>
-              }
+                  </mat-expansion-panel>
+                }
             </mat-nav-list>
             </mat-card-content>
             </mat-card>

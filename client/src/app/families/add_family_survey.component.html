@@ -1,103 +1,319 @@
 <div class="survey-list-container">
-  <h1>New Family Survey</h1>
   <form (ngSubmit)="submitSurvey()" #surveyForm="ngForm">
-    <mat-card class="survey-card">
+
+    <mat-card class = "section-card center-title"> <!-- whatever -->
       <mat-card-header>
-        <mat-card-title>Family Survey</mat-card-title>
+      @if (espanol) {<mat-card-title><h2><strong>ENCUESTA FAMILIAR</strong></h2></mat-card-title>}
+      @else {<mat-card-title><h2><strong>FAMILY SURVEY</strong></h2></mat-card-title>}
       </mat-card-header>
+    </mat-card>
+
+    <mat-card class = "section-card flex-col">
+      @if (espanol) {
+        <p>
+        ¡Bienvenido a la encuesta de materiales de Ready4Learning!<br>
+        Por favor, complete la información general de su familia y la información adicional de cada estudiante.<br>
+        Ready4Learning solo requiere información personal con fines organizativos y la eliminará después del evento.<br>
+        </p>
+      }
+      @else {
+      <p>
+      Welcome to the Ready4Learning supply survey!<br>
+      Please fill out general information for your family, and additional information for each student.<br>
+      Ready4Learning only requires personal information for organizing purposes, and will discard it after the event.<br>
+      </p>
+      }
+
+    </mat-card>
+    <mat-card class="survey-card">
       <mat-card-content>
-        <div class="flex-row gap-8 flex-wrap">
-          <mat-form-field class="input-field">
-            <input matInput placeholder="Family Last Name" [(ngModel)]="surveyFamilyLastName" name="familyLastName" required>
-            <mat-hint>Family last name</mat-hint>
-          </mat-form-field>
+        <div class="flex-col">
+          <div class="radio-group">
+            <strong>Language/Idioma</strong>
+            <mat-radio-group [(ngModel)]="espanol" name="espanol" required>
+              <mat-radio-button [value]="false">English</mat-radio-button>
+              <mat-radio-button [value]="true">Espanol</mat-radio-button>
+            </mat-radio-group>
+          </div>
 
-          <mat-form-field class="input-field">
-            <input matInput placeholder="Parent Email" [(ngModel)]="surveyParentEmail" name="parentEmail" required email #parentEmail="ngModel">
-            <mat-hint>Parent email</mat-hint>
-            @if (parentEmail.invalid && (parentEmail.dirty || parentEmail.touched)) {
-            <mat-error>
-              @if (parentEmail.errors?.required) {
-                <span>Parent email is required.</span>
-              }
-              @if (parentEmail.errors?.email) {
-                <span>Enter a valid email address.</span>
-              }
-            </mat-error>
-            }
-          </mat-form-field>
-
-          @for (child of surveyChildren; track child; let i = $index) {
-          <mat-card class="child-card">
-            <mat-card-header>
-              <mat-card-title>Child {{i + 1}}</mat-card-title>
-              <mat-card-subtitle>Student details</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-              <div class="flex-row gap-8 flex-wrap">
-                <mat-form-field class="input-field">
-                  <input matInput placeholder="Child First Name" [(ngModel)]="child.firstName" name="childFirstName{{i}}" required>
-                  <mat-hint>Child first name</mat-hint>
-                </mat-form-field>
-
-                <mat-form-field class="input-field">
-                  <input matInput placeholder="Child Last Name" [(ngModel)]="child.lastName" name="childLastName{{i}}" required>
-                  <mat-hint>Child last name</mat-hint>
-                </mat-form-field>
-
-                <mat-form-field>
-              <mat-label>School</mat-label>
-              <!-- <input matInput
-              formControlName="school"
-              required
-              [(ngModel)]="localOriginSchool"
-              > -->
-              <mat-select
-              placeholder="School"
-              [(ngModel)]="child.school"
-              name="school{{i}}">
-                @for (school of filteredSchoolOptions() | async; track school.label) {
-                <mat-option [value]="school.label">{{school.label}}</mat-option>
+          @if (espanol) {
+              <mat-form-field>
+                <input matInput placeholder="Nombre de Pila" [(ngModel)]="surveyFamilyFirstName" name="familyFirstName" required #familyFirstName="ngModel">
+                <mat-hint>¿Quién recogerá los suministros?</mat-hint>
+                @if (familyFirstName.invalid && (familyFirstName.dirty || familyFirstName.touched)) {
+                <mat-error>
+                  @if (familyFirstName.errors?.required) {
+                    El nombre del padre/madre es obligatorio.
+                  }
+                </mat-error>
                 }
-              </mat-select>
-            <mat-hint>School that requires this</mat-hint>
             </mat-form-field>
 
+            <mat-form-field>
+                <input matInput placeholder="Apellido" [(ngModel)]="surveyFamilyLastName" name="familyLastName" required #familyLastName="ngModel">
+                <mat-hint>¿Quién recogerá los suministros?</mat-hint>
+                @if (familyLastName.invalid && (familyLastName.dirty || familyLastName.touched)) {
+                <mat-error>
+                  @if (familyLastName.errors?.required) {
+                    El nombre del padre/madre es obligatorio.
+                  }
+                </mat-error>
+                }
+              </mat-form-field>
 
-                <mat-form-field class="input-field">
-                  <mat-label>Grade</mat-label>
-                  <mat-select [(ngModel)]="child.grade" name="grade{{i}}" required>
-                    @for (grade of ['K','1','2','3','4','5','6','7','8','9','10','11','12']; track grade) {
-                      <mat-option [value]="grade">{{grade}}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
+              <mat-form-field>
+                <input matInput placeholder="Nombre de Pila (Opcional)" [(ngModel)]="surveyFamilyFirstNameAlt" name="familyFirstNameAlt">
+                <mat-hint>Persona alternativa (Opcional)</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field>
+                <input matInput placeholder="Apellido (Opcional)" [(ngModel)]="surveyFamilyLastNameAlt" name="familyLastNameAlt">
+                <mat-hint>Persona alternativa (Opcional)</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field>
+                <input matInput placeholder="Email" [(ngModel)]="surveyParentEmail" name="parentEmail" required email #parentEmail="ngModel">
+                <mat-hint>Dirección de correo electrónico</mat-hint>
+                @if (parentEmail.invalid && (parentEmail.dirty || parentEmail.touched)) {
+                <mat-error>
+                  @if (parentEmail.errors?.required) {
+                    El correo electrónico es obligatorio.
+                  }
+                  @if (parentEmail.errors?.email) {
+                    Dirección de correo electrónico no válida
+                  }
+                </mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Tiempo</mat-label>
+                <mat-select placeholder="Tiempo" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
+                  @for (time of filteredTimeOptions() | async; track time.value) {
+                  <mat-option [value]="time.value">{{time.value}}</mat-option>
+                  }
+                </mat-select>
+                <mat-hint>Hora deseada para recoger los suministros</mat-hint>
+              </mat-form-field>
+
+              @for (child of surveyChildren; track child; let i = $index) {
+              <mat-card class="child-card">
+                <mat-card-header>
+                  <mat-card-title>Estudiante #{{i + 1}}</mat-card-title>
+                  <mat-card-subtitle>Por favor, complete la información de cada estudiante:</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                  <div class="flex-col section-card">
+                    <mat-form-field>
+                      <input matInput placeholder="Nombre de Pila" [(ngModel)]="child.first_name" name="childFirstName{{i}}" required>
+                      <mat-hint>Nombre del estudiante.</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <input matInput placeholder="Apellido" [(ngModel)]="child.last_name" name="childLastName{{i}}" required>
+                      <mat-hint>Apellido de estudiante.</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Escuela</mat-label>
+                      <mat-select placeholder="Escuela" [(ngModel)]="child.school" name="school{{i}}">
+                        @for (school of filteredSchoolOptions() | async; track school.label) {
+                        <mat-option [value]="school.label">{{school.label}}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint>¿A qué escuela asiste el estudiante?</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Grado</mat-label>
+                      <mat-select [(ngModel)]="child.grade" name="grade{{i}}" required>
+                        @for (grade of gradeOptions; track grade) {
+                          <mat-option [value]="grade.value">{{grade.spanish}}</mat-option>
+                        }
+                      </mat-select>
+                      <mat-hint>¿En qué grado está inscrito el estudiante?</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field>
+                      <mat-label>Maestra/Maestro</mat-label>
+                      <input matInput placeholder="Maestra/Maestro" [(ngModel)]="child.teacher" name="childTeacher{{i}}">
+                      <mat-hint>¿Quién es el maestro del estudiante? (Opcional)</mat-hint>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="radio-group">
+                    <strong>¿Este estudiante necesita una mochila?</strong>
+                    <mat-radio-group [(ngModel)]="child.backpack" name="backpack{{i}}" required aria-label="Testing">
+                      <mat-radio-button [value]="true">Sí</mat-radio-button>
+                      <mat-radio-button [value]="false">No</mat-radio-button>
+                    </mat-radio-group>
+                  </div>
+
+                  <div class="radio-group">
+                    <strong>¿Este estudiante necesita auriculares?</strong>
+                    <mat-radio-group [(ngModel)]="child.headphones" name="headphones{{i}}" required aria-label="Testing">
+                      <mat-radio-button [value]="true">Sí</mat-radio-button>
+                      <mat-radio-button [value]="false">No</mat-radio-button>
+                    </mat-radio-group>
+                  </div>
+
+                </mat-card-content>
+                <mat-card-actions class="child-actions">
+                  @if (surveyChildren.length > 1) {
+                    <button mat-button type="button" (click)="removeChild(i)">Eliminar estudiante</button>
+                  }
+                </mat-card-actions>
+              </mat-card>
+              }
+
+              <button mat-button type="button" (click)="addChild()">Añadir otro estudiante</button>
+          }
+          @else {
+              <mat-form-field>
+                <input matInput placeholder="First Name" [(ngModel)]="surveyFamilyFirstName" name="familyFirstName" required #familyFirstName="ngModel">
+                <mat-hint>Person responsible for pickup.</mat-hint>
+                @if (familyFirstName.invalid && (familyFirstName.dirty || familyFirstName.touched)) {
+                <mat-error>
+                  @if (familyFirstName.errors?.required) {
+                    Guardian first name is required.
+                  }
+                </mat-error>
+                }
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput placeholder="Last Name" [(ngModel)]="surveyFamilyLastName" name="familyLastName" required #familyLastName="ngModel">
+              <mat-hint>Person responsible for pickup.</mat-hint>
+              @if (familyLastName.invalid && (familyLastName.dirty || familyLastName.touched)) {
+              <mat-error>
+                @if (familyLastName.errors?.required) {
+                  Guardian last name is required.
+                  <!-- Why isn't this a form control?-->
+                }
+              </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput placeholder="First Name (Optional)" [(ngModel)]="surveyFamilyFirstNameAlt" name="familyFirstNameAlt">
+              <mat-hint>Alternative pickup person. (Optional)</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput placeholder="Last Name (Optional)" [(ngModel)]="surveyFamilyLastNameAlt" name="familyLastNameAlt">
+              <mat-hint>Alternative pickup person. (Optional)</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput placeholder="Email" [(ngModel)]="surveyParentEmail" name="parentEmail" required email #parentEmail="ngModel">
+              <mat-hint>Guardian Email address</mat-hint>
+              @if (parentEmail.invalid && (parentEmail.dirty || parentEmail.touched)) {
+              <mat-error>
+                @if (parentEmail.errors?.required) {
+                  Guardian Email is required.
+                }
+                @if (parentEmail.errors?.email) {
+                  Invalid Email
+                }
+              </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field>
+              <mat-label>Time</mat-label>
+              <mat-select placeholder="Time" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
+                @for (time of filteredTimeOptions() | async; track time.value) {
+                <mat-option [value]="time.value">{{time.value}}</mat-option>
+                }
+              </mat-select>
+              <mat-hint>Desired time for supplies pickup</mat-hint>
+            </mat-form-field>
+
+            @for (child of surveyChildren; track child; let i = $index) {
+            <mat-card class="child-card">
+              <mat-card-header>
+                <mat-card-title>Student #{{i + 1}}</mat-card-title>
+                <mat-card-subtitle>Please fill out information for each student:</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <div class="flex-col section-card">
+                  <mat-form-field>
+                    <input matInput placeholder="First Name" [(ngModel)]="child.first_name" name="childFirstName{{i}}" required>
+                    <mat-hint>Student first name</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <input matInput placeholder="Last Name" [(ngModel)]="child.last_name" name="childLastName{{i}}" required>
+                    <mat-hint>Student last name</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>School</mat-label>
+                    <mat-select placeholder="School" [(ngModel)]="child.school" name="school{{i}}">
+                      @for (school of filteredSchoolOptions() | async; track school.label) {
+                      <mat-option [value]="school.label">{{school.label}}</mat-option>
+                      }
+                    </mat-select>
+                    <mat-hint>School student is enrolled in</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Grade</mat-label>
+                    <mat-select [(ngModel)]="child.grade" name="grade{{i}}" required>
+                      @for (grade of gradeOptions; track grade) {
+                        <mat-option [value]="grade.value">{{grade.label}}</mat-option>
+                      }
+                    </mat-select>
+                    <mat-hint>Grade student is enrolled in</mat-hint>
+                  </mat-form-field>
+
+                  <mat-form-field>
+                    <mat-label>Teacher</mat-label>
+                    <input matInput placeholder="Teacher" [(ngModel)]="child.teacher" name="childTeacher{{i}}">
+                    <mat-hint>Student's teacher. (Not required)</mat-hint>
+                  </mat-form-field>
+                </div>
 
                 <div class="radio-group">
-                  <h3>Backpack Needed?</h3>
-                  <mat-radio-group [(ngModel)]="child.backpackNeeded" name="backpackNeeded{{i}}" required>
-                    <mat-radio-button value="yes">Yes</mat-radio-button>
-                    <mat-radio-button value="no">No</mat-radio-button>
+                  <strong>Does this student need a backpack?</strong>
+                  <mat-radio-group [(ngModel)]="child.backpack" name="backpack{{i}}" required aria-label="Testing">
+                    <mat-radio-button [value]="true">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false">No</mat-radio-button>
                   </mat-radio-group>
                 </div>
-              </div>
-            </mat-card-content>
-            <mat-card-actions class="child-actions">
-              @if (surveyChildren.length > 1) {
-                <button mat-button type="button" (click)="removeChild(i)">Remove Child</button>
-              }
-            </mat-card-actions>
-          </mat-card>
-          }
 
-          <button mat-button type="button" (click)="addChild()">Add Another Child</button>
+                <div class="radio-group">
+                  <strong>Does this student need headphones?</strong>
+                  <mat-radio-group [(ngModel)]="child.headphones" name="headphones{{i}}" required aria-label="Testing">
+                    <mat-radio-button [value]="true">Yes</mat-radio-button>
+                    <mat-radio-button [value]="false">No</mat-radio-button>
+                  </mat-radio-group>
+                </div>
+
+              </mat-card-content>
+              <mat-card-actions class="child-actions">
+                @if (surveyChildren.length > 1) {
+                  <button mat-button type="button" (click)="removeChild(i)">Remove Student</button>
+                }
+              </mat-card-actions>
+            </mat-card>
+            }
+
+            <button mat-button type="button" (click)="addChild()">Add Another Student</button>
+          }
         </div>
       </mat-card-content>
     </mat-card>
 
     <div class="form-actions">
-      <button mat-raised-button color="primary" type="submit" [disabled]="!surveyForm.form.valid">Submit Survey</button>
-      <button mat-button type="button" (click)="resetSurvey()">Reset Form</button>
+      @if (espanol) {
+        <button mat-raised-button color="accent" type="submit" [disabled]="!surveyForm.form.valid">¡Enviar Encuesta!</button>
+        <button mat-button type="button" (click)="resetSurvey()">Restablecer Encuesta</button>
+      }
+      @else {
+        <button mat-raised-button color="accent" type="submit" [disabled]="!surveyForm.form.valid">Submit Survey</button>
+        <button mat-button type="button" (click)="resetSurvey()">Reset Survey</button>
+      }
     </div>
   </form>
 </div>

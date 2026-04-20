@@ -8,15 +8,17 @@ import org.mongojack.ObjectId;
 // import umm3601.inventory_items.InventoryItem;
 // import umm3601.families.Family;
 
-@SuppressWarnings({"VisibilityModifier"})
+@SuppressWarnings({"VisibilityModifier", "MemberName"})
 public class Family {
 
   @ObjectId @Id
-  @SuppressWarnings({"MemberName"})
+
   public String _id;
 
-  public String name; //Last name
-  //public Student[] students; //Array of students in family
+  public String first_name; //Main pickup person.
+  public String last_name; //Main pickup person last name
+  public String first_name_alt; //Alternate pickup person
+  public String last_name_alt; //Alternate pickup person last name.
   public List<Student> students; //Parseable string of data
   public String time; //Time of appointment
   public String email;
@@ -38,6 +40,6 @@ public class Family {
 
   @Override
   public String toString() {
-    return name;
+    return first_name;
   }
 }

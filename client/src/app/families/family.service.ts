@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Family } from './family';
+import { Time } from './time';
 import { School } from '../grade_list/school';
 //import { Company } from '../company-list/company';
 //import { Signal } from '@angular/core/rxjs-interop';
@@ -28,6 +29,7 @@ export class FamilyService {
   // The URL for the users part of the server API.
   readonly familyUrl: string = `${environment.apiUrl}families`;
   readonly schoolUrl: string = `${environment.apiUrl}schools`;
+  readonly timeUrl: string = `${environment.apiUrl}times`;
   //readonly usersByCompanyUrl: string = `${environment.apiUrl}usersByCompany`;
 
   private readonly schoolKey = 'school'; //school filtering
@@ -47,24 +49,45 @@ export class FamilyService {
   savedFamilyGrade = '';
   savedFamilyStudents = 0;
   savedFamilyTime = '';
-  savedFamilySortBy = 'grade_school'; //Per-session saved value for sort-order search bar. Defaults to grade and school
+  savedFamilySortBy = 'name'; //Per-session saved value for sort-order search bar. Defaults to grade and school
 
   gradeOptions = [
-    { value: 'P', label: 'Pre-School' },
-    { value: 'K', label: 'Kindergarten' },
-    { value: '1', label: '1st Grade' },
-    { value: '2', label: '2nd Grade' },
-    { value: '3', label: '3rd Grade' },
-    { value: '4', label: '4th Grade' },
-    { value: '5', label: '5th Grade' },
-    { value: '6', label: '6th Grade' },
-    { value: '7', label: '7th Grade' },
-    { value: '8', label: '8th Grade' },
-    { value: '9', label: '9th Grade' },
-    { value: '10', label: '10th Grade' },
-    { value: '11', label: '11th Grade' },
-    { value: '12', label: '12th Grade' }
+    { value: 'P', label: 'Pre-School', spanish:'Preescolar'},
+    { value: 'K', label: 'Kindergarten', spanish:'Kindergarten' },
+    { value: '1', label: '1st Grade', spanish:'Primer Grado'},
+    { value: '2', label: '2nd Grade', spanish:'Segundo Grado' },
+    { value: '3', label: '3rd Grade', spanish:'Tercer Grado' },
+    { value: '4', label: '4th Grade', spanish:'Cuarto Grado' },
+    { value: '5', label: '5th Grade', spanish:'Quinto Grado' },
+    { value: '6', label: '6th Grade', spanish:'Sexto Grado' },
+    { value: '7', label: '7th Grade', spanish:'Séptimo Grado' },
+    { value: '8', label: '8th Grade', spanish:'Octavo Grado' },
+    { value: '9', label: '9th Grade', spanish:'Noveno Grado' },
+    { value: '10', label: '10th Grade', spanish:'Décimo Grado' },
+    { value: '11', label: '11th Grade', spanish:'Undécimo Grado' },
+    { value: '12', label: '12th Grade', spanish:'Duodécimo Grado' }
   ];
+
+  //Helper function for display
+  getGradeLabel(grade: string) {
+    for (let g = 0; g < this.gradeOptions.length; g ++) {
+      if (this.gradeOptions[g].value == grade) {
+        return this.gradeOptions[g].label;
+      }
+    }
+  }
+
+  //Another helper function for display
+  familyCount(family:Family, grade?: string, school?: string): number {
+    let count = 0;
+    for (let s = 0; s < family.students.length; s ++) {
+      if (((!grade) || (family.students[s].grade == grade))
+      && ((!school) || (family.students[s].school == school))) {
+        count ++;
+      }
+    }
+    return count;
+  }
 
   /**
    * @param fields a map that specifies which search terms to save
@@ -127,6 +150,11 @@ export class FamilyService {
     return this.httpClient.get<School[]>(this.schoolUrl);
   }
 
+  //Helper function
+  getTimes(): Observable<Time[]> {
+    return this.httpClient.get<Time[]>(this.timeUrl);
+  }
+
   /**
    * Get the `Family` with the specified ID.
    *
@@ -159,16 +187,27 @@ export class FamilyService {
     // Filter by name
     if (filters.name) {
       filters.name = filters.name.toLowerCase();
-      filteredFamilies = filteredFamilies.filter(item => item.name.toLowerCase().indexOf(filters.name) !== -1);
+      filteredFamilies = filteredFamilies.filter(item => item.last_name.toLowerCase().indexOf(filters.name) !== -1);
     }
 
-    if (filters.grade) {
-      //Inclusive- if a family has any students in this grade, they show up in the filter.
+    if ((filters.grade) && (!filters.school)) {
       filteredFamilies = filteredFamilies.filter(item => item.students.some(student => student.grade == filters.grade));
     }
 
-    if (filters.school) {
+    if ((filters.school) && (!filters.grade)) {
       filteredFamilies = filteredFamilies.filter(item => item.students.some(student => student.school == filters.school));
+    }
+
+    if ((filters.school) && (filters.grade)) {
+      //Necessary to do this seperate, since families can have students at different schools.
+      //...In the test data, Koopa Clan has a 2nd grader who goes to MAES, and 10th graders at Saint Mary's...
+      //With the independent filters, they pass the grade filter, (10th), and the school filter, (the 2nd graders count),
+      //And so show up for MAES 10th grade, even though all their 10th graders go to Saint Marys.
+      //...This appears to resolve that issue.
+      filteredFamilies = filteredFamilies.filter(item => item.students.some(student =>
+        (student.grade == filters.grade)
+        && (student.school == filters.school))
+      );
     }
 
     if (filters.students) {
@@ -193,12 +232,12 @@ export class FamilyService {
       break;
     case "name":
       filteredFamilies = filteredFamilies.sort((i1,i2) => {
-        return i1.name.localeCompare(i2.name);
+        return i1.last_name.localeCompare(i2.last_name);
       });
       break;
     case "name_des":
       filteredFamilies = filteredFamilies.sort((i1,i2) => {
-        return i2.name.localeCompare(i1.name);
+        return i2.last_name.localeCompare(i1.last_name);
       });
       break;
     case "time":

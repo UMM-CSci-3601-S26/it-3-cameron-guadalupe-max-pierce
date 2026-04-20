@@ -13,20 +13,23 @@ import { FamilyService } from './family.service';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { of } from 'rxjs';
 import { School } from '../grade_list/school';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+//import { Family } from './family';
+import { Student } from './student';
 
-export interface Student {
-  firstName: string;
-  lastName: string;
-  school: string;
-  grade: string;
-  backpack: boolean;
-}
+// export interface Student {
+//   first_name: string;
+//   last_name: string;
+//   school: string;
+//   grade: string;
+//   backpack: boolean;
+// }
 
-export interface Family {
-  name: string;
-  email: string;
-  students: Student[];
-}
+// export interface Family {
+//   name: string;
+//   email: string;
+//   students: Student[];
+// }
 
 
 @Component({
@@ -39,6 +42,7 @@ export interface Family {
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatAutocompleteModule,
     MatRadioModule,
     MatButtonModule
   ],
@@ -51,10 +55,19 @@ export class AddFamilySurveyComponent {
   private router = inject(Router);
   private schoolInput = signal('');
 
+  filteredGradeOptions = computed(() => {
+    return this.familyService.gradeOptions;
+  });
+
   errMsg = signal('');
 
   surveyFamilyLastName = '';
+  surveyFamilyFirstName = '';
+  surveyFamilyLastNameAlt = '';
+  surveyFamilyFirstNameAlt = '';
   surveyParentEmail = '';
+  surveyFamilyTime = '';
+  espanol = false; //If true, spanish version is used.
 
 
   serverFilteredSchools = signal(
@@ -71,31 +84,53 @@ export class AddFamilySurveyComponent {
     )
   );
 
+  serverFilteredTimes = signal(
+    this.familyService.getTimes().pipe(
+      catchError((err) => {
+        if (!(err.error instanceof ErrorEvent)) {
+          this.errMsg.set(
+            `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
+          );
+        }
+        this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
+        return of<School[]>([]);
+      })
+    )
+  );
+
+  filteredTimeOptions = computed(() => {
+    return this.serverFilteredTimes();
+
+  });
+
   filteredSchoolOptions = computed(() => {
     return this.serverFilteredSchools();
-    // const input = (this.schoolInput() || '').toLowerCase();
-    // if (!input) return this.serverFilteredSchools();
-    // return this.serverFilteredSchools(); //No filtering, short list.
   });
+
+  gradeOptions = this.familyService.gradeOptions;
 
 
   surveyChildren: {
-    firstName: string;
-    lastName: string;
+    first_name: string;
+    last_name: string;
     school: string;
     grade: string;
-    backpackNeeded: string;
+    teacher: string;
+    backpack: boolean;
+    headphones: boolean;
   }[] = [
-      { firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' }
+      { first_name: '', last_name: '', school: '', grade: '', teacher: '', backpack: false, headphones: false}
     ];
 
   addChild(): void {
     this.surveyChildren.push({
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: this.surveyFamilyLastName,
       school: '',
       grade: '',
-      backpackNeeded: ''
+      teacher: '',
+      backpack: false,
+      headphones: false,
     });
   }
 
@@ -107,9 +142,13 @@ export class AddFamilySurveyComponent {
 
   resetSurvey(): void {
     this.surveyFamilyLastName = '';
+    this.surveyFamilyFirstName = '';
+    this.surveyFamilyLastNameAlt = '';
+    this.surveyFamilyFirstNameAlt = '';
     this.surveyParentEmail = '';
+    this.surveyFamilyTime = '';
     this.surveyChildren = [
-      { firstName: '', lastName: '', school: '', grade: '', backpackNeeded: '' }
+      { first_name: '', last_name: '', school: '', grade: '', backpack: false, headphones: false, teacher: '' }
     ];
   }
 
@@ -122,10 +161,11 @@ export class AddFamilySurveyComponent {
   submitSurvey(): void {
     if (
       !this.surveyFamilyLastName ||
+      !this.surveyFamilyFirstName ||
       !this.surveyParentEmail ||
       !this.isValidEmail(this.surveyParentEmail) ||
       this.surveyChildren.some(
-        c => !c.firstName || !c.lastName || !c.school || !c.grade
+        c => !c.first_name || !c.last_name || !c.school || !c.grade
       )
     ) {
       this.snackBar.open(
@@ -141,31 +181,36 @@ export class AddFamilySurveyComponent {
     }
 
     const students: Student[] = this.surveyChildren.map(c => ({
-      firstName: c.firstName,
-      lastName: c.lastName,
+      first_name: c.first_name,
+      last_name: c.last_name,
       school: c.school,
+      teacher: c.teacher,
       grade: c.grade,
-      backpack: c.backpackNeeded === 'yes'
+      backpack: c.backpack,
+      headphones: c.headphones
     }));
 
     this.familyService.addFamily({
-      name: this.surveyFamilyLastName,
+      first_name: this.surveyFamilyFirstName,
+      last_name: this.surveyFamilyLastName,
+      first_name_alt: this.surveyFamilyFirstNameAlt,
+      last_name_alt: this.surveyFamilyLastNameAlt,
+      time: this.surveyFamilyTime,
       email: this.surveyParentEmail,
       students
     }).subscribe({
       next: () => {
-        this.snackBar.open('Family added successfully!', 'OK', {
+        this.snackBar.open('Survey submitted successfully!', 'OK', {
           duration: 5000
         });
         this.resetSurvey();
         this.router.navigate(['/families']);
       },
       error: (err: Error) => {
-        this.snackBar.open(`Error adding family: ${err.message}`, 'OK', {
+        this.snackBar.open(`Error submitting survey: ${err.message}`, 'OK', {
           duration: 5000
         });
       }
     });
   }
-
 }
