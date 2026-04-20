@@ -1,0 +1,70 @@
+.survey-list-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+
+  // why is this like this??? Shouldn't h1 just use default color?
+  h1 {
+    color: #000;
+    margin-bottom: 20px;
+  }
+}
+
+.survey-card {
+  margin-bottom: 20px;
+}
+
+.center-title {
+  display: flex;
+  justify-content: space-between;
+}
+
+.section-card {
+  margin-bottom: 8px;
+  padding-bottom: 10px;
+  padding-left: 15px;
+  padding-top: 10px;
+}
+
+
+.flex-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.input-field {
+  flex: 1 1 200px;
+}
+
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.child-form {
+  margin-bottom: 12px;
+}
+
+.child-card {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.child-card mat-card-content {
+  padding-top: 0;
+}
+
+.child-actions {
+  justify-content: flex-end;
+  padding: 0 16px 16px;
+  display: flex;
+  gap: 8px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
