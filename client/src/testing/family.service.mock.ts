@@ -16,7 +16,7 @@ import { FamilyService } from 'src/app/families/family.service';
 })
 
 //'modifyMass'
-export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'|'getSchools' | 'deleteAll'|'getGradeLabel'|'familyCount' | 'getTimes' > {
+export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'getFamilyById' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'|'getSchools' | 'deleteAll'|'getGradeLabel'|'familyCount' | 'getTimes' > {
   savedFamilyName = ''; //Per-session saved value for name search bar.
   savedFamilySchool = '';
   savedFamilyGrade = '';
