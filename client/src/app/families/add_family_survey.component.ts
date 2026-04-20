@@ -142,7 +142,7 @@ export class AddFamilySurveyComponent {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return Boolean(normalized && emailPattern.test(normalized));
   }
-
+  //We should really be using proper validators for this, but whatever...
   submitSurvey(): void {
     if (
       !this.surveyFamilyLastName ||

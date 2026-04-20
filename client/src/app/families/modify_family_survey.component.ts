@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { FamilyService } from './family.service';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { of, combineLatest, tap } from 'rxjs';
+import { RouterLink } from '@angular/router';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { School } from '../grade_list/school';
 import { Family } from './family';
@@ -22,11 +23,14 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { Student } from './student';
 import { Time } from './time';
 
+//How TF is the add family survey validating this???
+
 @Component({
   selector: 'app-modify-family-survey',
   standalone: true,
   imports: [
     CommonModule,
+    RouterLink,
     FormsModule,
     MatCardModule,
     MatFormFieldModule,
@@ -59,8 +63,8 @@ export class ModifyFamilySurveyComponent {
   surveyFamilyFirstNameAlt = '';
   surveyParentEmail = '';
   surveyFamilyTime = '';
-  studentsShown = false; //Once the old student data loads, the user should be able to modify it.
-  surveyFinished = false;
+  initialized = false;
+  surveyChildren: Student[] = [];
 
   //Get schools from the database to allow for autofill and limiting inputs.
   private schoolInput$ = toObservable(this.schoolInput);
@@ -141,27 +145,29 @@ export class ModifyFamilySurveyComponent {
     )
   );
 
-  //All the following stupid BS is necessary because this stupid thing isn't instalized beforehand.
+  //All the following stupid BS is necessary because we aren't using fricking form controls and family isn't initialized properly...
   // surveyChildren: Student[] = this.family().students;
-  surveyChildren: Student[] = [];
 
-  revealStudents(): void { //Screw it all, I'm done with this.
-    this.studentsShown = true;
-    this.surveyChildren = this.family().students;
+  constructor() {
+    this.initFamily();
   }
 
-  // constructor() {
-  //   const location = inject(Location);
-  //   const router = inject(Router);
-
-  //   router.events.subscribe(() => {
-  //     if ((location.path() != '') && (!this.surveyInit) && (!this.surveyFinished)) {
-  //       //this.route = location.path();
-  //       this.surveyChildren = this.family().students;
-  //       this.surveyInit = true;
-  //     }
-  //   });
-  // }
+  initFamily() {
+    if (this.family() != undefined) {
+      this.surveyFamilyFirstName = this.family().first_name;
+      this.surveyFamilyLastName = this.family().last_name;
+      this. surveyFamilyLastNameAlt = this.family().last_name_alt;
+      this.surveyFamilyFirstNameAlt = this.family().first_name_alt;
+      this.surveyParentEmail = this.family().email;
+      this.surveyFamilyTime = this.family().time;
+      this.surveyChildren = this.family().students;
+      this.initialized = true;
+    } else {
+      setTimeout(() => {
+        this.initFamily();
+      }, 200); //This is probably a horrible way of doing this...
+    }
+  }
 
   addChild(): void {
     this.surveyChildren.push({
@@ -198,10 +204,27 @@ export class ModifyFamilySurveyComponent {
   }
 
   submitSurvey() {
-    //Reveal students FIRST to ensure the correct default values are loaded... lord this is janky
-    this.revealStudents();
-
-    //Delete original item and add the new item specified in the form.
+    if (
+      !this.surveyFamilyLastName ||
+      !this.surveyFamilyFirstName ||
+      !this.surveyParentEmail ||
+      !this.isValidEmail(this.surveyParentEmail) ||
+      this.surveyChildren.some(
+        c => !c.first_name || !c.last_name || !c.school || !c.grade
+      )
+    ) {
+      this.snackBar.open(
+        !this.surveyParentEmail || !this.isValidEmail(this.surveyParentEmail)
+          ? 'Please enter a valid parent email address'
+          : 'Please fill in all required fields',
+        'OK',
+        {
+          duration: 5000
+        }
+      );
+      return;
+    }
+    //If still running, Delete original item and add the new item specified in the form.
     this.familyService.deleteFamily(this.family()._id).subscribe({
       error: err => {
         if (err.status === 400) {
@@ -244,7 +267,7 @@ export class ModifyFamilySurveyComponent {
           null,
           { duration: 3000 }
         );
-        this.router.navigate(['/inventory']);
+        this.router.navigate(['/families']);
       },
       error: err => {
         if (err.status === 400) {
