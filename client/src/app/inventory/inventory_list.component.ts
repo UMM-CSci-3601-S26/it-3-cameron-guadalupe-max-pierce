@@ -345,12 +345,12 @@ export class InventoryListComponent implements AfterViewInit {
     this.snackBar.open('Inventory exported successfully', 'OK', { duration: 3000 });
   }
 
-  private escapeCsvValue(value: string | undefined): string {
+  public escapeCsvValue(value: string | undefined): string {
     if (!value) return '';
 
-    // Escape quotes and wrap in quotes if value contains comma, newline, or quote
+    // Escape quotes and wrap in quotes if value contains comma, newline, or double/single quote
     const escaped = value.replace(/"/g, '""');
-    if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"')) {
+    if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"') || escaped.includes("'")) {
       return `"${escaped}"`;
     }
     return escaped;
