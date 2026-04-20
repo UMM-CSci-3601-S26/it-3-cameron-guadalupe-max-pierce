@@ -173,4 +173,9 @@ describe('Misbehaving Family List', () => {
       .withContext('the error message will be')
       .toContain('Problem contacting the server – Error Code:');
   });
+  it('returns an error message when getFamilies() throwss an error during exportToCSV()', () => {
+    spyOn(familyServiceStub, 'getFamilies').and.throwError('getFamilies() throws an error');
+    familyList.exportToCSV();
+    expect(familyList.errMsg()).toContain('Problem contacting the server – Error Code:');
+  });
 });

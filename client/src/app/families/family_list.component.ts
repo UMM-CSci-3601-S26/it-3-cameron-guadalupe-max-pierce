@@ -335,6 +335,27 @@ export class FamilyListComponent {
       this.familyService.reloadPage();
     }
   }
+  exportToCSV() {
+    const header = ['First Name', 'Last Name', 'Time', 'Students'];
+    const rows = this.serverFilteredItems().map(family => [
+      family.first_name,
+      family.last_name,
+      family.time,
+      family.students.map(s => `${s.first_name} (${s.grade} at ${s.school})`).join('; ')
+    ]);
+
+    const csvContent = [header, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "families.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+
+  }
 
   //Not relevant for families? Will still want a clear all families button.
   // resetLocations() {
