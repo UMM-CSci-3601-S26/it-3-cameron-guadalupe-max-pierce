@@ -218,11 +218,15 @@ export class GradeListComponent {
         );
         //For every requirement of every student...
         for (let r = 0; r < gradeReqs.length; r ++) {
-          index = this.shoppingService.alreadyInReqs(gradeReqs[r], runningTotal);
-          if (index == -1) {//Add a new item
-            runningTotal.push(gradeReqs[r]);
-          } else {//or increase requirement for existing item.
-            runningTotal[index].required += gradeReqs[r].required;
+          if (((gradeReqs[r].type !== "backpacks") || (currentFamilies[i].students[s].backpack))
+          && ((gradeReqs[r].type !== "headphones") || (currentFamilies[i].students[s].headphones))) {
+            //Backpacks and headphones are only counted if the current student requires one.
+            index = this.shoppingService.alreadyInReqs(gradeReqs[r], runningTotal);
+            if (index == -1) {//Add a new item to the running total...
+              runningTotal.push(gradeReqs[r]);
+            } else {//or increase requirement for existing item.
+              runningTotal[index].required += gradeReqs[r].required;
+            }
           }
         }
       }
