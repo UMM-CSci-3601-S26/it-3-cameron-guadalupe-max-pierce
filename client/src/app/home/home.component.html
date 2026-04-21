@@ -1,14 +1,59 @@
+<header class="hero-header">
+  <h1>Ready 4 Learning</h1>
+  <p>Homepage</p>
+</header>
+
 <div class="flex-row">
   <div class="flex-1">
     <mat-card class="home-card">
       <mat-card-header>
-        <mat-card-title>
-          Home
-        </mat-card-title>
+        <mat-card-title>Dashboard</mat-card-title>
+        <mat-card-subtitle>Operational DashBoard Overview</mat-card-subtitle>
       </mat-card-header>
+
       <mat-card-content>
-        This is a home page! It doesn't do anything!
+        <div class = "stats container">
+
+          <!-- Shows stats for Student Info -->
+        <div class ="info-tile students">
+          <mat-icon>group</mat-icon>
+          <div class = "tile-content">
+            <span class="label">students Signed up</span>
+            <span class="value">{{ studentCount|| 0}}</span>
+          </div>
+        </div>
+
+        <!-- Shows stats for Total Stock -->
+        <div class ="info-tile stock">
+          <mat-icon>inventory</mat-icon>
+          <div class="tile-content">
+            <span class="label">Total Stock</span>
+            <span class="value">{{ stockCount|| 0}}</span>
+          </div>
+        </div>
+
+        <!-- Shows status for stock -->
+        <div class="info-tile status">
+          <mat-icon>sensors</mat-icon>
+          <div class="tile-content">
+            <span class="label">SystemStatus</span>
+            <span class="status-text">{{ lowStockAlert ?  'Low Stock Alert' : 'Active'}}</span>
+          </div>
+        </div>
+
+        <!-- General info about system -->
+        <section class ="general-info">
+          <h3>System Overview </h3>
+          <p> Welcome to Ready 4 Learning HomePage! this dashboard provides real time updates on the system status, key metrics, and Student Engagement. </p>
+        </section>
+      </div>
       </mat-card-content>
+
+
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary">View Inventory</button>
+        <button mat-raised-button color="accent">Manage Students</button>
+      </mat-card-actions>
     </mat-card>
   </div>
 </div>
