@@ -79,6 +79,17 @@
             Reset Inventory
           </button>
 
+            <button mat-raised-button
+            color="primary"
+            [style.height.px]=55
+            (click)="exportToCSV()"
+            data-test="exportCSVButton"
+            matTooltip="Export filtered inventory to CSV"
+            >
+    <mat-icon>download</mat-icon>
+    Export to CSV
+  </button>
+
         </div>
 
         <div class="flex-row gap-8 flex-wrap">
@@ -108,13 +119,16 @@
   </div>
 </div>
 
-<div class="flex-row" style="justify-content: flex-end; padding: 8px 0;">
-  <button mat-icon-button (click)="viewMode.set('list')" [color]="viewMode() === 'list' ? 'primary' : undefined" data-test="listViewButton" matTooltip="List view">
-    <mat-icon>list</mat-icon>
-  </button>
-  <button mat-icon-button (click)="viewMode.set('grid')" [color]="viewMode() === 'grid' ? 'primary' : undefined" data-test="gridViewButton" matTooltip="Grid view">
-    <mat-icon>grid_view</mat-icon>
-  </button>
+<div class="flex-row" style="justify-content: space-between; align-items: center; padding: 8px 0;">
+
+  <div>
+    <button mat-icon-button (click)="viewMode.set('list')" [color]="viewMode() === 'list' ? 'primary' : undefined" data-test="listViewButton" matTooltip="List view">
+      <mat-icon>list</mat-icon>
+    </button>
+    <button mat-icon-button (click)="viewMode.set('grid')" [color]="viewMode() === 'grid' ? 'primary' : undefined" data-test="gridViewButton" matTooltip="Grid view">
+      <mat-icon>grid_view</mat-icon>
+    </button>
+  </div>
 </div>
 
 @if (viewMode() === 'grid') {
