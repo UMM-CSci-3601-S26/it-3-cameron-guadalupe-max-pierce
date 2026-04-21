@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { AppComponent } from 'src/app/app.component';
 import { Family } from '../app/families/family';
+import { Time } from '../app/families/time';
 import { School } from '../app/grade_list/school';
 import { FamilyService } from 'src/app/families/family.service';
 
@@ -15,7 +16,7 @@ import { FamilyService } from 'src/app/families/family.service';
 })
 
 //'modifyMass'
-export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'|'getSchools' | 'deleteAll'|'getGradeLabel'|'familyCount'> {
+export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'getFamilyById' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'|'getSchools' | 'deleteAll'|'getGradeLabel'|'familyCount' | 'getTimes' > {
   savedFamilyName = ''; //Per-session saved value for name search bar.
   savedFamilySchool = '';
   savedFamilyGrade = '';
@@ -38,6 +39,21 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'f
       "_id": "saint_mary's_id",
       "value": "Saint Mary's Elementary",
       "label":"Saint Mary's"
+    }
+  ];
+
+  static testTimes: Time[] = [
+    {
+      "_id": "9_id",
+      "value": "9:00am",
+    },
+    {
+      "_id": "12_id",
+      "value": "12:00pm",
+    },
+    {
+      "_id": "2_id",
+      "value": "2:00pm",
     }
   ];
 
@@ -216,6 +232,10 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'f
 
   getSchools(): Observable<School[]> {
     return of(MockFamilyService.testSchools);
+  }
+
+  getTimes(): Observable<Time[]> {
+    return of(MockFamilyService.testTimes);
   }
 
   //Probably unessesary
