@@ -60,13 +60,12 @@
 
           <mat-form-field [style.width.px]=250 class="input-field">
             <!-- <mat-label>Desc</mat-label> -->
-            <mat-select placeholder="Sort by School & Grade" [(ngModel)]="sortBy" data-test="sortBySelect">
-              <mat-option value="school">Sort by School & Grade</mat-option>
-              <mat-option value="name">Sort by Name</mat-option> <!--Must be provided, otherwise reset won't work -->
-              <mat-option value="name_des">Sort by Name (Des)</mat-option>
+            <mat-select placeholder="Sort by Name (A-Z)" [(ngModel)]="sortBy" data-test="sortBySelect">
+              <mat-option value="name">Sort by Name (A-Z)</mat-option> <!--Must be provided, otherwise reset won't work -->
+              <mat-option value="name_des">Sort by Name (Z-A)</mat-option>
               <mat-option value="type">Sort by Type</mat-option>
-              <mat-option value="quantity">Sort by Required</mat-option>
-              <mat-option value="quantity_des">Sort by Required (Des)</mat-option>
+              <mat-option value="quantity">Sort by Required (1-9)</mat-option>
+              <mat-option value="quantity_des">Sort by Required (9-1)</mat-option>
             </mat-select>
             <mat-hint>Select Sort Order</mat-hint>
           </mat-form-field>
@@ -82,20 +81,44 @@
   <div class="flex-1">
     <!-- The actual grade requirement list -->
     <div>
-        <!--Regular, untyped sorting-->
-          <mat-card>
-          <mat-card-content>
-          <mat-nav-list class="item-nav-list" color="accent">
-            @for (item of shoppingListItems(); track item._id) {
-                <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
-                <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.required}}</strong> ~ {{item.name}}</span>
-                <span matListItemLine class="item-list-desc"> {{item.desc}} @if (item.pack > 1) {~ Package of {{item.pack}} ct.}</span>
-                </a>
-            }
-          </mat-nav-list>
-        </mat-card-content>
-        </mat-card>
-
+          @if (sortBy() === "type") { <!-- Special sectioned list for type -->
+            <mat-nav-list class="item-nav-list" color="accent">
+              @for (collection of typeFilteredShoppingListItems(); track collection.items) {
+                <mat-card class = "section-card">
+                <mat-card-content>
+                <mat-toolbar color="primary">
+                <h2 matSubheader>{{ collection.header }}</h2>
+                </mat-toolbar>
+                <!--Sublist for each item type-->
+                @for (item of collection.items; track item._id) {
+                    <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
+                    <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
+                    <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
+                    @if (item.pack > 1) {
+                      <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
+                    }
+                    </a>
+                }
+                </mat-card-content>
+                </mat-card>
+              }
+            </mat-nav-list>
+          }
+          @else { <!--Regular, untyped sorting-->
+            <!--Regular, untyped sorting-->
+            <mat-card>
+            <mat-card-content>
+            <mat-nav-list class="item-nav-list" color="accent">
+              @for (item of shoppingListItems(); track item._id) {
+                  <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.required}}</strong> ~ {{item.name}}</span>
+                  <span matListItemLine class="item-list-desc"> {{item.desc}} @if (item.pack > 1) {~ Package of {{item.pack}} ct.}</span>
+                  </a>
+              }
+            </mat-nav-list>
+          </mat-card-content>
+          </mat-card>
+          }
     </div>
   </div>
   } @else {
@@ -110,12 +133,3 @@
   }
 
 </div>
-
-<!-- <button mat-fab class="add-item-fab"
-  matTooltip="Add Requirement"
-  matTooltipPosition="left"
-  routerLink="/grade_list/new"
-  (click)="updateOrigin()"
-  data-test="addItemButton">
-  <mat-icon class="md-24" aria-label="Add Item">add</mat-icon>
-</button> -->

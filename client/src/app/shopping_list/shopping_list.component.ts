@@ -22,7 +22,7 @@ import { School } from '../grade_list/school';
 import { ShoppingListService } from './shopping_list.service';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-//import { MatToolbar } from '@angular/material/toolbar';
+import { MatToolbar } from '@angular/material/toolbar';
 
 /**
  * A component that displays a list of users, either as a grid
@@ -48,7 +48,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatAutocompleteModule,
     MatOptionModule,
     MatRadioModule,
-    //MatToolbar,
+    MatToolbar,
     //MatTableModule,
     //InventoryCardComponent,
     MatListModule,
@@ -211,21 +211,34 @@ export class ShoppingListComponent {
     //For every student...
     for (let i = 0; i < currentFamilies.length; i ++) {
       for (let s = 0; s < currentFamilies[i].students.length; s ++) {
-        //Get all required items for the current student.
-        gradeReqs = this.shoppingService.gradeService.filterItems(
-          this.serverFilteredRequirements(),
-          {grade:currentFamilies[i].students[s].grade, school:currentFamilies[i].students[s].school,}
-        );
-        //For every requirement of every student...
-        for (let r = 0; r < gradeReqs.length; r ++) {
-          if (((gradeReqs[r].type !== "backpacks") || (currentFamilies[i].students[s].backpack))
-          && ((gradeReqs[r].type !== "headphones") || (currentFamilies[i].students[s].headphones))) {
-            //Backpacks and headphones are only counted if the current student requires one.
-            index = this.shoppingService.alreadyInReqs(gradeReqs[r], runningTotal);
-            if (index == -1) {//Add a new item to the running total...
-              runningTotal.push(gradeReqs[r]);
-            } else {//or increase requirement for existing item.
-              runningTotal[index].required += gradeReqs[r].required;
+        //if school and grade filters are provided, only consider students with matching school and grade.
+        if (((this.itemSchool() == '') || (currentFamilies[i].students[s].school.toLowerCase().indexOf(this.itemSchool().toLowerCase()) !== -1))
+        && ((this.itemGrade() == '') || (currentFamilies[i].students[s].grade.toLowerCase().indexOf(this.itemGrade().toLowerCase()) !== -1))) {
+          //Get all required items for the current student.
+          gradeReqs = this.shoppingService.gradeService.filterItems(
+            this.serverFilteredRequirements(),
+            {grade:currentFamilies[i].students[s].grade, school:currentFamilies[i].students[s].school,}
+          );
+          //For every requirement of every student...
+          for (let r = 0; r < gradeReqs.length; r ++) {
+            if (((gradeReqs[r].type !== "backpacks") || (currentFamilies[i].students[s].backpack))
+            && ((gradeReqs[r].type !== "headphones") || (currentFamilies[i].students[s].headphones))) {
+              //Backpacks and headphones are only counted if the current student requires one.
+              index = this.shoppingService.alreadyInReqs(gradeReqs[r], runningTotal);
+              if (index == -1) {//Add a new item to the running total...
+                runningTotal.push({ //We need to CREATE a new required item, otherwise successive calls update the same set of items.
+                  name: gradeReqs[r].name,
+                  type: gradeReqs[r].type,
+                  desc: gradeReqs[r].desc,
+                  grade:'', //No longer relevant
+                  school:'',
+                  required: gradeReqs[r].required,
+                  pack: gradeReqs[r].pack,
+                  _id:undefined,
+                });
+              } else {//or increase requirement for existing item.
+                runningTotal[index].required += gradeReqs[r].required;
+              }
             }
           }
         }
@@ -246,6 +259,11 @@ export class ShoppingListComponent {
       }
     }
 
-    return finalList;
+    return this.shoppingService.gradeService.filterItems(finalList,{name:this.itemName(), type:this.itemType(), sortBy:this.sortBy(), desc:this.itemDesc()});
   });
+
+  typeFilteredShoppingListItems = computed(() => {
+    return [];
+  });
+
 }
