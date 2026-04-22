@@ -22,7 +22,7 @@ import { School } from '../grade_list/school';
 import { ShoppingListService } from './shopping_list.service';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatToolbar } from '@angular/material/toolbar';
+//import { MatToolbar } from '@angular/material/toolbar';
 
 /**
  * A component that displays a list of users, either as a grid
@@ -48,8 +48,8 @@ import { MatToolbar } from '@angular/material/toolbar';
     MatAutocompleteModule,
     MatOptionModule,
     MatRadioModule,
-    MatToolbar,
-    // MatTableModule,
+    //MatToolbar,
+    //MatTableModule,
     //InventoryCardComponent,
     MatListModule,
     RouterLink,
@@ -58,7 +58,7 @@ import { MatToolbar } from '@angular/material/toolbar';
     MatIconModule
   ],
 })
-export class GradeListComponent {
+export class ShoppingListComponent {
   private shoppingService = inject(ShoppingListService);
   // snackBar the `MatSnackBar` used to display feedback
   public snackBar = inject(MatSnackBar);
