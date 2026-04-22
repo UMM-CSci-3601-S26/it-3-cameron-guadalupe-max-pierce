@@ -49,6 +49,12 @@
             </mat-autocomplete>
             <mat-hint>Search by type</mat-hint>
           </mat-form-field>
+
+          <mat-radio-group aria-label="View type" [(ngModel)]="subtractInventory" data-test="subtractRadio">
+              <mat-radio-button [value]="true">Subtract Inventory</mat-radio-button>
+              <mat-radio-button [value]="false">Ignore Inventory</mat-radio-button>
+          </mat-radio-group>
+
         </div>
 
         <div class="flex-row gap-8 flex-wrap">

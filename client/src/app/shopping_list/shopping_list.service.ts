@@ -29,6 +29,7 @@ export class ShoppingListService {
   savedShoppingListType = ''; //Per-session saved value for type search bar.
   savedShoppingListDesc = ''; //Per-session saved value for description search bar.
   savedShoppingListSortBy = ''; //Per-session saved value for sort-order search bar.
+  savedSubtractInventory = true;
 
   inventoryService = new InventoryService;
   typeOptions = this.inventoryService.typeOptions;

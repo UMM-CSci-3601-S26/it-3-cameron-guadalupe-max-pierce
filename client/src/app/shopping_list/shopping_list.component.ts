@@ -70,6 +70,7 @@ export class ShoppingListComponent {
   itemSchool = signal<string|undefined>(this.shoppingService.savedShoppingListSchool);
   itemType = signal<string|undefined>(this.shoppingService.savedShoppingListType);
   sortBy = signal<string|undefined>(this.shoppingService.savedShoppingListSortBy);
+  subtractInventory = signal<boolean|undefined>(this.shoppingService.savedSubtractInventory);
 
   filteredTypeOptions = computed(() => {
     const input = (this.itemType() || '').toLowerCase();
@@ -204,7 +205,7 @@ export class ShoppingListComponent {
     });
     const currentInventory = this.serverFilteredInventory();
     const runningTotal: RequiredItem[] = []; //Running total of requirements based on student grade reqs.
-    const finalList: RequiredItem[] = []; //The running total, after inventory filtering.
+    let finalList: RequiredItem[] = []; //The running total, after inventory filtering.
     const currentFamilies = this.serverFilteredFamilies();
     let gradeReqs: RequiredItem[] = []; //Requirements for each individual student.
     let index = -1;
@@ -246,20 +247,24 @@ export class ShoppingListComponent {
     }
     //We should now have an array with all the requirements, with correct quantities.
     // Now we subtract our current stock from the requirements.
-    for (let i = 0; i < runningTotal.length; i ++) {
-      index = this.shoppingService.alreadyInInventory(runningTotal[i],currentInventory);
-      if (index == -1) { //If no matching items in inventory, add to shopping list unchanged.
-        finalList.push(runningTotal[i]);
-      } else { //Otherwise if the inventory has matching items...
-        if (currentInventory[index].stocked < runningTotal[i].required) {
-          //Push those items, but ONLY if there will still be some items required.
-          runningTotal[i].required -= currentInventory[index].stocked;
+    if (this.subtractInventory()) {
+      for (let i = 0; i < runningTotal.length; i ++) {
+        index = this.shoppingService.alreadyInInventory(runningTotal[i],currentInventory);
+        if (index == -1) { //If no matching items in inventory, add to shopping list unchanged.
           finalList.push(runningTotal[i]);
+        } else { //Otherwise if the inventory has matching items...
+          if (currentInventory[index].stocked < runningTotal[i].required) {
+            //Push those items, but ONLY if there will still be some items required.
+            runningTotal[i].required -= currentInventory[index].stocked;
+            finalList.push(runningTotal[i]);
+          }
         }
       }
+    } else {
+      finalList = runningTotal;
     }
 
-    return this.shoppingService.gradeService.filterItems(finalList,{name:this.itemName(), type:this.itemType(), sortBy:this.sortBy(), desc:this.itemDesc()});
+    return this.shoppingService.gradeService.filterItems(finalList, {name:this.itemName(), type:this.itemType(), sortBy:this.sortBy(), desc:this.itemDesc()});
   });
 
   typeFilteredShoppingListItems = computed(() => {
