@@ -99,10 +99,7 @@
                 @for (item of collection.items; track item._id) {
                     <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
                     <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
-                    <span matListItemLine class="item-list-desc"> {{item.desc}} ~ required for {{item.school}}, {{item.grade}}</span>
-                    @if (item.pack > 1) {
-                      <span matListItemLine class="item-list-desc">Package of {{item.pack}} ct.</span>
-                    }
+                    <span matListItemLine class="item-list-desc"> {{item.desc}} @if (item.pack > 1) {~ Package of {{item.pack}} ct.}</span>
                     </a>
                 }
                 </mat-card-content>

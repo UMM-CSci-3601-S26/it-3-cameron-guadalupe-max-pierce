@@ -235,7 +235,29 @@ export class ShoppingListComponent {
   });
 
   typeFilteredShoppingListItems = computed(() => {
-    return [];
-  });
+    const currentItems = this.shoppingListItems();
+    const typedArray: { header: string, items: RequiredItem[] }[] = [];
+    let matchingItems = [];
+    for (let i = 0; i < this.shoppingService.gradeService.typeOptions.length - 1; i++) {
+      matchingItems = this.shoppingService.gradeService.filterItems(currentItems, {
+        name: this.itemName(),
+        type: this.shoppingService.gradeService.typeOptions[i].value,
+        required: 0,
+        desc: this.itemDesc(),
+        grade: this.itemGrade(),
+        school: this.itemSchool(),
+        sortBy: this.sortBy()
+      })
+      //Only sections that have matching items are shown.
+      if (matchingItems.length > 0) {
+        typedArray.push({
+          header: this.shoppingService.gradeService.typeOptions[i].label,
+          items: matchingItems
+        })
+      }
+    }
+
+    return typedArray;
+  })
 
 }
