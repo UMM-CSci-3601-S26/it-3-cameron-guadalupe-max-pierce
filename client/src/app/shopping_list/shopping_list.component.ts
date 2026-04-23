@@ -12,11 +12,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
-import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
+import { combineLatest, switchMap, tap } from 'rxjs'; //catchError, of
 import { RequiredItem } from '../grade_list/required_item';
 import { InventoryItem } from '../inventory/inventory_item';
 import { Family } from '../families/family';
-import { School } from '../grade_list/school';
+// import { School } from '../grade_list/school';
 //import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 //import { InventoryCardComponent } from './inventory_card.component';
 import { ShoppingListService } from './shopping_list.service';
@@ -115,15 +115,6 @@ export class ShoppingListComponent {
         switchMap(() =>
           this.shoppingService.gradeService.getSchools() //If we decide to filter on server, args go her
         ),
-        catchError((err) => {
-          if (!(err.error instanceof ErrorEvent)) {
-            this.errMsg.set(
-              `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
-            );
-          }
-          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
-          return of<School[]>([]);
-        }),
         tap(() => {
         })
       )
@@ -136,15 +127,6 @@ export class ShoppingListComponent {
         switchMap(() =>
           this.shoppingService.inventoryService.getItems({}) //If we decide to filter on server, args go her
         ),
-        catchError((err) => {
-          if (!(err.error instanceof ErrorEvent)) {
-            this.errMsg.set(
-              `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
-            );
-          }
-          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
-          return of<InventoryItem[]>([]);
-        }),
         tap(() => {
         })
       )
@@ -158,15 +140,6 @@ export class ShoppingListComponent {
         switchMap(() =>
           this.shoppingService.gradeService.getItems({}) //If we decide to filter on server, args go her
         ),
-        catchError((err) => {
-          if (!(err.error instanceof ErrorEvent)) {
-            this.errMsg.set(
-              `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
-            );
-          }
-          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
-          return of<RequiredItem[]>([]);
-        }),
         tap(() => {
         })
       )
@@ -179,51 +152,28 @@ export class ShoppingListComponent {
         switchMap(() =>
           this.shoppingService.familyService.getFamilies({}) //If we decide to filter on server, args go her
         ),
-        catchError((err) => {
-          if (!(err.error instanceof ErrorEvent)) {
-            this.errMsg.set(
-              `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
-            );
-          }
-          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
-          return of<Family[]>([]);
-        }),
         tap(() => {
         })
       )
     );
 
-  shoppingListItems = computed(() => {
-    //Whenever we sort, we also update saved search.
-    this.shoppingService.updateSavedSearch({
-      name: this.itemName(),
-      desc: this.itemDesc(),
-      grade: this.itemGrade(),
-      school: this.itemSchool(),
-      type: this.itemType(),
-      sortby: this.sortBy()
-    });
-    const currentInventory = this.serverFilteredInventory();
+  calculateShoppingList = (inventory: InventoryItem[], requirements: RequiredItem[], families: Family[], subtractInventory: boolean): RequiredItem[] => {
     const runningTotal: RequiredItem[] = []; //Running total of requirements based on student grade reqs.
     let finalList: RequiredItem[] = []; //The running total, after inventory filtering.
-    const currentFamilies = this.serverFilteredFamilies();
     let gradeReqs: RequiredItem[] = []; //Requirements for each individual student.
     let index = -1;
     //For every student...
-    for (let i = 0; i < currentFamilies.length; i ++) {
-      for (let s = 0; s < currentFamilies[i].students.length; s ++) {
+    for (let i = 0; i < families.length; i ++) {
+      for (let s = 0; s < families[i].students.length; s ++) {
         //if school and grade filters are provided, only consider students with matching school and grade.
-        if (((this.itemSchool() == '') || (currentFamilies[i].students[s].school.toLowerCase().indexOf(this.itemSchool().toLowerCase()) !== -1))
-        && ((this.itemGrade() == '') || (currentFamilies[i].students[s].grade.toLowerCase().indexOf(this.itemGrade().toLowerCase()) !== -1))) {
+        if (((this.itemSchool() == '') || (families[i].students[s].school.toLowerCase().indexOf(this.itemSchool().toLowerCase()) !== -1))
+        && ((this.itemGrade() == '') || (families[i].students[s].grade.toLowerCase().indexOf(this.itemGrade().toLowerCase()) !== -1))) {
           //Get all required items for the current student.
-          gradeReqs = this.shoppingService.gradeService.filterItems(
-            this.serverFilteredRequirements(),
-            {grade:currentFamilies[i].students[s].grade, school:currentFamilies[i].students[s].school,}
-          );
+          gradeReqs = this.shoppingService.gradeService.filterItems(requirements, {grade:families[i].students[s].grade, school:families[i].students[s].school,});
           //For every requirement of every student...
           for (let r = 0; r < gradeReqs.length; r ++) {
-            if (((gradeReqs[r].type !== "backpacks") || (currentFamilies[i].students[s].backpack))
-            && ((gradeReqs[r].type !== "headphones") || (currentFamilies[i].students[s].headphones))) {
+            if (((gradeReqs[r].type !== "backpacks") || (families[i].students[s].backpack))
+            && ((gradeReqs[r].type !== "headphones") || (families[i].students[s].headphones))) {
               //Backpacks and headphones are only counted if the current student requires one.
               index = this.shoppingService.alreadyInReqs(gradeReqs[r], runningTotal);
               if (index == -1) {//Add a new item to the running total...
@@ -247,15 +197,15 @@ export class ShoppingListComponent {
     }
     //We should now have an array with all the requirements, with correct quantities.
     // Now we subtract our current stock from the requirements.
-    if (this.subtractInventory()) {
+    if (subtractInventory) {
       for (let i = 0; i < runningTotal.length; i ++) {
-        index = this.shoppingService.alreadyInInventory(runningTotal[i],currentInventory);
+        index = this.shoppingService.alreadyInInventory(runningTotal[i],inventory);
         if (index == -1) { //If no matching items in inventory, add to shopping list unchanged.
           finalList.push(runningTotal[i]);
         } else { //Otherwise if the inventory has matching items...
-          if (currentInventory[index].stocked < runningTotal[i].required) {
+          if (inventory[index].stocked < runningTotal[i].required) {
             //Push those items, but ONLY if there will still be some items required.
-            runningTotal[i].required -= currentInventory[index].stocked;
+            runningTotal[i].required -= inventory[index].stocked;
             finalList.push(runningTotal[i]);
           }
         }
@@ -264,7 +214,24 @@ export class ShoppingListComponent {
       finalList = runningTotal;
     }
 
-    return this.shoppingService.gradeService.filterItems(finalList, {name:this.itemName(), type:this.itemType(), sortBy:this.sortBy(), desc:this.itemDesc()});
+    return finalList;
+  };
+
+
+  shoppingListItems = computed(() => {
+    //Whenever we sort, we also update saved search.
+    this.shoppingService.updateSavedSearch({
+      name: this.itemName(),
+      desc: this.itemDesc(),
+      grade: this.itemGrade(),
+      school: this.itemSchool(),
+      type: this.itemType(),
+      sortby: this.sortBy()
+    });
+
+    const shoppingList = this.calculateShoppingList(this.serverFilteredInventory(), this.serverFilteredRequirements(), this.serverFilteredFamilies(), this.subtractInventory());
+
+    return this.shoppingService.gradeService.filterItems(shoppingList, {name:this.itemName(), type:this.itemType(), sortBy:this.sortBy(), desc:this.itemDesc()});
   });
 
   typeFilteredShoppingListItems = computed(() => {
