@@ -91,7 +91,7 @@ export class ShoppingListComponent {
   });
 
   displayGradeLabel = (value: string | null): string => {
-    if (!value) return '';
+    // if (!value) return '';
     const match = this.filteredGradeOptions().find(option => option.value === value);
     return match ? match.label : value;
   };
