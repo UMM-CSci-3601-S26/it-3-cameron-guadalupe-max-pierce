@@ -6,12 +6,15 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('Home', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let de: DebugElement;
   let el: HTMLElement;
+  let router: Router;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -20,7 +23,8 @@ describe('Home', () => {
         NoopAnimationsModule,
         MatCardModule,
         MatIconModule,
-        MatButtonModule
+        MatButtonModule,
+        RouterTestingModule
       ],
     });
 
@@ -30,6 +34,7 @@ describe('Home', () => {
 
     // query for the link (<a> tag) by CSS element selector
     de = fixture.debugElement.query(By.css('.home-card'));
+    expect(de).toBeTruthy();
     el = de.nativeElement;
   });
 
@@ -112,6 +117,26 @@ describe('Home', () => {
     expect(buttons[0].nativeElement.textContent).toContain('View Inventory');
     expect(buttons[1].nativeElement.textContent).toContain('Manage Students');
   });
+
+
+  it('should navigate to inventory page when "View Inventory" button is clicked', () => {
+    const spy = spyOn(router, 'navigate');
+
+    const viewInventoryButton = fixture.debugElement.query(By.css('button[color="primary"]')).nativeElement;
+    viewInventoryButton.click();
+
+    expect(spy).toHaveBeenCalledWith(['/inventory']);
+  });
+
+  it('should navigate to students page when "Manage Students" button is clicked', () => {
+    const spy = spyOn(router, 'navigate');
+
+    const manageStudentsButton = fixture.debugElement.query(By.css('button[color="accent"]')).nativeElement;
+    manageStudentsButton.click();
+
+    expect(spy).toHaveBeenCalledWith(['/students']);
+  });
 });
+
 
 
