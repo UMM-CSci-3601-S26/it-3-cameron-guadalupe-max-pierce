@@ -12,7 +12,20 @@
       </mat-card-header>
 
       <mat-card-content>
-        <div class = "stats container">
+
+        <div class="alert-banner" *ngIf="lowStockAlert">
+          ⚠ Low stock detected in inventory! Please review the Inventory Page for details.
+          <button mat-button color="warn" (click)="dismissAlert()">Dismiss</button>
+        </div>
+
+        <!--dashboard overview-->
+        <section class ="general-info">
+          <h3>System Overview </h3>
+          <p> Welcome to Ready 4 Learning HomePage! this dashboard provides real time updates on the system status, key metrics, and Student Engagement. </p>
+        </section>
+
+        <!-- Dashboard Grid-->
+        <div class = "stats-container">
 
           <!-- Shows stats for Student Info -->
         <div class ="info-tile students">
@@ -23,36 +36,30 @@
           </div>
         </div>
 
-        <!-- Shows stats for Total Stock -->
-        <div class ="info-tile stock">
-          <mat-icon>inventory</mat-icon>
-          <div class="tile-content">
-            <span class="label">Total Stock</span>
-            <span class="value">{{ stockCount|| 0}}</span>
-          </div>
-        </div>
 
         <!-- Shows status for stock -->
-        <div class="info-tile status">
+        <div class="info-tile">
+          <mat-icon>warning</mat-icon>
+          <div class="tile-content">
+            <span class="label">Low Stock Items</span>
+            <span class="value">{{ lowStockItems.length }}</span>
+          </div>
+        </div>"
+
+        <div class="info-tile">
           <mat-icon>sensors</mat-icon>
           <div class="tile-content">
-            <span class="label">SystemStatus</span>
-            <span class="status-text">{{ lowStockAlert ?  'Low Stock Alert' : 'Active'}}</span>
+            <span class="label">System Status</span>
+            <span class="value">{{ lowStockAlert ?  'Low Stock Alert' : 'Active'}}</span>
           </div>
         </div>
-
-        <!-- General info about system -->
-        <section class ="general-info">
-          <h3>System Overview </h3>
-          <p> Welcome to Ready 4 Learning HomePage! this dashboard provides real time updates on the system status, key metrics, and Student Engagement. </p>
-        </section>
       </div>
       </mat-card-content>
 
 
       <mat-card-actions align="end">
         <button mat-raised-button color="primary">View Inventory</button>
-        <button mat-raised-button color="accent">Manage Students</button>
+        <button mat-raised-button color="accent">Students</button>
       </mat-card-actions>
     </mat-card>
   </div>
