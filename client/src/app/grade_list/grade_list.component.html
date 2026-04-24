@@ -23,9 +23,18 @@
             <mat-hint>Search requirements by name</mat-hint>
           </mat-form-field>
 
-          <mat-form-field class="input-field">
+          <!-- <mat-form-field class="input-field">
             <input matInput data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
             <mat-hint>Search by school</mat-hint>
+          </mat-form-field> -->
+          <mat-form-field>
+            <mat-label>School</mat-label>
+            <mat-select data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
+              @for (school of filteredSchoolOptions(); track school.label) {
+              <mat-option [value]="school.label">{{school.label}}</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Search by School</mat-hint>
           </mat-form-field>
 
           <mat-form-field class="input-field">

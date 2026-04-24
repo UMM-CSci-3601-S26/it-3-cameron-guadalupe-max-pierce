@@ -76,6 +76,12 @@ describe('Grade List', () => {
     expect(Array.isArray(items)).toBe(true);
   });
 
+  it('should initialize with filteredSchoolOptions available', () => {
+    const items = gradeList.filteredSchoolOptions();
+    expect(items).toBeDefined();
+    expect(Array.isArray(items)).toBe(true);
+  });
+
   it('should initialize with filteredItems available', () => {
     const items = gradeList.filteredItems();
     expect(items).toBeDefined();

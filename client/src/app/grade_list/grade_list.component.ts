@@ -158,6 +158,10 @@ export class GradeListComponent {
       )
     );
 
+  filteredSchoolOptions = computed(() => {
+    return this.serverFilteredSchools();
+  });
+
 
   filteredItems = computed(() => {
     const currentItems = this.serverFilteredItems();
