@@ -28,11 +28,19 @@
         <div class = "stats-container">
 
           <!-- Shows stats for Student Info -->
-        <div class ="info-tile students">
-          <mat-icon>group</mat-icon>
+        <div class ="info-tile families">
+          <mat-icon>groups</mat-icon>
           <div class = "tile-content">
-            <span class="label">students Signed up</span>
-            <span class="value">{{ studentCount|| 0}}</span>
+            <span class="label">Families Registered</span>
+            <span class="value">{{ familyCount }}</span>
+          </div>
+        </div>
+
+        <div class="info-tile inventory">
+          <mat-icon>inventory</mat-icon>
+          <div class="tile-content">
+            <span class="label">Inventory Items</span>
+            <span class="value">{{ inventoryCount }}</span>
           </div>
         </div>
 
@@ -44,13 +52,13 @@
             <span class="label">Low Stock Items</span>
             <span class="value">{{ lowStockItems.length }}</span>
           </div>
-        </div>"
+        </div>
 
         <div class="info-tile">
           <mat-icon>sensors</mat-icon>
           <div class="tile-content">
             <span class="label">System Status</span>
-            <span class="value">{{ lowStockAlert ?  'Low Stock Alert' : 'Active'}}</span>
+            <span class="value">{{ lowStockAlert ?  'Attention' : 'Active'}}</span>
           </div>
         </div>
       </div>
@@ -58,8 +66,8 @@
 
 
       <mat-card-actions align="end">
-        <button mat-raised-button color="primary">View Inventory</button>
-        <button mat-raised-button color="accent">Students</button>
+        <button mat-raised-button color="primary" (click)="viewInventory()">View Inventory</button>
+        <button mat-raised-button color="accent" (click)="viewFamilies()">View Families</button>
       </mat-card-actions>
     </mat-card>
   </div>

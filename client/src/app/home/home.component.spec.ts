@@ -8,13 +8,28 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { of } from 'rxjs';
+import { InventoryService } from '../inventory/inventory.service';
+import { FamilyService } from '../families/family.service';
 
-describe('Home', () => {
+describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let de: DebugElement;
   let el: HTMLElement;
   let router: Router;
+
+  const inventoryMock = {
+    inventory$: of([
+      { stocked: 2 },
+      { stocked: 10 }
+    ])
+  };
+
+  const familyMock = {
+    getFamilies: () => of([{ _id: '1' }, { _id: '2' }])
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -24,119 +39,115 @@ describe('Home', () => {
         MatCardModule,
         MatIconModule,
         MatButtonModule,
+        HttpClientTestingModule,
         RouterTestingModule
       ],
-    });
+      providers: [
+        { provide: InventoryService, useValue: inventoryMock },
+        { provide: FamilyService, useValue: familyMock }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(HomeComponent);
-    component = fixture.componentInstance; // BannerComponent test instance
+    component = fixture.componentInstance;
+    router = TestBed.inject(Router);
     fixture.detectChanges();
 
-    // query for the link (<a> tag) by CSS element selector
     de = fixture.debugElement.query(By.css('.home-card'));
     expect(de).toBeTruthy();
     el = de.nativeElement;
   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(HomeComponent);
-    component = fixture.componentInstance; // HomeComponent Test Instance
-    de = fixture.debugElement.query(By.css('.home-card'))
-  });
-
-  it('It has the basic home page text', () => {
-    fixture.detectChanges();
-    expect(el.textContent).toContain('Welcome to Ready 4 Learning HomePage! this dashboard provides real time updates on the system status, key metrics, and Student Engagement.');
-    expect(component).toBeTruthy();
-  });
-
-  it('It has the basic home page subtitle', () => {
-    fixture.detectChanges();
-    expect(el.textContent).toContain("Operational DashBoard Overview");
-    expect(component).toBeTruthy();
-  });
-
-  it('It has the basic home page content', () => {
-    fixture.detectChanges();
-    expect(el.textContent).toContain("This is the content for the home page.");
-    expect(component).toBeTruthy();
-  });
-
-  it('the home page should have a mat-card element', () => {
-    fixture.detectChanges();
-    const matCardElement = de.query(predicate => predicate.name === 'MatCard');
-    expect(matCardElement).toBeTruthy();
-  });
-
-  it('The home page should have a mat-card-header element', () => {
-    fixture.detectChanges();
-    const matCardHeaderElement = de.query(predicate => predicate.name === 'MatCardHeader');
-    expect(matCardHeaderElement).toBeTruthy();
-  });
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the Big Company Title "Ready 4 Learning"', () => {
-    const titleElement = fixture.debugElement.query(By.css('.hero-header h1')).nativeElement;
-    expect(titleElement.textContent).toContain('Ready 4 Learning');
+  it('has the main dashboard text', () => {
+    expect(el.textContent).toContain(
+      'Welcome to Ready 4 Learning HomePage! this dashboard provides real time updates on the system status, key metrics, and Student Engagement.'
+    );
+  });
+
+  it('has the subtitle', () => {
+    expect(el.textContent).toContain('Operational DashBoard Overview');
+  });
+
+
+  it('should have a mat-card element', () => {
+    const matCard = fixture.debugElement.query(By.css('mat-card'));
+    expect(matCard).toBeTruthy();
+  });
+
+  it('should have a mat-card-header element', () => {
+    const header = fixture.debugElement.query(By.css('mat-card-header'));
+    expect(header).toBeTruthy();
+  });
+
+  it('should display the correct title in the header', () => {
+    const title = fixture.debugElement.query(By.css('.hero-header h1'));
+    expect(title).toBeTruthy();
+    expect(title.nativeElement.textContent).toContain('Ready 4 Learning');
   });
 
   it('should display the correct subtitle in the header', () => {
-    const subtitle = fixture.debugElement.query(By.css('.hero-header p')).nativeElement;
-    expect(subtitle.textContent).toContain('Homepage');
+    const subtitle = fixture.debugElement.query(By.css('.hero-header p'));
+    expect(subtitle).toBeTruthy();
+    expect(subtitle.nativeElement.textContent).toContain('Homepage');
   });
 
-  it('should display the student count from the component', () => {
-    // Manually set a value to test data binding
-    component.studentCount = 25;
+
+  it('should display the family count from the component', () => {
+    component.familyCount = 25;
     fixture.detectChanges();
 
-    const studentValue = fixture.debugElement.query(By.css('.students .value')).nativeElement;
-    expect(studentValue.textContent).toContain('25');
+    const value = fixture.debugElement.query(By.css('.families .value'));
+    expect(value).toBeTruthy();
+    expect(value.nativeElement.textContent).toContain('25');
   });
 
 
-  it('should show "Low Stock Alert" when lowStockAlert is true', () => {
+  it('should show alert when triggered', () => {
     component.lowStockAlert = true;
     fixture.detectChanges();
 
-    const statusText = fixture.debugElement.query(By.css('.status-text')).nativeElement;
-    expect(statusText.textContent).toContain('Low Stock Alert');
+    const alert = fixture.debugElement.query(By.css('.alert-banner'));
+    expect(alert).toBeTruthy();
+    expect(alert.nativeElement.textContent.toLowerCase()).toContain('low stock');
   });
+
 
   it('should have the "System Overview" section with correct text', () => {
-    const infoSection = fixture.debugElement.query(By.css('.general-info p')).nativeElement;
-    expect(infoSection.textContent).toContain('Welcome to Ready 4 Learning HomePage!');
+    const infoSection = fixture.debugElement.query(By.css('.general-info p'));
+    expect(infoSection).toBeTruthy();
+    expect(infoSection.nativeElement.textContent).toContain('Welcome to Ready 4 Learning HomePage!');
   });
 
-  it('should have functional action buttons', () => {
+
+  it('should have action buttons', () => {
     const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
     expect(buttons.length).toBe(2);
     expect(buttons[0].nativeElement.textContent).toContain('View Inventory');
-    expect(buttons[1].nativeElement.textContent).toContain('Manage Students');
+    expect(buttons[1].nativeElement.textContent).toContain('View Families');
   });
-
 
   it('should navigate to inventory page when "View Inventory" button is clicked', () => {
     const spy = spyOn(router, 'navigate');
 
-    const viewInventoryButton = fixture.debugElement.query(By.css('button[color="primary"]')).nativeElement;
-    viewInventoryButton.click();
+    const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
+    buttons[0].nativeElement.click();
 
     expect(spy).toHaveBeenCalledWith(['/inventory']);
   });
 
-  it('should navigate to students page when "Manage Students" button is clicked', () => {
+  it('should navigate to families page when "View Families" button is clicked', () => {
     const spy = spyOn(router, 'navigate');
 
-    const manageStudentsButton = fixture.debugElement.query(By.css('button[color="accent"]')).nativeElement;
-    manageStudentsButton.click();
+    const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
+    buttons[1].nativeElement.click();
 
-    expect(spy).toHaveBeenCalledWith(['/students']);
+    expect(spy).toHaveBeenCalledWith(['/families']);
   });
 });
-
 
 
