@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -149,6 +149,10 @@ export class FamilyService {
   getSchools(): Observable<School[]> {
     return this.httpClient.get<School[]>(this.schoolUrl);
   }
+
+  serverFilteredSchools = signal(
+    this.getSchools().pipe()
+  );
 
   //Helper function
   getTimes(): Observable<Time[]> {
