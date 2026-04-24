@@ -209,12 +209,12 @@ class FamilyControllerSpec {
     void canGetTimes() throws IOException {
         when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
         familyController.getTimes(ctx);
-        verify(ctx).json(inventoryItemArrayCaptor.capture());
+        verify(ctx).json(timeArrayCaptor.capture());
         verify(ctx).status(HttpStatus.OK);
 
         assertEquals(
-            testDatabase.getCollection("families").countDocuments(),
-            inventoryItemArrayCaptor.getValue().size());
+            testDatabase.getCollection("times").countDocuments(),
+            timeArrayCaptor.getValue().size());
     }
 
     // @Test
