@@ -8,8 +8,8 @@
       <mat-card class="search-card">
         <p>
           Based on grade requirements and enrolled families, this page generates a list of required materials.
-          <br>The list can be sorted by various properties; by default, sorted by grade and school. Use the <strong>'Sort By'</strong> section to change the sorting method.
-          <br>Sorting is reflected in the exportable CSV file.
+          <br>The list can be sorted by various properties; by default, sorted by grade and school. Use the <strong>'Sort By'</strong> section to change the sorting method. Sorting is reflected in the exportable CSV file.
+          <br>While the <strong>'Subtract Inventory'</strong> option is enabled, any matching stock in inventory is subtracted from the shopping list.
         </p>
       </mat-card>
 
@@ -26,8 +26,14 @@
             <mat-hint>Search by school</mat-hint>
           </mat-form-field>
 
-          <mat-form-field class="input-field">
-            <input matInput data-test="itemGradeInput" placeholder="Grade" [(ngModel)]="itemGrade">
+          <mat-form-field>
+            <mat-label>Grade</mat-label>
+            <mat-select data-test="itemGradeInput" [(ngModel)]="itemGrade">
+              <mat-option value="">All Grades</mat-option>
+              @for (grade of shoppingService.gradeService.gradeOptions; track grade) {
+                <mat-option [value]="grade.value">{{grade.label}}</mat-option>
+              }
+            </mat-select>
             <mat-hint>Search by grade</mat-hint>
           </mat-form-field>
 

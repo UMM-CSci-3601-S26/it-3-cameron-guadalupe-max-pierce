@@ -59,7 +59,7 @@ import { MatToolbar } from '@angular/material/toolbar';
   ],
 })
 export class ShoppingListComponent {
-  private shoppingService = inject(ShoppingListService);
+  public shoppingService = inject(ShoppingListService);
   // snackBar the `MatSnackBar` used to display feedback
   public snackBar = inject(MatSnackBar);
 
