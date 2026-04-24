@@ -114,6 +114,12 @@ describe('Shopping List', () => {
     expect(Array.isArray(items)).toBe(true);
   });
 
+  it('should initialize with filteredSchoolOptions available', () => {
+    const items = shoppingList.filteredSchoolOptions();
+    expect(items).toBeDefined();
+    expect(Array.isArray(items)).toBe(true);
+  });
+
   it('should initialize with filtered inventory available', () => {
     const items = shoppingList.serverFilteredInventory();
     expect(items).toBeDefined();
