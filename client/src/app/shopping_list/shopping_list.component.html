@@ -24,6 +24,7 @@
           <mat-form-field>
             <mat-label>School</mat-label>
             <mat-select data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
+              <mat-option value="">Any School</mat-option>
               @for (school of filteredSchoolOptions(); track school.label) {
               <mat-option [value]="school.label">{{school.label}}</mat-option>
               }
