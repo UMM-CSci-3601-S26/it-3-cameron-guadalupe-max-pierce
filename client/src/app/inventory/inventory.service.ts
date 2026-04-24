@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, forkJoin, of } from 'rxjs';
+import { Observable, forkJoin, of, BehaviorSubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { InventoryItem } from './inventory_item';
@@ -11,6 +11,13 @@ import { InventoryItem } from './inventory_item';
  * Service that provides the interface for getting information
  * about `Users` from the server.
  */
+export interface InventoryFilters {
+  name?: string;
+  stocked?: number;
+  desc?: string;
+  location?: string;
+  type?: string;
+}
 @Injectable({
   providedIn: 'root'
 })
@@ -27,6 +34,26 @@ export class InventoryService {
   // The URL for the users part of the server API.
   readonly inventoryUrl: string = `${environment.apiUrl}inventory`;
   //readonly usersByCompanyUrl: string = `${environment.apiUrl}usersByCompany`;
+  // this is for homepage for low stock alert
+  private inventorySubject = new BehaviorSubject<InventoryItem[]>([]);
+  inventory$ = this.inventorySubject.asObservable();
+
+  setInventory(items: InventoryItem[]) {
+    this.inventorySubject.next(items);
+  }
+
+  loadItems(filters?: InventoryFilters): Observable<InventoryItem[]> {
+    return this.getItems(filters).pipe(
+      map(items => {
+        this.inventorySubject.next(items);
+        return items;
+      })
+    );
+  }
+
+  getLowStockItems(threshold = 5): InventoryItem[] {
+    return this.inventorySubject.value.filter(i => i.stocked < threshold);
+  }
 
   private readonly nameKey = 'name';
   private readonly locationKey = 'location';
