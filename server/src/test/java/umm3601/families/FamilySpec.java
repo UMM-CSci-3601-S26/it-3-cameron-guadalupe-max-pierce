@@ -54,7 +54,7 @@ class FamilySpec {
 
     @SuppressWarnings("unlikely-arg-type")
     @Test
-    void equalsReturnsFalseForDifferentType() {
+     void equalsReturnsFalseForDifferentType() {
         family1._id = FAKE_ID1;
         assertFalse(family1.equals("some string"));
     }
