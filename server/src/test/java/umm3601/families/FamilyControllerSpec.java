@@ -83,6 +83,9 @@ class FamilyControllerSpec {
     private ArgumentCaptor<ArrayList<Family>> inventoryItemArrayCaptor;
 
     @Captor
+    private ArgumentCaptor<ArrayList<Time>> timeArrayCaptor;
+
+    @Captor
     private ArgumentCaptor<Family> familyCaptor;
 
     @Captor
@@ -194,6 +197,18 @@ class FamilyControllerSpec {
     void canGetAllFamilies() throws IOException {
         when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
         familyController.getFamilies(ctx);
+        verify(ctx).json(inventoryItemArrayCaptor.capture());
+        verify(ctx).status(HttpStatus.OK);
+
+        assertEquals(
+            testDatabase.getCollection("families").countDocuments(),
+            inventoryItemArrayCaptor.getValue().size());
+    }
+
+    @Test
+    void canGetTimes() throws IOException {
+        when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
+        familyController.getTimes(ctx);
         verify(ctx).json(inventoryItemArrayCaptor.capture());
         verify(ctx).status(HttpStatus.OK);
 

@@ -8,6 +8,7 @@
     "first_name_alt":"",
     "last_name_alt":"",
     "time":"12:00pm",
+    "phone":"320-287-1867",
     "email":"prcrichards@gmail.com",
     "students":[
       {
@@ -37,6 +38,7 @@
     "last_name_alt":"",
     "time":"9:00pm",
     "email":"gkross@gmail.com",
+    "phone":"888-888-8888",
     "students":[
       {
         "first_name":"Bob",
@@ -83,6 +85,7 @@
     "last_name_alt":"Mahoney",
     "time":"7:00pm",
     "email":"ntucker@gmail.com",
+    "phone":"298-827-2944",
     "students":[
       {
         "first_name":"Thomas",
@@ -120,6 +123,7 @@
     "last_name_alt":"",
     "time":"12:00pm",
     "email":"igoodman@gmail.net",
+    "phone":"827-840-1822",
     "students":[
       {
         "first_name":"Wilfred",
@@ -160,6 +164,7 @@
     "last_name_alt":"Smith",
     "time":"1:00pm",
     "email":"jsmith@arpnet.net",
+    "phone":"123-456-7890",
     "students":[
       {
         "first_name":"Joe",
@@ -179,6 +184,7 @@
     "last_name_alt":"Weiss",
     "time":"1:00pm",
     "email":"cweiss@arpnet.net",
+    "phone":"1-800-999-9999",
     "students":[
       {
         "first_name":"Callum",
@@ -198,6 +204,7 @@
     "last_name_alt":"Byrd",
     "time":"1:00pm",
     "email":"cweiss@arpnet.net",
+    "phone":"827-840-1822",
     "students":[
       {
         "first_name":"Tim",
@@ -217,6 +224,7 @@
     "last_name_alt":"Thomson",
     "time":"12:00pm",
     "email":"mthomson@itsanemail.gov",
+    "phone":"229-4840-1230",
     "students":[
       {
         "first_name":"Maurice",
@@ -236,6 +244,7 @@
     "last_name_alt":"",
     "time":"2:00pm",
     "email":"fred@fred.edu",
+    "phone":"298-8434-2399",
     "students":[
       {
         "first_name":"Fred",
@@ -258,6 +267,7 @@
     "last_name_alt":"Baudelaire",
     "time":"9:00am",
     "email":"nichereference@gmail.vfd",
+    "phone":"273-4838-9201",
     "students":[
       {
         "first_name": "Sunny",
@@ -298,6 +308,7 @@
     "last_name_alt":"Obama",
     "time":"7:00am",
     "email":"bobama@gmail.gov",
+    "phone":"822-800-9821",
     "students":[
       {
         "first_name": "Sasha",
@@ -329,6 +340,7 @@
     "last_name_alt":"Bowser",
     "time":"2:00am",
     "email":"lbowser@koopa.kom",
+    "phone":"999-8282-3944",
     "students":[
       {
         "first_name": "Larry",

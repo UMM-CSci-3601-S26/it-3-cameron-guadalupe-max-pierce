@@ -72,6 +72,21 @@
               </mat-form-field>
 
               <mat-form-field>
+              <input matInput placeholder="Número de Teléfono" [(ngModel)]="surveyParentPhone" name="parentPhone" required #parentPhone="ngModel">
+              <mat-hint>Número de teléfono del padre/madre (###-###-####)</mat-hint>
+              @if (parentPhone.invalid && (parentPhone.dirty || parentPhone.touched)) {
+              <mat-error>
+                @if (parentPhone.errors?.required) {
+                  Se requiere el número de teléfono.
+                }
+                @if (parentPhone.errors?.email) {
+                  El número de teléfono no es válido.
+                }
+              </mat-error>
+              }
+            </mat-form-field>
+
+              <mat-form-field>
                 <input matInput placeholder="Email" [(ngModel)]="surveyParentEmail" name="parentEmail" required email #parentEmail="ngModel">
                 <mat-hint>Dirección de correo electrónico</mat-hint>
                 @if (parentEmail.invalid && (parentEmail.dirty || parentEmail.touched)) {
@@ -80,7 +95,7 @@
                     El correo electrónico es obligatorio.
                   }
                   @if (parentEmail.errors?.email) {
-                    Dirección de correo electrónico no válida
+                    El correo electrónico no es válido.
                   }
                 </mat-error>
                 }
@@ -202,6 +217,21 @@
             <mat-form-field>
               <input matInput placeholder="Last Name (Optional)" [(ngModel)]="surveyFamilyLastNameAlt" name="familyLastNameAlt">
               <mat-hint>Alternative pickup person. (Optional)</mat-hint>
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput placeholder="Phone Number" [(ngModel)]="surveyParentPhone" name="parentPhone" required #parentPhone="ngModel">
+              <mat-hint>Guardian Phone number (###-###-####)</mat-hint>
+              @if (parentPhone.invalid && (parentPhone.dirty || parentPhone.touched)) {
+              <mat-error>
+                @if (parentPhone.errors?.required) {
+                  Guardian Phone number is required.
+                }
+                @if (parentPhone.errors?.email) {
+                  Invalid Phone Number
+                }
+              </mat-error>
+              }
             </mat-form-field>
 
             <mat-form-field>
