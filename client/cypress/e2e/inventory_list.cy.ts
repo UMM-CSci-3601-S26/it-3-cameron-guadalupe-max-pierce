@@ -118,4 +118,34 @@ describe('Item list', () => {
     });
   });
 
+  it('Should display export CSV button', () => {
+    page.exportCSVButton().should('be.visible');
+    page.exportCSVButton().should('contain.text', 'Export to CSV');
+  });
+
+  it('Should export all items to CSV when button is clicked', () => {
+    page.exportCSVButton().should('be.visible').click();
+
+    // Verify snackbar confirmation
+    cy.contains('Inventory exported successfully', { timeout: 5000 }).should('be.visible');
+  });
+
+  it('Should export filtered items to CSV', () => {
+    cy.get('[data-test=itemNameInput]').clear().type('Yellow Pencil');
+    page.getItemListItems().should('have.length', 1);
+
+    page.exportCSVButton().click();
+
+    // Verify snackbar confirmation appears
+    cy.contains('Inventory exported successfully', { timeout: 5000 }).should('be.visible');
+  });
+
+  it('Should show snackbar message when export is successful', () => {
+    page.exportCSVButton().click();
+
+    // Verify the snackbar message appears
+    cy.contains('Inventory exported successfully', { timeout: 5000 }).should('be.visible');
+  });
+
 });
+

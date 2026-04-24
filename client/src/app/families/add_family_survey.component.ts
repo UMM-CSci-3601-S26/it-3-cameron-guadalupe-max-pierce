@@ -16,21 +16,7 @@ import { School } from '../grade_list/school';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 //import { Family } from './family';
 import { Student } from './student';
-
-// export interface Student {
-//   first_name: string;
-//   last_name: string;
-//   school: string;
-//   grade: string;
-//   backpack: boolean;
-// }
-
-// export interface Family {
-//   name: string;
-//   email: string;
-//   students: Student[];
-// }
-
+import { Time } from './time';
 
 @Component({
   selector: 'app-add-family-survey',
@@ -93,14 +79,13 @@ export class AddFamilySurveyComponent {
           );
         }
         this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
-        return of<School[]>([]);
+        return of<Time[]>([]);
       })
     )
   );
 
   filteredTimeOptions = computed(() => {
     return this.serverFilteredTimes();
-
   });
 
   filteredSchoolOptions = computed(() => {
@@ -157,7 +142,7 @@ export class AddFamilySurveyComponent {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return Boolean(normalized && emailPattern.test(normalized));
   }
-
+  //We should really be using proper validators for this, but whatever...
   submitSurvey(): void {
     if (
       !this.surveyFamilyLastName ||
