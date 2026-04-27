@@ -12,6 +12,7 @@ import { AddFamilySurveyComponent } from './families/add_family_survey.component
 import { InventoryListComponent } from './inventory/inventory_list.component';
 import { AddItemComponent } from './inventory/add_inventory_item.component';
 import { ModifyItemComponent } from './inventory/modify_inventory_item.component';
+import { SettingsComponent } from './settings/settings.component';
 
 // Note that the 'users/new' route needs to come before 'users/:id'.
 // If 'users/:id' came first, it would accidentally catch requests to
@@ -28,6 +29,7 @@ const routes: Routes = [
   {path: 'inventory', component: InventoryListComponent, title: 'Inventory'},
   {path: 'inventory/new', component: AddItemComponent, title: 'Add Item'},
   {path: 'inventory/:id', component: ModifyItemComponent, title: 'Item Profile'},
+  {path: 'settings', component: SettingsComponent, title: 'Settings'},
   // {path: 'companies', component: CompanyListComponent, title: 'Companies'}
 ];
 
