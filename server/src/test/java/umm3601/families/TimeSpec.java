@@ -53,4 +53,9 @@ class TimeSpec {
         time2._id = FAKE_ID1;
         assertTrue(time1.hashCode() == time2.hashCode());
     }
+
+    @Test
+    void nameBasedOnValue() {
+        assertTrue(time1.toString() == time1.value);
+    }
 }

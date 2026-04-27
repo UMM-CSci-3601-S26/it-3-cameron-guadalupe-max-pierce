@@ -120,6 +120,10 @@ export class ShoppingListComponent {
       )
     );
 
+  filteredSchoolOptions = computed(() => {
+    return this.serverFilteredSchools();
+  });
+
   serverFilteredInventory =
     toSignal(
       //Not actually doing any filtering on the server, just need to get Items.

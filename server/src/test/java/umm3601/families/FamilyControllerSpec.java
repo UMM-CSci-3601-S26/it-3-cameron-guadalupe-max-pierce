@@ -83,6 +83,9 @@ class FamilyControllerSpec {
     private ArgumentCaptor<ArrayList<Family>> inventoryItemArrayCaptor;
 
     @Captor
+    private ArgumentCaptor<ArrayList<Time>> timeArrayCaptor;
+
+    @Captor
     private ArgumentCaptor<Family> familyCaptor;
 
     @Captor
@@ -202,6 +205,18 @@ class FamilyControllerSpec {
             inventoryItemArrayCaptor.getValue().size());
     }
 
+    @Test
+    void canGetTimes() throws IOException {
+        when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
+        familyController.getTimes(ctx);
+        verify(ctx).json(timeArrayCaptor.capture());
+        verify(ctx).status(HttpStatus.OK);
+
+        assertEquals(
+            testDatabase.getCollection("times").countDocuments(),
+            timeArrayCaptor.getValue().size());
+    }
+
     // @Test
     // void getFamiliesSupportsDescendingSortOrder() throws IOException {
     //   when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
@@ -315,9 +330,6 @@ class FamilyControllerSpec {
     // field values as the user we asked it to add (`newUser`).
     assertEquals(newFamily.first_name, addedItem.get("first_name"));
     assertEquals(newFamily.time, addedItem.get("time"));
-    //TODO, actually add some meaningful tests for student equality;
-    //An array of structs does not automatically equal a student.
-    //assertEquals(newFamily.students, addedItem.get("students")); //This is gonna be a troublemaker
   }
 
   @Test
@@ -328,9 +340,24 @@ class FamilyControllerSpec {
     // like we did in the previous tests.
     String newFamilyJson = """
       {
-        "name": "no",
-        "time": "2",
-        "students":[]
+        "first_name": "no",
+        "last_name":"Richards",
+        "first_name_alt":"",
+        "last_name_alt":"",
+        "time":"12:00pm",
+        "phone":"320-287-1867",
+        "email":"prcrichards@gmail.com",
+        "students":[
+          {
+            "first_name":"Ted",
+            "last_name":"Richards",
+            "grade":"P",
+            "teacher":"Mrs.Greene",
+            "school":"MAES",
+            "backpack":true,
+            "headphones":false
+          }
+        ]
       }
       """;
 

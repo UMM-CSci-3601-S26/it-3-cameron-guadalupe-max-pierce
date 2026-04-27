@@ -9,4 +9,5 @@ export interface Family {
   time: string;
   students: Array<Student>;
   email?: string; //for family survey
+  phone?: string;
 }

@@ -1,5 +1,5 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -103,19 +103,6 @@ export class FamilyService {
     this.savedFamilySortBy = fields.sortby;
   }
 
-  /**
-   * Get all the items from the server, filtered by the information
-   * in the `filters` map.
-   *
-   *
-   * @param filters a map that allows us to specify a target role, age,
-   *  or company to filter by, or any combination of those
-   * @returns an `Observable` of an array of `InventoryItems`. Wrapping the array
-   *  in an `Observable` means that other bits of of code can `subscribe` to
-   *  the result (the `Observable`) and get the results that come back
-   *  from the server after a possibly substantial delay (because we're
-   *  contacting a remote server over the Internet).
-   */
   getFamilies(filters?: { name?: string; grade?: string; school?: string; students?: number; time?: string; }): Observable<Family[]> {
     // `HttpParams` is essentially just a map used to hold key-value
     // pairs that are then encoded as "?key1=value1&key2=value2&…" in
@@ -149,6 +136,10 @@ export class FamilyService {
   getSchools(): Observable<School[]> {
     return this.httpClient.get<School[]>(this.schoolUrl);
   }
+
+  serverFilteredSchools = signal(
+    this.getSchools().pipe()
+  );
 
   //Helper function
   getTimes(): Observable<Time[]> {

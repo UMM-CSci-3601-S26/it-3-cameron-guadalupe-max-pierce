@@ -61,19 +61,70 @@ describe('AddFamilySurveyComponent', () => {
     expect(component.surveyChildren.length).toBe(1);
   });
 
-  it('should show validation error if form incomplete', () => {
-    component.surveyParentEmail = 'test@test.com';
-
+  it('should show validation errors if form incomplete', () => {
+    //Missing Email
     component.submitSurvey();
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Please enter a valid email address',
+      'OK',
+      { duration: 5000 }
+    );
+    expect(familyServiceSpy.addFamily).not.toHaveBeenCalled();
 
+    //Missing email (in Spanish)
+    component.espanol = true;
+    component.submitSurvey();
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Por favor, introduce una dirección de correo electrónico válida',
+      'OK',
+      { duration: 5000 }
+    );
+    expect(familyServiceSpy.addFamily).not.toHaveBeenCalled();
+
+    //Missing phone
+    component.surveyParentEmail = 'test@test.com';
+    component.espanol = false;
+    component.submitSurvey();
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Please enter a valid phone number',
+      'OK',
+      { duration: 5000 }
+    );
+    expect(familyServiceSpy.addFamily).not.toHaveBeenCalled();
+
+    //Missing phone (in Spanish)
+    component.espanol = true;
+    component.submitSurvey();
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Por favor, ingrese un número de teléfono válido.',
+      'OK',
+      { duration: 5000 }
+    );
+    expect(familyServiceSpy.addFamily).not.toHaveBeenCalled();
+
+    //Missing other
+    component.surveyParentPhone = '320-287-1867';
+    component.espanol = false;
+    component.submitSurvey();
     expect(snackBarSpy.open).toHaveBeenCalledWith(
       'Please fill in all required fields',
       'OK',
       { duration: 5000 }
     );
     expect(familyServiceSpy.addFamily).not.toHaveBeenCalled();
+
+    //Missing other (In Spanish)
+    component.espanol = true;
+    component.submitSurvey();
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Por favor, complete toda la información requerida.',
+      'OK',
+      { duration: 5000 }
+    );
+    expect(familyServiceSpy.addFamily).not.toHaveBeenCalled();
   });
 
+  //Example with all information completed
   it('should submit successfully', fakeAsync(() => {
     component.surveyFamilyFirstName = 'John';
     component.surveyFamilyLastName = 'Smith';
@@ -81,6 +132,7 @@ describe('AddFamilySurveyComponent', () => {
     component.surveyFamilyFirstNameAlt = '';
     component.surveyFamilyLastNameAlt = '';
     component.surveyParentEmail = 'test@test.com';
+    component.surveyParentPhone = '320-287-1867'
     component.surveyChildren[0] = {
       first_name: 'John',
       last_name: 'Doe',
@@ -102,6 +154,7 @@ describe('AddFamilySurveyComponent', () => {
     expect(submittedPayload.first_name).toBe('John');
     expect(submittedPayload.last_name).toBe('Smith');
     expect(submittedPayload.email).toBe('test@test.com');
+    expect(submittedPayload.phone).toBe('320-287-1867');
     expect(submittedPayload.students[0]).toEqual(jasmine.objectContaining({
       first_name: 'John',
       last_name: 'Doe',
@@ -120,8 +173,10 @@ describe('AddFamilySurveyComponent', () => {
   }));
 
   it('should handle error on submit', fakeAsync(() => {
+    //Missing parent first name
     component.surveyFamilyLastName = 'Smith';
     component.surveyParentEmail = 'test@test.com';
+    component.surveyParentPhone = '320-287-1867'
     component.surveyChildren[0] = {
       first_name: 'John',
       last_name: 'Doe',
@@ -145,5 +200,18 @@ describe('AddFamilySurveyComponent', () => {
       { duration: 5000 }
     );
     expect(routerSpy.navigate).not.toHaveBeenCalled();
+
+    //Error should also be returned in spanish.
+    component.espanol = true;
+    component.submitSurvey();
+    tick();
+
+    expect(snackBarSpy.open).toHaveBeenCalledWith(
+      'Por favor, complete toda la información requerida.',
+      'OK',
+      { duration: 5000 }
+    );
+    expect(routerSpy.navigate).not.toHaveBeenCalled();
+
   }));
 });
