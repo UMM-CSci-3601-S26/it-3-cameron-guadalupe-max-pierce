@@ -368,7 +368,7 @@ export class FamilyListComponent {
     }
   }
   //Line variable, tracks current PDF position, resets when called.
-  private line = 0;
+  public line = 0;
 
   //Helper function to determine when to do page breaks
   lineBreak(document: jsPDF, line_height: number, start_pos:number) {
