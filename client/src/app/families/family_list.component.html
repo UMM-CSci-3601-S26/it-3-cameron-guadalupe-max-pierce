@@ -140,6 +140,7 @@
                           <mat-expansion-panel-header>
                           <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
                           <mat-panel-description>  {{family.email}}  -  {{family.time}} Pickup</mat-panel-description>
+                          <button mat-raised-button type="button" color="accent" class="edit-button" data-test="exportFamilyButton" (click)="exportPDF(family._id)">⬇</button>
                           <button mat-raised-button type="button" color="accent" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
                           </mat-expansion-panel-header>
                           @for (student of family.students; track student.first_name) {
@@ -176,6 +177,7 @@
                         , x{{family.students.length}} Total
                       }
                        - {{family.email}}  -  {{family.time}} Pickup </mat-panel-description>
+                    <button mat-raised-button type="button" color="accent" class="edit-button" data-test="exportFamilyButton" (click)="exportPDF(family._id)">⬇</button>
                     <button mat-raised-button type="button" color="accent" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
                     </mat-expansion-panel-header>
                     @for (student of family.students; track student.first_name) {
@@ -212,6 +214,7 @@
                         , x{{family.students.length}} Total
                       }
                        - {{family.email}}  -  {{family.time}} Pickup </mat-panel-description>
+                   <button mat-raised-button type="button" color="accent" class="edit-button" data-test="exportFamilyButton" (click)="exportPDF(family._id)">⬇</button>
                    <button mat-raised-button type="button" color="accent" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
                     </mat-expansion-panel-header>
                     @for (student of family.students; track student.first_name) {
@@ -237,6 +240,7 @@
                     <mat-expansion-panel-header>
                     <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
                     <mat-panel-description> x{{this.familyService.familyCount(family,undefined,undefined)}} Children - {{family.email}}  -  {{family.time}} Pickup</mat-panel-description>
+                    <button mat-raised-button type="button" color="accent" class="edit-button" data-test="exportFamilyButton" (click)="exportPDF(family._id)">⬇</button>
                     <button mat-raised-button type="button" color="accent" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
                     </mat-expansion-panel-header>
                     @for (student of family.students; track student.first_name) {
