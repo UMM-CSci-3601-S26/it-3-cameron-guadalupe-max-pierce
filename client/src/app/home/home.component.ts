@@ -7,9 +7,11 @@ import { NavigationEnd, Router } from '@angular/router';
 import { InventoryService} from '../inventory/inventory.service';
 import { InventoryItem } from '../inventory/inventory_item';
 import { FamilyService } from '../families/family.service';
-import { GradeListService } from '../grade_list/grade_list.service';
-import { RequiredItem } from '../grade_list/required_item';
 import { Family } from '../families/family';
+import { GradeListService } from '../grade_list/grade_list.service';
+import { ShoppingListService } from '../shopping_list/shopping_list.service';
+import { SettingsService } from '../settings/settings.service';
+
 import { filter } from 'rxjs/internal/operators/filter';@Component({
   selector: 'app-home-component',
   templateUrl: 'home.component.html',
@@ -28,6 +30,8 @@ export class HomeComponent implements OnInit {
   private inventoryService = inject(InventoryService);
   private familyService = inject(FamilyService);
   private gradeListService = inject(GradeListService);
+  private shoppingListService = inject(ShoppingListService);
+  private settingService = inject(SettingsService);
   familyCount = 0;
   inventoryCount = 0;
 
@@ -74,7 +78,7 @@ export class HomeComponent implements OnInit {
 
   viewShoppingList(): void {
     console.log('Navigating to Shopping List Page..');
-    this.router.navigate(['/shopping-list']);
+    this.router.navigate(['/shopping_list']);
   }
 
   viewSettings(): void {
