@@ -191,11 +191,15 @@ class RequiredItemControllerSpec {
     }
 
     @Test
-    void canGetAllSchools() throws IOException {
-      MongoCollection<Document> schools = testDatabase.getCollection("schools");
-      schools.drop();
-      schools.insertOne(new Document().append("value", "A School").append("label", "A School"));
-      schools.insertOne(new Document().append("value", "B School").append("label", "B School"));
+    void canGetAllSchoolsFromSettings() throws IOException {
+      MongoCollection<Document> settings = testDatabase.getCollection("settings");
+      settings.drop();
+      settings.insertOne(new Document()
+        .append("_id", "app-settings")
+        .append("schools", List.of(
+          new Document().append("name", "A School").append("abbreviation", "AS"),
+          new Document().append("name", "B School").append("abbreviation", "BS")
+        )));
 
       requiredItemController.getSchools(ctx);
 
@@ -204,14 +208,26 @@ class RequiredItemControllerSpec {
       verify(ctx).json(schoolArrayCaptor.capture());
       verify(ctx).status(HttpStatus.OK);
       assertEquals(2, schoolArrayCaptor.getValue().size());
+      assertEquals("AS", schoolArrayCaptor.getValue().get(0).label);
+      assertEquals("BS", schoolArrayCaptor.getValue().get(1).label);
+    }
+
+    @Test
+    void getSchoolsReturnsEmptyWhenSettingsUnavailable() throws IOException {
+      MongoCollection<Document> settings = testDatabase.getCollection("settings");
+      settings.drop();
+
+      requiredItemController.getSchools(ctx);
+
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<ArrayList<School>> schoolArrayCaptor = ArgumentCaptor.forClass(ArrayList.class);
+      verify(ctx).json(schoolArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+      assertEquals(0, schoolArrayCaptor.getValue().size());
     }
 
     @Test
     void getSchoolsUsesSettingsWhenAvailable() throws IOException {
-      MongoCollection<Document> schools = testDatabase.getCollection("schools");
-      schools.drop();
-      schools.insertOne(new Document().append("value", "Legacy School").append("label", "LEG"));
-
       MongoCollection<Document> settings = testDatabase.getCollection("settings");
       settings.drop();
       settings.insertOne(new Document()
