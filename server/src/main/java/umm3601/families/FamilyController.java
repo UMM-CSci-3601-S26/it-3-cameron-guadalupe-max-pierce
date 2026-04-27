@@ -29,6 +29,8 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
+import umm3601.settings.Settings;
+import umm3601.settings.SettingsController;
 // import umm3601.families.Student;
 // import umm3601.inventory_items.InventoryItem;
 
@@ -48,7 +50,7 @@ public class FamilyController implements Controller {
   // static final String STOCKED_KEY = "stocked";
 
   private final JacksonMongoCollection<Family> familyCollection;
-  private final JacksonMongoCollection<Time> timeCollection;
+  private final JacksonMongoCollection<Settings> settingsCollection;
 
   /**
    * Construct a controller for users.
@@ -61,10 +63,10 @@ public class FamilyController implements Controller {
         "families",
         Family.class,
         UuidRepresentation.STANDARD);
-      timeCollection = JacksonMongoCollection.builder().build(
+      settingsCollection = JacksonMongoCollection.builder().build(
         database,
-        "times",
-        Time.class,
+        "settings",
+        Settings.class,
         UuidRepresentation.STANDARD);
   }
 
@@ -117,12 +119,37 @@ public class FamilyController implements Controller {
    * @param ctx a Javalin HTTP context
    */
   public void getTimes(Context ctx) {
+    Settings settings = settingsCollection.find(eq("_id", SettingsController.SETTINGS_ID)).first();
+    ArrayList<Time> mappedTimes = new ArrayList<>();
 
-    ArrayList<Time> matchingItems = timeCollection
-      .find() //No sorting required
-      .into(new ArrayList<>());
+    if (settings != null && settings.timeAvailability != null) {
+      if (settings.timeAvailability.earlyMorning != null && !settings.timeAvailability.earlyMorning.isBlank()) {
+        Time earlyMorning = new Time();
+        earlyMorning._id = "earlyMorning";
+        earlyMorning.value = settings.timeAvailability.earlyMorning;
+        mappedTimes.add(earlyMorning);
+      }
+      if (settings.timeAvailability.lateMorning != null && !settings.timeAvailability.lateMorning.isBlank()) {
+        Time lateMorning = new Time();
+        lateMorning._id = "lateMorning";
+        lateMorning.value = settings.timeAvailability.lateMorning;
+        mappedTimes.add(lateMorning);
+      }
+      if (settings.timeAvailability.earlyAfternoon != null && !settings.timeAvailability.earlyAfternoon.isBlank()) {
+        Time earlyAfternoon = new Time();
+        earlyAfternoon._id = "earlyAfternoon";
+        earlyAfternoon.value = settings.timeAvailability.earlyAfternoon;
+        mappedTimes.add(earlyAfternoon);
+      }
+      if (settings.timeAvailability.lateAfternoon != null && !settings.timeAvailability.lateAfternoon.isBlank()) {
+        Time lateAfternoon = new Time();
+        lateAfternoon._id = "lateAfternoon";
+        lateAfternoon.value = settings.timeAvailability.lateAfternoon;
+        mappedTimes.add(lateAfternoon);
+      }
+    }
 
-    ctx.json(matchingItems);
+    ctx.json(mappedTimes);
 
     // Explicitly set the context status to OK
     ctx.status(HttpStatus.OK);
