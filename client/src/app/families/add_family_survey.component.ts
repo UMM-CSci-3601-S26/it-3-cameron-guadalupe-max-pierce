@@ -13,6 +13,7 @@ import { FamilyService } from './family.service';
 import { catchError } from 'rxjs/internal/operators/catchError';
 import { of } from 'rxjs';
 import { School } from '../grade_list/school';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 export interface Student {
   firstName: string;
@@ -57,7 +58,7 @@ export class AddFamilySurveyComponent {
   surveyParentEmail = '';
 
 
-  serverFilteredSchools = signal(
+  schoolOptions = toSignal(
     this.familyService.getSchools().pipe(
       catchError((err) => {
         if (!(err.error instanceof ErrorEvent)) {
@@ -68,14 +69,15 @@ export class AddFamilySurveyComponent {
         this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
         return of<School[]>([]);
       })
-    )
+    ),
+    { initialValue: [] }
   );
 
   filteredSchoolOptions = computed(() => {
-    return this.serverFilteredSchools();
+    return this.schoolOptions();
     // const input = (this.schoolInput() || '').toLowerCase();
-    // if (!input) return this.serverFilteredSchools();
-    // return this.serverFilteredSchools(); //No filtering, short list.
+    // if (!input) return this.schoolOptions();
+    // return this.schoolOptions(); //No filtering, short list.
   });
 
 
