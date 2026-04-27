@@ -340,6 +340,20 @@ export class FamilyListComponent {
       this.familyService.reloadPage();
     }
   }
+  //Line variable, tracks current PDF position, resets when called.
+  private line = 0;
+
+  //Helper function to determine when to do page breaks
+  lineBreak(document: jsPDF, line_height: number, start_pos:number) {
+    if ((this.line*line_height) + start_pos >= document.internal.pageSize.getHeight() - 14) {
+      document.addPage();
+      this.line = 1;
+      return true;
+    } else {
+      this.line ++;
+      return false;
+    }
+  }
 
   //Template courtesy of feawsted
   exportPDF(family_id) {
@@ -351,10 +365,12 @@ export class FamilyListComponent {
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
         const margin = 14;
+        const stuMargin = 6; //Additional margin for student subsections.
+        //const itemMargin = 6; //Additional margin for item sub-subsections.
         //const checkSize = 4;
         const lineHeight = 6;
         const startPos = 18;
-        let lines = 1;
+        this.line = 1;
 
         // Header block
         doc.setFontSize(16);
@@ -368,14 +384,38 @@ export class FamilyListComponent {
         doc.setFontSize(11);
         doc.setFont('helvetica', 'normal');
         doc.text(`Primary Pickup Person - ${family.first_name} ${family.last_name}`, margin, startPos+lineHeight);
-        lines ++;
+        this.lineBreak(doc,lineHeight,startPos);
         if (family.first_name_alt != '') {
-          doc.text(`Alternate Pickup Person - ${family.first_name_alt} ${family.last_name_alt}`, margin, startPos+(lineHeight*lines));
-          lines ++;
+          doc.text(`Alternate Pickup Person - ${family.first_name_alt} ${family.last_name_alt}`, margin, startPos+(lineHeight*this.line));
+          this.lineBreak(doc,lineHeight,startPos);
         }
-        doc.text(`Contact Info - ${family.phone} - ${family.email}`, margin, startPos+(lineHeight*lines));
-        lines ++;
-        doc.text(`Pickup Time - ${family.time}`, margin, startPos+(lineHeight*lines));
+        doc.text(`Contact Info - ${family.phone} - ${family.email}`, margin, startPos+(lineHeight*this.line));
+        this.lineBreak(doc,lineHeight,startPos);
+        doc.text(`Pickup Time - ${family.time}`, margin, startPos+(lineHeight*this.line));
+        this.lineBreak(doc,lineHeight,startPos);
+
+        //Line #2
+        doc.line(margin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
+        this.lineBreak(doc,lineHeight,startPos);
+
+        //Student subsections
+        for (let s = 0; s < family.students.length; s ++) {
+
+          doc.text(`Student #${s+1} - ${family.students[s].first_name} ${family.students[s].last_name}`, margin + stuMargin, startPos+(lineHeight*this.line));
+          this.lineBreak(doc,lineHeight,startPos);
+          if ((family.students[s].teacher == '') || (family.students[s].teacher == undefined)) {
+            doc.text(`${family.students[s].school} - ${this.familyService.getGradeLabel(family.students[s].grade)}`, margin + stuMargin, startPos+(lineHeight*this.line));
+          } else {
+            doc.text(`${family.students[s].school} - ${family.students[s].teacher}'s ${this.familyService.getGradeLabel(family.students[s].grade)} class`, margin + stuMargin, startPos+(lineHeight*this.line));
+          }
+          this.lineBreak(doc,lineHeight,startPos);
+          doc.line(margin + stuMargin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
+          this.lineBreak(doc,lineHeight,startPos);
+          // if (lines*lineHeight >= doc.internal.pageSize.getHeight() - 14) {
+          //   doc.addPage();
+          //   lines = 0;
+          // }
+        }
         // doc.text(`Student: ${checklist.studentName}`, margin, 28);
         // doc.text(`Guardian: ${checklist.guardianName}`, margin, 36);
         // if (checklist.altPickUp) {
