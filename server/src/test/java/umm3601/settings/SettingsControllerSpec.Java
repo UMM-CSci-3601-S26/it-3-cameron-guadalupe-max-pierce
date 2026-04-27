@@ -1,49 +1,152 @@
 package umm3601.settings;
 
-// Static Imports
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
+import org.bson.Document;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
-public class SettingSpec {
+import com.mongodb.MongoClientSettings;
+import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoDatabase;
 
-  @Test
-  void canCreateSettingsWithSchoolListAndTimeAvailability() {
-    Settings settings = new Settings();
-    settings._id = "app-settings";
+import io.javalin.Javalin;
+import io.javalin.http.Context;
+import io.javalin.http.HttpStatus;
 
-    Settings.SchoolInfo schoolInfo = new Settings.SchoolInfo();
-    schoolInfo.name = "Morris Area High School";
-    schoolInfo.abbreviation = "MAHS";
-    settings.schools = List.of(schoolInfo);
+@SuppressWarnings({"MagicNumber"})
+class SettingsControllerSpec {
 
-    Settings.TimeAvailabilityLabels labels = new Settings.TimeAvailabilityLabels();
-    labels.earlyMorning = "8:30 AM - 10:30 AM";
-    labels.lateMorning = "10:30 AM - 12:30 AM";
-    labels.earlyAfternoon = "1:00 PM - 3:00 PM";
-    labels.lateAfternoon = "3:00 PM - 5:00 PM";
-    settings.timeAvailability = labels;
+  private SettingsController settingsController;
 
-    assertEquals("app-settings", settings._id);
-    assertEquals(1, settings.schools.size());
-    assertEquals("Morris Area High School", settings.schools.get(0).name);
-    assertEquals("MAHS", settings.schools.get(0).abbreviation);
-    assertEquals("8:30 AM - 10:30 AM", settings.timeAvailability.earlyMorning);
-    assertEquals("10:30 AM - 12:30 AM", settings.timeAvailability.lateMorning);
-    assertEquals("1:00 PM - 3:00 PM", settings.timeAvailability.earlyAfternoon);
-    assertEquals("3:00 PM - 5:00 PM", settings.timeAvailability.lateAfternoon);
+  private static MongoClient mongoClient;
+  private static MongoDatabase db;
+
+  @Mock
+  private Context ctx;
+
+  @BeforeAll
+  static void setupAll() {
+    String mongoAddr = System.getenv().getOrDefault("MONGO_ADDR", "localhost");
+    mongoClient = MongoClients.create(
+        MongoClientSettings.builder()
+            .applyToClusterSettings(builder -> builder.hosts(Arrays.asList(new ServerAddress(mongoAddr))))
+            .build());
+    db = mongoClient.getDatabase("test");
+  }
+
+  @AfterAll
+  static void teardown() {
+    db.drop();
+    mongoClient.close();
+  }
+
+  @BeforeEach
+  void setupEach() throws IOException {
+    MockitoAnnotations.openMocks(this);
+    db.getCollection("settings").drop();
+    settingsController = new SettingsController(db);
   }
 
   @Test
-  void schoolInfoStoresValues() {
-    Settings.SchoolInfo info = new Settings.SchoolInfo();
-    info.name = "Morris Area High School";
-    info.abbreviation = "MAHS";
+  void getSettingsReturnsDefaultWhenNoneExists() {
+    settingsController.getSettings(ctx);
 
-    assertEquals("Morris Area High School", info.name);
-    assertEquals("MAHS", info.abbreviation);
+    ArgumentCaptor<Settings> settingsCaptor = ArgumentCaptor.forClass(Settings.class);
+    verify(ctx).json(settingsCaptor.capture());
+    verify(ctx).status(HttpStatus.OK);
+
+    Settings returned = settingsCaptor.getValue();
+    assertEquals(SettingsController.SETTINGS_ID, returned._id);
+    assertNotNull(returned.schools);
+    assertNotNull(returned.timeAvailability);
+    assertNotNull(returned.supplyOrder);
   }
 
+  @Test
+  void addsRoutes() {
+    Javalin mockServer = mock(Javalin.class);
+    settingsController.addRoutes(mockServer);
+
+    verify(mockServer, atLeastOnce()).get(any(), any());
+    verify(mockServer, atLeastOnce()).patch(any(), any());
+    verify(mockServer, never()).post(any(), any());
+  }
+
+  @Test
+  void updateSchoolsThrowsOnMissingSchools() {
+    Settings body = new Settings();
+    body.schools = null;
+    when(ctx.bodyAsClass(Settings.class)).thenReturn(body);
+
+    boolean threw = false;
+    try {
+      settingsController.updateSchools(ctx);
+    } catch (io.javalin.http.BadRequestResponse e) {
+      threw = true;
+      assertEquals("Request body must include a 'schools' array.", e.getMessage());
+    }
+
+    assertTrue(threw);
+  }
+
+  @Test
+  void updateSupplyOrderWithNullSupplyOrderThrowsBadRequest() {
+    Settings body = new Settings();
+    body.supplyOrder = null;
+    when(ctx.bodyAsClass(Settings.class)).thenReturn(body);
+
+    boolean threw = false;
+    try {
+      settingsController.updateSupplyOrder(ctx);
+    } catch (io.javalin.http.BadRequestResponse e) {
+      threw = true;
+      assertEquals("Request body must include a 'supplyOrder' array.", e.getMessage());
+    }
+
+    assertTrue(threw);
+  }
+
+  @Test
+  void updateSupplyOrderPersistsAndIsRetrievable() {
+    Settings.SupplyItemOrder entry = new Settings.SupplyItemOrder();
+    entry.itemTerm = "folder";
+    entry.status = "unstaged";
+
+    Settings body = new Settings();
+    body.supplyOrder = List.of(entry);
+    when(ctx.bodyAsClass(Settings.class)).thenReturn(body);
+
+    settingsController.updateSupplyOrder(ctx);
+    verify(ctx).status(HttpStatus.OK);
+
+    settingsController.getSettings(ctx);
+    ArgumentCaptor<Settings> settingsCaptor = ArgumentCaptor.forClass(Settings.class);
+    verify(ctx, Mockito.times(1)).json(settingsCaptor.capture());
+
+    Settings saved = settingsCaptor.getValue();
+    assertEquals(1, saved.supplyOrder.size());
+    assertEquals("folder", saved.supplyOrder.get(0).itemTerm);
+    assertEquals("unstaged", saved.supplyOrder.get(0).status);
+  }
 }
