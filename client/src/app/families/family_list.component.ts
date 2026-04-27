@@ -354,6 +354,7 @@ export class FamilyListComponent {
         //const checkSize = 4;
         const lineHeight = 6;
         const startPos = 18;
+        let lines = 1;
 
         // Header block
         doc.setFontSize(16);
@@ -367,9 +368,12 @@ export class FamilyListComponent {
         doc.setFontSize(11);
         doc.setFont('helvetica', 'normal');
         doc.text(`Primary Pickup Person - ${family.first_name} ${family.last_name}`, margin, startPos+lineHeight);
+        lines ++;
         if (family.first_name_alt != '') {
-          doc.text(`Alternate Pickup Person - ${family.first_name_alt} ${family.last_name_alt}`, margin, startPos+(lineHeight*2));
+          doc.text(`Alternate Pickup Person - ${family.first_name_alt} ${family.last_name_alt}`, margin, startPos+(lineHeight*lines));
+          lines ++;
         }
+        doc.text(`Contact Info - ${family.phone} - ${family.email}`, margin, startPos+(lineHeight*lines));
         // doc.text(`Student: ${checklist.studentName}`, margin, 28);
         // doc.text(`Guardian: ${checklist.guardianName}`, margin, 36);
         // if (checklist.altPickUp) {
