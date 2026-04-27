@@ -14,6 +14,7 @@ import { catchError } from 'rxjs/internal/operators/catchError';
 import { of } from 'rxjs';
 import { School } from '../grade_list/school';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { toSignal } from '@angular/core/rxjs-interop';
 //import { Family } from './family';
 import { Student } from './student';
 import { Time } from './time';
@@ -56,7 +57,7 @@ export class AddFamilySurveyComponent {
   espanol = false; //If true, spanish version is used.
 
 
-  serverFilteredSchools = signal(
+  schoolOptions = toSignal(
     this.familyService.getSchools().pipe(
       catchError((err) => {
         if (!(err.error instanceof ErrorEvent)) {
@@ -67,10 +68,11 @@ export class AddFamilySurveyComponent {
         this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
         return of<School[]>([]);
       })
-    )
+    ),
+    { initialValue: [] }
   );
 
-  serverFilteredTimes = signal(
+  serverFilteredTimes = toSignal(
     this.familyService.getTimes().pipe(
       catchError((err) => {
         if (!(err.error instanceof ErrorEvent)) {
@@ -81,7 +83,8 @@ export class AddFamilySurveyComponent {
         this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
         return of<Time[]>([]);
       })
-    )
+    ),
+    { initialValue: [] }
   );
 
   filteredTimeOptions = computed(() => {
@@ -89,7 +92,7 @@ export class AddFamilySurveyComponent {
   });
 
   filteredSchoolOptions = computed(() => {
-    return this.serverFilteredSchools();
+    return this.schoolOptions();
   });
 
   gradeOptions = this.familyService.gradeOptions;

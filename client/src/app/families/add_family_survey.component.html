@@ -89,7 +89,7 @@
               <mat-form-field>
                 <mat-label>Tiempo</mat-label>
                 <mat-select placeholder="Tiempo" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
-                  @for (time of filteredTimeOptions() | async; track time.value) {
+                  @for (time of filteredTimeOptions(); track time.value) {
                   <mat-option [value]="time.value">{{time.value}}</mat-option>
                   }
                 </mat-select>
@@ -117,7 +117,7 @@
                     <mat-form-field>
                       <mat-label>Escuela</mat-label>
                       <mat-select placeholder="Escuela" [(ngModel)]="child.school" name="school{{i}}">
-                        @for (school of filteredSchoolOptions() | async; track school.label) {
+                        @for (school of filteredSchoolOptions(); track school.label) {
                         <mat-option [value]="school.label">{{school.label}}</mat-option>
                         }
                       </mat-select>
@@ -222,7 +222,7 @@
             <mat-form-field>
               <mat-label>Time</mat-label>
               <mat-select placeholder="Time" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
-                @for (time of filteredTimeOptions() | async; track time.value) {
+                @for (time of filteredTimeOptions(); track time.value) {
                 <mat-option [value]="time.value">{{time.value}}</mat-option>
                 }
               </mat-select>
@@ -250,7 +250,7 @@
                   <mat-form-field>
                     <mat-label>School</mat-label>
                     <mat-select placeholder="School" [(ngModel)]="child.school" name="school{{i}}">
-                      @for (school of filteredSchoolOptions() | async; track school.label) {
+                      @for (school of filteredSchoolOptions(); track school.label) {
                       <mat-option [value]="school.label">{{school.label}}</mat-option>
                       }
                     </mat-select>
