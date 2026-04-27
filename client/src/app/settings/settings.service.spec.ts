@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 
 import { environment } from '../../environments/environment';
-import { AppSettings, SupplyItemOrder } from './settings';
+import { AppSettings } from './settings';
 import { SettingsService } from './settings.service';
 
 describe('SettingsService', () => {
@@ -21,11 +21,6 @@ describe('SettingsService', () => {
       earlyAfternoon: '12:00 PM',
       lateAfternoon: '2:00 PM',
     },
-    supplyOrder: [
-      { itemTerm: 'notebook', status: 'staged' },
-      { itemTerm: 'folder', status: 'unstaged' },
-      { itemTerm: 'pencil', status: 'notGiven' },
-    ],
   };
 
   beforeEach(() => {
@@ -53,44 +48,6 @@ describe('SettingsService', () => {
       const req = httpTestingController.expectOne(settingsUrl);
       expect(req.request.method).toBe('GET');
       req.flush(mockSettings);
-    });
-  });
-
-  describe('updateSupplyOrder()', () => {
-    it('sends PATCH to /api/settings/supplyOrder with the order in the body', () => {
-      const order: SupplyItemOrder[] = [
-        { itemTerm: 'notebook', status: 'staged' },
-        { itemTerm: 'folder', status: 'unstaged' },
-      ];
-
-      service.updateSupplyOrder(order).subscribe();
-
-      const req = httpTestingController.expectOne(`${settingsUrl}/supplyOrder`);
-      expect(req.request.method).toBe('PATCH');
-      expect(req.request.body).toEqual({ supplyOrder: order });
-      req.flush(null);
-    });
-
-    it('sends PATCH with an empty array when no order is given', () => {
-      service.updateSupplyOrder([]).subscribe();
-
-      const req = httpTestingController.expectOne(`${settingsUrl}/supplyOrder`);
-      expect(req.request.body).toEqual({ supplyOrder: [] });
-      req.flush(null);
-    });
-
-    it('sends all three statuses (staged, unstaged, notGiven) in a single request', () => {
-      const order: SupplyItemOrder[] = [
-        { itemTerm: 'notebook', status: 'staged' },
-        { itemTerm: 'folder', status: 'unstaged' },
-        { itemTerm: 'pencil', status: 'notGiven' },
-      ];
-
-      service.updateSupplyOrder(order).subscribe();
-
-      const req = httpTestingController.expectOne(`${settingsUrl}/supplyOrder`);
-      expect(req.request.body.supplyOrder).toEqual(order);
-      req.flush(null);
     });
   });
 
