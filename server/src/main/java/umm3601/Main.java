@@ -7,6 +7,7 @@ import umm3601.user.UserController;
 import umm3601.inventory_items.InventoryItemController;
 import umm3601.grade_list.RequiredItemController;
 import umm3601.families.FamilyController;
+import umm3601.settings.SettingsController;
 
 public class Main {
 
@@ -67,6 +68,7 @@ public class Main {
       new InventoryItemController(database),
       new FamilyController(database),
       new RequiredItemController(database),
+      new SettingsController(database),
     };
     return controllers;
   }

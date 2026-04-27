@@ -374,6 +374,52 @@ class FamilyControllerSpec {
   }
 
   @Test
+  void addInvalidLastNameFamily() throws IOException {
+    String newFamilyJson = """
+      {
+        "first_name": "ValidFirst",
+        "last_name": "no",
+        "time": "2:00",
+        "students":[]
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newFamilyJson);
+    when(ctx.bodyValidator(Family.class))
+      .thenReturn(new BodyValidator<Family>(newFamilyJson, Family.class,
+                    () -> javalinJackson.fromJsonString(newFamilyJson, Family.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      familyController.addNewFamily(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+    assertTrue(exceptionMessage.contains("last name"));
+  }
+
+  @Test
+  void addInvalidTimeFamily() throws IOException {
+    String newFamilyJson = """
+      {
+        "first_name": "ValidFirst",
+        "last_name": "ValidLast",
+        "time": "",
+        "students":[]
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newFamilyJson);
+    when(ctx.bodyValidator(Family.class))
+      .thenReturn(new BodyValidator<Family>(newFamilyJson, Family.class,
+                    () -> javalinJackson.fromJsonString(newFamilyJson, Family.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      familyController.addNewFamily(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+    assertTrue(exceptionMessage.contains("appointment time"));
+  }
+
+  @Test
   void deleteFoundFamily() throws IOException { //Don't delete found family! That's the best family!
     String testID = testItemId1.toHexString();
     when(ctx.pathParam("id")).thenReturn(testID);
