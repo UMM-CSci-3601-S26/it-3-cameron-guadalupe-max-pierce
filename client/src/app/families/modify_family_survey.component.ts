@@ -62,6 +62,7 @@ export class ModifyFamilySurveyComponent {
   surveyFamilyLastNameAlt = '';
   surveyFamilyFirstNameAlt = '';
   surveyParentEmail = '';
+  surveyParentPhone = '';
   surveyFamilyTime = '';
   initialized = false;
   surveyChildren: Student[] = [];
@@ -159,6 +160,7 @@ export class ModifyFamilySurveyComponent {
       this. surveyFamilyLastNameAlt = this.family().last_name_alt;
       this.surveyFamilyFirstNameAlt = this.family().first_name_alt;
       this.surveyParentEmail = this.family().email;
+      this.surveyParentPhone = this.family().phone;
       this.surveyFamilyTime = this.family().time;
       this.surveyChildren = this.family().students;
       this.initialized = true;
@@ -193,6 +195,7 @@ export class ModifyFamilySurveyComponent {
     this.surveyFamilyLastNameAlt = this.family().last_name_alt;
     this.surveyFamilyFirstNameAlt = this.family().first_name_alt;
     this.surveyParentEmail = this.family().email;
+    this.surveyParentPhone = this.family().phone;
     this.surveyFamilyTime = this.family().time;
     this.surveyChildren = this.family().students;
   }
@@ -203,25 +206,48 @@ export class ModifyFamilySurveyComponent {
     return Boolean(normalized && emailPattern.test(normalized));
   }
 
+  private isValidPhone(phone: string): boolean {
+    const normalized = phone?.trim();
+    const phonePattern =/^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/g
+    return Boolean(normalized && phonePattern.test(normalized));
+  }
+
   submitSurvey() {
     if (
       !this.surveyFamilyLastName ||
       !this.surveyFamilyFirstName ||
       !this.surveyParentEmail ||
       !this.isValidEmail(this.surveyParentEmail) ||
+      !this.isValidPhone(this.surveyParentPhone) ||
       this.surveyChildren.some(
         c => !c.first_name || !c.last_name || !c.school || !c.grade
       )
     ) {
-      this.snackBar.open(
-        !this.surveyParentEmail || !this.isValidEmail(this.surveyParentEmail)
-          ? 'Please enter a valid parent email address'
-          : 'Please fill in all required fields',
-        'OK',
-        {
-          duration: 5000
-        }
-      );
+      if (!this.surveyParentEmail || !this.isValidEmail(this.surveyParentEmail)) {
+        this.snackBar.open(
+          'Please enter a valid email address',
+          'OK',
+          {
+            duration: 5000
+          }
+        );
+      } else if (!this.surveyParentPhone || !this.isValidPhone(this.surveyParentPhone)) {
+        this.snackBar.open(
+          'Please enter a valid phone number',
+          'OK',
+          {
+            duration: 5000
+          }
+        );
+      } else {
+        this.snackBar.open(
+          'Please fill in all required fields',
+          'OK',
+          {
+            duration: 5000
+          }
+        );
+      }
       return;
     }
     //If still running, Delete original item and add the new item specified in the form.
@@ -256,6 +282,7 @@ export class ModifyFamilySurveyComponent {
         first_name_alt:this.surveyFamilyFirstNameAlt,
         last_name_alt:this.surveyFamilyLastNameAlt,
         time:this.surveyFamilyTime,
+        phone:this.surveyParentPhone,
         email:this.surveyParentEmail,
         students:this.surveyChildren
       }
