@@ -374,6 +374,8 @@ export class FamilyListComponent {
           lines ++;
         }
         doc.text(`Contact Info - ${family.phone} - ${family.email}`, margin, startPos+(lineHeight*lines));
+        lines ++;
+        doc.text(`Pickup Time - ${family.time}`, margin, startPos+(lineHeight*lines));
         // doc.text(`Student: ${checklist.studentName}`, margin, 28);
         // doc.text(`Guardian: ${checklist.guardianName}`, margin, 36);
         // if (checklist.altPickUp) {
