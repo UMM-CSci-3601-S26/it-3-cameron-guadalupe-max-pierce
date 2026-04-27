@@ -389,6 +389,7 @@ export class FamilyListComponent {
         this.snackBar.open(`Failed to load checklist: ${err.message}`, 'OK', { duration: 6000 });
       },
       next: (family) => {
+        this.snackBar.open(`Generating ${family.last_name} checklist, please wait...`, 'OK', { duration: 4000 });
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
         const margin = 14;
@@ -439,77 +440,37 @@ export class FamilyListComponent {
           }
           this.lineBreak(doc,lineHeight,startPos);
 
-          //Requirements per student.
+          //Requirements per student
+          doc.setFont('helvetica', 'italic');
           for (let r = 0; r < studentReqs.length; r ++) {
             //Checkbox
             doc.rect(margin + stuMargin + itemMargin - (checkSize+1), startPos+(lineHeight*this.line) - checkSize + 1, checkSize, checkSize);
-            doc.text(`x${studentReqs[r].required} ${studentReqs[r].name}`, margin + stuMargin + itemMargin, startPos+(lineHeight*this.line));
+            //Requirement
+            let itemString = '';
+            if (studentReqs[r].required > 1) {
+              itemString = itemString.concat(`x${studentReqs[r].required} ${studentReqs[r].name}`);
+            } else {
+              itemString = itemString.concat(`${studentReqs[r].name}`);
+            }
+
+            if (studentReqs[r].desc != '') {
+              itemString = itemString.concat(` - ${studentReqs[r].desc}`);
+            }
+
+            if (studentReqs[r].pack > 1) {
+              itemString = itemString.concat(` - ${studentReqs[r].pack} ct.`);
+            }
+
+            doc.text(itemString, margin + stuMargin + itemMargin, startPos+(lineHeight*this.line));
             this.lineBreak(doc,lineHeight,startPos);
           }
+          doc.setFont('helvetica', 'normal');
+
           //Student break
           doc.line(margin + stuMargin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
           this.lineBreak(doc,lineHeight,startPos);
         }
-        // doc.text(`Student: ${checklist.studentName}`, margin, 28);
-        // doc.text(`Guardian: ${checklist.guardianName}`, margin, 36);
-        // if (checklist.altPickUp) {
-        //   doc.text(`Alt Pickup: ${checklist.altPickUp}`, margin, 44);
-        //   doc.text(`School:  ${checklist.school}`, margin, 51);
-        //   doc.text(`Grade:   ${checklist.grade}`, margin, 58);
-
-        //   doc.setLineWidth(0.4);
-        //   doc.line(margin, 62, pageWidth - margin, 62);
-        //   let y = 70;
-        //   // Items with checkboxes
-        //   checklist.checklist.forEach(item => {
-        //     const label = supplyToLabel(item.supply);
-        //     const lines = doc.splitTextToSize(label, pageWidth - margin - 20) as string[];
-        //     const blockHeight = lines.length * lineHeight;
-
-        //     if (y + blockHeight > doc.internal.pageSize.getHeight() - 14) {
-        //       doc.addPage();
-        //       y = 20;
-        //     }
-
-        //     // Checkbox square — centred vertically with the first line of text
-        //     doc.rect(margin, y - checkSize + 1, checkSize, checkSize);
-
-        //     // Label text starting after the checkbox
-        //     doc.setFontSize(10);
-        //     doc.setFont('helvetica', 'normal');
-        //     doc.text(lines, margin + checkSize + 3, y);
-
-        //     y += blockHeight + 3;
-        //   });
-        // } else {
-        //   doc.text(`School:  ${checklist.school}`, margin, 45);
-        //   doc.text(`Grade:   ${checklist.grade}`, margin, 53);
-
-        //   doc.setLineWidth(0.4);
-        //   doc.line(margin, 55, pageWidth - margin, 55);
-        //   let y = 60;
-        //   // Items with checkboxes
-        //   checklist.checklist.forEach(item => {
-        //     const label = supplyToLabel(item.supply);
-        //     const lines = doc.splitTextToSize(label, pageWidth - margin - 20) as string[];
-        //     const blockHeight = lines.length * lineHeight;
-
-        //     if (y + blockHeight > doc.internal.pageSize.getHeight() - 14) {
-        //       doc.addPage();
-        //       y = 20;
-        //     }
-
-        //     // Checkbox square — centred vertically with the first line of text
-        //     doc.rect(margin, y - checkSize + 1, checkSize, checkSize);
-
-        //     // Label text starting after the checkbox
-        //     doc.setFontSize(10);
-        //     doc.setFont('helvetica', 'normal');
-        //     doc.text(lines, margin + checkSize + 3, y);
-
-        //     y += blockHeight + 3;
-        //   });
-        // }
+        //Save and export
         doc.save(family.last_name.concat(' Checklist.pdf'));
       }
     });
