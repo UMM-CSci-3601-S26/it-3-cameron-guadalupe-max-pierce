@@ -16,7 +16,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RouterLink } from '@angular/router';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { Family } from './family';
+import { Student } from './student';
 import { School } from '../grade_list/school';
+import { RequiredItem } from '../grade_list/required_item';
 //import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 //import { InventoryCardComponent } from './inventory_card.component';
 import { FamilyService } from './family.service';
@@ -103,7 +105,7 @@ export class FamilyListComponent {
   private itemStudents$ = toObservable(this.itemStudents);
   private itemTime$ = toObservable(this.itemTime);
 
-  serverFilteredItems =
+  serverFilteredFamilies =
     toSignal(
       //Not actually doing any filtering on the server, just need to get Items.
       combineLatest([this.itemName$,this.itemGrade$,this.itemSchool$,this.itemStudents$,this.itemTime$]).pipe(
@@ -127,7 +129,7 @@ export class FamilyListComponent {
   serverFilteredSchools =
     toSignal(
       //Not actually doing any filtering on the server, just need to get Items.
-      combineLatest([this.itemSchool$]).pipe(
+      combineLatest([this.itemName$,this.itemGrade$,this.itemSchool$,this.itemStudents$,this.itemTime$]).pipe(
         switchMap(() =>
           this.familyService.getSchools() //If we decide to filter on server, args go her
         ),
@@ -145,13 +147,38 @@ export class FamilyListComponent {
       )
     );
 
+  serverFilteredItems =
+    toSignal(
+      //Not actually doing any filtering on the server, just need to get Items.
+      combineLatest([this.itemName$,this.itemGrade$,this.itemSchool$,this.itemStudents$,this.itemTime$]).pipe(
+        switchMap(() =>
+          this.familyService.getItems() //If we decide to filter on server, args go her
+        ),
+        catchError((err) => {
+          if (!(err.error instanceof ErrorEvent)) {
+            this.errMsg.set(
+              `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
+            );
+          }
+          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
+          return of<RequiredItem[]>([]);
+        }),
+        tap(() => {
+        })
+      )
+    );
+
   filteredSchoolOptions = computed(() => {
     return this.serverFilteredSchools();
   });
 
+  gradeReqs = computed(() => {
+    return this.serverFilteredItems();
+  })
+
 
   filteredFamilies = computed(() => {
-    const currentItems = this.serverFilteredItems();
+    const currentItems = this.serverFilteredFamilies();
     //Whenever we sort, we also update saved search.
     //Since this is through service, should be saved between pages.
     this.familyService.updateSavedSearch({
@@ -173,7 +200,7 @@ export class FamilyListComponent {
   });
 
   gradeFilteredFamilies = computed(() => {
-    const currentItems = this.serverFilteredItems();
+    const currentItems = this.serverFilteredFamilies();
     const typedArray: { header: string, grade_total: number, value: string, families: Family[] }[] = [];
     let matchingFamilies = [];
     let totalStudents = 0;
@@ -212,7 +239,7 @@ export class FamilyListComponent {
   })
 
   schoolFilteredFamilies = computed(() => {
-    const currentItems = this.serverFilteredItems();
+    const currentItems = this.serverFilteredFamilies();
     const typedArray: { header: string, school_total: number, value: string, families: Family[] }[] = [];
     let matchingFamilies = [];
     let totalStudents = 0;
@@ -252,7 +279,7 @@ export class FamilyListComponent {
   gradeAndSchoolFilteredFamilies = computed(() => {
     //Currently, if a family has students in multiple schools, they can get counted for grades from each school...
     //Even when they actually have no matching students for that slot.
-    const currentItems = this.serverFilteredItems();
+    const currentItems = this.serverFilteredFamilies();
     const schooledArray: {
           school_header: string,
           school_total:number,
@@ -331,7 +358,7 @@ export class FamilyListComponent {
   resetStudents() {
     const warning = confirm("This will delete ALL families. Are you sure?");
     if (warning == true) {
-      this.familyService.deleteAll(this.serverFilteredItems());
+      this.familyService.deleteAll(this.serverFilteredFamilies());
       this.snackBar.open(
         `Family List reset. Please wait for page to reload...`,
         'OK',
@@ -366,8 +393,8 @@ export class FamilyListComponent {
         const pageWidth = doc.internal.pageSize.getWidth();
         const margin = 14;
         const stuMargin = 6; //Additional margin for student subsections.
-        //const itemMargin = 6; //Additional margin for item sub-subsections.
-        //const checkSize = 4;
+        const itemMargin = 6; //Additional margin for item sub-subsections.
+        const checkSize = 4;
         const lineHeight = 6;
         const startPos = 18;
         this.line = 1;
@@ -400,21 +427,28 @@ export class FamilyListComponent {
 
         //Student subsections
         for (let s = 0; s < family.students.length; s ++) {
-
+          const studentReqs = this.getStudentRequirements(family.students[s]);
+          doc.setFont('helvetica', 'bold');
           doc.text(`Student #${s+1} - ${family.students[s].first_name} ${family.students[s].last_name}`, margin + stuMargin, startPos+(lineHeight*this.line));
+          doc.setFont('helvetica', 'normal');
           this.lineBreak(doc,lineHeight,startPos);
           if ((family.students[s].teacher == '') || (family.students[s].teacher == undefined)) {
-            doc.text(`${family.students[s].school} - ${this.familyService.getGradeLabel(family.students[s].grade)}`, margin + stuMargin, startPos+(lineHeight*this.line));
+            doc.text(`${family.students[s].school} - ${this.familyService.getGradeLabel(family.students[s].grade)} - ${studentReqs.length} items`, margin + stuMargin, startPos+(lineHeight*this.line));
           } else {
-            doc.text(`${family.students[s].school} - ${family.students[s].teacher}'s ${this.familyService.getGradeLabel(family.students[s].grade)} class`, margin + stuMargin, startPos+(lineHeight*this.line));
+            doc.text(`${family.students[s].school} - ${family.students[s].teacher}'s ${this.familyService.getGradeLabel(family.students[s].grade)} class - ${studentReqs.length} items`, margin + stuMargin, startPos+(lineHeight*this.line));
           }
           this.lineBreak(doc,lineHeight,startPos);
+
+          //Requirements per student.
+          for (let r = 0; r < studentReqs.length; r ++) {
+            //Checkbox
+            doc.rect(margin + stuMargin + itemMargin - (checkSize+1), startPos+(lineHeight*this.line) - checkSize + 1, checkSize, checkSize);
+            doc.text(`x${studentReqs[r].required} ${studentReqs[r].name}`, margin + stuMargin + itemMargin, startPos+(lineHeight*this.line));
+            this.lineBreak(doc,lineHeight,startPos);
+          }
+          //Student break
           doc.line(margin + stuMargin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
           this.lineBreak(doc,lineHeight,startPos);
-          // if (lines*lineHeight >= doc.internal.pageSize.getHeight() - 14) {
-          //   doc.addPage();
-          //   lines = 0;
-          // }
         }
         // doc.text(`Student: ${checklist.studentName}`, margin, 28);
         // doc.text(`Guardian: ${checklist.guardianName}`, margin, 36);
@@ -481,10 +515,33 @@ export class FamilyListComponent {
     });
   }
 
+  getStudentRequirements(student:Student) {
+    //Get all required items for the current student, based on grade and school.
+    const gradeReqs = this.familyService.filterItems(this.gradeReqs(),student);
+    const runningTotal: RequiredItem[] = [];
+    //For every requirement of every student...
+    for (let r = 0; r < gradeReqs.length; r ++) {
+      if (((gradeReqs[r].type !== "backpacks") || (student.backpack))
+      && ((gradeReqs[r].type !== "headphones") || (student.headphones))) {
+        //Backpacks and headphones are only counted if the current student requires one.
+        runningTotal.push({ //We need to CREATE a new required item, otherwise successive calls update the same set of items.
+          name: gradeReqs[r].name,
+          type: gradeReqs[r].type,
+          desc: gradeReqs[r].desc,
+          grade:'', //No longer relevant
+          school:'',
+          required: gradeReqs[r].required,
+          pack: gradeReqs[r].pack,
+          _id:undefined,
+        });
+      }
+    }
+    return runningTotal;
+  }
 
   exportToCSV() {
     const header = ['First Name', 'Last Name', 'Time', 'Students'];
-    const rows = this.serverFilteredItems().map(family => [
+    const rows = this.serverFilteredFamilies().map(family => [
       family.first_name,
       family.last_name,
       family.time,
