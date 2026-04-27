@@ -7,6 +7,7 @@ import { GradeListComponent } from './grade_list/grade_list.component';
 import { AddRequirementComponent } from './grade_list/add_grade_list_item.component';
 import { ModifyRequirementComponent } from './grade_list/modify_grade_list_item.component';
 import { AddFamilySurveyComponent } from './families/add_family_survey.component';
+import { ModifyFamilySurveyComponent } from './families/modify_family_survey.component';
 
 //import { CompanyListComponent } from './company-list/company-list.component';
 import { InventoryListComponent } from './inventory/inventory_list.component';
@@ -14,22 +15,27 @@ import { AddItemComponent } from './inventory/add_inventory_item.component';
 import { ModifyItemComponent } from './inventory/modify_inventory_item.component';
 import { SettingsComponent } from './settings/settings.component';
 
+import { ShoppingListComponent } from './shopping_list/shopping_list.component';
+
 // Note that the 'users/new' route needs to come before 'users/:id'.
 // If 'users/:id' came first, it would accidentally catch requests to
 // 'users/new'; the router would just think that the string 'new' is a user ID.
 const routes: Routes = [
   {path: '', component: HomeComponent, title: 'Home'},
   {path: 'families', component: FamilyListComponent, title: 'Families'},
-  {path: 'families/survey', component: AddFamilySurveyComponent, title: 'Backpack Survey'},
+  {path: 'families/survey', component: AddFamilySurveyComponent, title: 'Family Survey'},
+  {path: 'families/:id', component: ModifyFamilySurveyComponent, title: 'Family Profile'},
+
   {path: 'grade_list', component: GradeListComponent, title: 'Requirements'},
   {path: 'grade_list/new', component: AddRequirementComponent, title: 'Add Requirement'},
   {path: 'grade_list/:id', component: ModifyRequirementComponent, title: 'Requirement Profile'},
   // {path: 'families/new', component: AddUserComponent, title: 'Add User'},
-  // {path: 'families/:id', component: UserProfileComponent, title: 'User Profile'},
   {path: 'inventory', component: InventoryListComponent, title: 'Inventory'},
   {path: 'inventory/new', component: AddItemComponent, title: 'Add Item'},
   {path: 'inventory/:id', component: ModifyItemComponent, title: 'Item Profile'},
   {path: 'settings', component: SettingsComponent, title: 'Settings'},
+
+  {path: 'shopping_list', component: ShoppingListComponent, title: 'Shopping List'},
   // {path: 'companies', component: CompanyListComponent, title: 'Companies'}
 ];
 

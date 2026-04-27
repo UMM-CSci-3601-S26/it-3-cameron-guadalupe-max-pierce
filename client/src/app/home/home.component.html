@@ -1,14 +1,74 @@
+<header class="hero-header">
+  <h1>Ready 4 Learning</h1>
+  <p>Homepage</p>
+</header>
+
 <div class="flex-row">
   <div class="flex-1">
     <mat-card class="home-card">
       <mat-card-header>
-        <mat-card-title>
-          Home
-        </mat-card-title>
+        <mat-card-title>Dashboard</mat-card-title>
+        <mat-card-subtitle>Operational DashBoard Overview</mat-card-subtitle>
       </mat-card-header>
+
       <mat-card-content>
-        This is a home page! It doesn't do anything!
+
+        <div class="alert-banner" *ngIf="lowStockAlert">
+          ⚠ Low stock detected in inventory! Please review the Inventory Page for details.
+          <button mat-button color="warn" (click)="dismissAlert()">Dismiss</button>
+        </div>
+
+        <!--dashboard overview-->
+        <section class ="general-info">
+          <h3>System Overview </h3>
+          <p> Welcome to Ready 4 Learning HomePage! this dashboard provides real time updates on the system status, key metrics, and Student Engagement. </p>
+        </section>
+
+        <!-- Dashboard Grid-->
+        <div class = "stats-container">
+
+          <!-- Shows stats for Student Info -->
+        <div class ="info-tile families">
+          <mat-icon>groups</mat-icon>
+          <div class = "tile-content">
+            <span class="label">Families Registered</span>
+            <span class="value">{{ familyCount }}</span>
+          </div>
+        </div>
+
+        <div class="info-tile inventory">
+          <mat-icon>inventory</mat-icon>
+          <div class="tile-content">
+            <span class="label">Inventory Items</span>
+            <span class="value">{{ inventoryCount }}</span>
+          </div>
+        </div>
+
+
+        <!-- Shows status for stock -->
+        <div class="info-tile">
+          <mat-icon>warning</mat-icon>
+          <div class="tile-content">
+            <span class="label">Low Stock Items</span>
+            <span class="value">{{ lowStockItems.length }}</span>
+          </div>
+        </div>
+
+        <div class="info-tile">
+          <mat-icon>sensors</mat-icon>
+          <div class="tile-content">
+            <span class="label">System Status</span>
+            <span class="value">{{ lowStockAlert ?  'Attention' : 'Active'}}</span>
+          </div>
+        </div>
+      </div>
       </mat-card-content>
+
+
+      <mat-card-actions align="end">
+        <button mat-raised-button color="primary" (click)="viewInventory()">View Inventory</button>
+        <button mat-raised-button color="accent" (click)="viewFamilies()">View Families</button>
+      </mat-card-actions>
     </mat-card>
   </div>
 </div>

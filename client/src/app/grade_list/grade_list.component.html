@@ -116,7 +116,7 @@
                   [style.height.px]=30
                   [disabled]="!populateAllowed"
                   data-test="populateButtonSchool"
-                  (click)="populateInventory(serverFilteredItems(),school.school_val)"
+                  (click)="populateInventory(serverFilteredItems(),this.gradeListService.inventoryReference(),school.school_val)"
                 >
                 Add all requirements to Inventory
                 </button>
@@ -145,7 +145,7 @@
                         [style.height.px]=30
                         data-test="populateButton"
                         [disabled]="!populateAllowed"
-                        (click)="populateInventory(serverFilteredItems(),school.school_val, grade.grade_val)"
+                        (click)="populateInventory(serverFilteredItems(),this.gradeListService.inventoryReference(),school.school_val, grade.grade_val)"
                       >
                       Add {{grade.grade_header}} requirements to Inventory
                       </button>

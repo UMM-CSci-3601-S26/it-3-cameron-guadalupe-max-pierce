@@ -6,6 +6,7 @@ import { InventoryListComponent } from './inventory_list.component';
 import { InventoryItem } from './inventory_item';
 import { InventoryService } from './inventory.service';
 import { provideHttpClient } from '@angular/common/http';
+//import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('Inventory list', () => {
@@ -76,6 +77,11 @@ describe('Inventory list', () => {
   it('should not show error message on successful load', () => {
     expect(inventoryList.errMsg()).toBeUndefined();
   });
+
+  // it('resetting does not instantly delete everything.', () => {
+  //   inventoryList.resetInventory();
+  //   expect(inventoryList.serverFilteredItems().length > 0);
+  // });
 
   it("correctly handles the 'Location Reset' button", () => {
     expect(inventoryList.resetVisible()).toEqual(false);
@@ -267,5 +273,21 @@ describe('Misbehaving Item List', () => {
     expect(itemList.errMsg())
       .withContext('the error message will be')
       .toContain('Problem contacting the server – Error Code:');
+  });
+
+  it('it returns an error message when getItems throws an error during export', () => {
+    spyOn(inventoryServiceStub, 'getItems').and.returnValue(
+      new Observable((observer) => {
+        observer.error('getItems() Observer generates an error');
+      })
+    );
+    itemList.exportToCSV();
+    expect(itemList.errMsg()).toContain('Problem contacting the server – Error Code:');
+  });
+
+  it('correctly handles blank cells', () => {
+    expect(itemList.escapeCsvValue(undefined)).toEqual('');
+    expect(itemList.escapeCsvValue('This is fine')).toEqual('This is fine');
+    expect(itemList.escapeCsvValue("This isn't fine")).toEqual('"This isn\'t fine"');
   });
 });

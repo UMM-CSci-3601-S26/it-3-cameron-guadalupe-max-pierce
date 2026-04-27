@@ -11,64 +11,115 @@ describe('FamilyService', () => {
   const testFamilies: Family[] = [
     {
       "_id": "richards_id",
-      "name": "Richards",
+      "first_name": "Steve",
+      "last_name":"Richards",
+      "first_name_alt":"",
+      "last_name_alt":"",
       "time":"12:00pm",
+      "email":"prcrichards@gmail.com",
       "students":[
         {
-          "grade": "P",
-          "school": "MAES",
-          "backpack": true,
-          firstName: '',
-          lastName: ''
+          "first_name":"Ted",
+          "last_name":"Richards",
+          "grade":"P",
+          "teacher":"Mrs.Greene",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":false
         },
         {
-          "grade": "3",
-          "school": "MAES",
-          "backpack": false,
-          firstName: '',
-          lastName: ''
+          "first_name":"Tod",
+          "last_name":"Richards",
+          "grade":"3",
+          "teacher":"Mrs.Ulrich",
+          "school":"MAES",
+          "backpack":false,
+          "headphones":true
         }
       ]
     },
     {
-      "_id": "smith_id",
-      "name": "Smith",
-      "time":"1:00pm",
+      "_id": "krosschell_id",
+      "first_name": "Frank",
+      "last_name":"Krosschell",
+      "first_name_alt":"",
+      "last_name_alt":"",
+      "time":"9:00pm",
+      "email":"gkross@gmail.com",
       "students":[
         {
-          "grade": "2",
-          "school": "Hancock",
-          "backpack": false,
-          firstName: '',
-          lastName: ''
+          "first_name":"Bob",
+          "last_name":"Krosschell",
+          "grade":"1",
+          "teacher":"Mr.Greene",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":false
+        },
+        {
+          "first_name":"Kevin",
+          "last_name":"Krosschell",
+          "grade":"3",
+          "teacher":"Mrs.Ulrich",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":true
+        },
+        {
+          "first_name":"Kyle",
+          "last_name":"Krosschell",
+          "grade":"3",
+          "teacher":"Mrs.Ulrich",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":true
+        },
+        {
+          "first_name":"Mitchel",
+          "last_name":"Krosschell",
+          "grade":"7",
+          "teacher":"Mr.Cannon",
+          "school":"Hancock",
+          "backpack":true,
+          "headphones":true
         }
       ]
     },
     {
-      "_id": "baudelaires_id",
-      "name": "Baudelaires",
-      "time":"9:00am",
+      "_id": "tucker_id",
+      "first_name": "Nadine",
+      "last_name":"Tucker",
+      "first_name_alt":"Judith",
+      "last_name_alt":"Mahoney",
+      "time":"7:00pm",
+      "email":"ntucker@gmail.com",
       "students":[
         {
-          "grade": "P",
-          "school": "MAES",
-          "backpack": false,
-          firstName: '',
-          lastName: ''
+          "first_name":"Thomas",
+          "last_name":"Tucker",
+          "grade":"K",
+          "teacher":"Mr.Greene",
+          "school":"MAES",
+          "backpack":true,
+          "headphones":false
         },
         {
-          "grade": "6",
-          "school": "MAES",
-          "backpack": true,
-          firstName: '',
-          lastName: ''
+          "first_name":"Omer",
+          "last_name":"Tucker",
+          "grade":"3",
+          "teacher":"Mrs.Ulrich",
+          "school":"Hancock",
+          "backpack":true,
+          "headphones":true
         },
         {
-          "grade": "10",
-          "school": "MAES",
-          "backpack": false,
-          firstName: '',
-          lastName: ''
+          "first_name":"Larry",
+          "last_name":"Mahoney",
+          "grade":"7",
+          "teacher":"Mr.Cannon",
+          "school":"Hancock",
+          "backpack":true,
+          "headphones":true
         }
       ]
     }
@@ -108,7 +159,7 @@ describe('FamilyService', () => {
       expect(familyService.savedFamilySchool).toEqual('');
       expect(familyService.savedFamilyStudents).toEqual(0);
       expect(familyService.savedFamilyTime).toEqual('');
-      expect(familyService.savedFamilySortBy).toEqual('grade_school');
+      expect(familyService.savedFamilySortBy).toEqual('name');
       //We test elsewhere that the list actually calls this correctly.
       familyService.updateSavedSearch({
         name:'Test',
@@ -226,6 +277,67 @@ describe('FamilyService', () => {
     });
   });
 
+  describe('Display helper functions', () => {
+    it('correctly fetches grade labels', waitForAsync(() => {
+      expect(familyService.getGradeLabel('1')).toEqual('1st Grade');
+      expect(familyService.getGradeLabel('P')).toEqual('Pre-School');
+      expect(familyService.getGradeLabel('K')).toEqual('Kindergarten');
+    }));
+    it('correctly counts valid students', waitForAsync(() => {
+      const testFamily: Family = { //Can't rely on test Family array, may be deleted.
+        "_id": "krosschell_id",
+        "first_name": "Frank",
+        "last_name":"Krosschell",
+        "first_name_alt":"",
+        "last_name_alt":"",
+        "time":"9:00pm",
+        "email":"gkross@gmail.com",
+        "students":[
+          {
+            "first_name":"Bob",
+            "last_name":"Krosschell",
+            "grade":"1",
+            "teacher":"Mr.Greene",
+            "school":"MAES",
+            "backpack":true,
+            "headphones":false
+          },
+          {
+            "first_name":"Kevin",
+            "last_name":"Krosschell",
+            "grade":"3",
+            "teacher":"Mrs.Ulrich",
+            "school":"Hancock",
+            "backpack":true,
+            "headphones":true
+          },
+          {
+            "first_name":"Kyle",
+            "last_name":"Krosschell",
+            "grade":"3",
+            "teacher":"Mrs.Ulrich",
+            "school":"MAES",
+            "backpack":true,
+            "headphones":true
+          },
+          {
+            "first_name":"Mitchel",
+            "last_name":"Krosschell",
+            "grade":"7",
+            "teacher":"Mr.Cannon",
+            "school":"Hancock",
+            "backpack":true,
+            "headphones":true
+          }
+        ]
+      }
+      expect(familyService.familyCount(testFamily,undefined,undefined)).toEqual(4);
+      expect(familyService.familyCount(testFamily,undefined,'MAES')).toEqual(2);
+      expect(familyService.familyCount(testFamily,'3',undefined)).toEqual(2);
+      expect(familyService.familyCount(testFamily,'3','MAES')).toEqual(1);
+    }));
+  });
+
   describe('When getFamilyById() is given an ID', () => {
     it('calls api/families/id with the correct ID', waitForAsync(() => {
       // We're just picking a Item "at random" from our little
@@ -248,14 +360,14 @@ describe('FamilyService', () => {
 
   describe('Filtering on the client using `filterFamilies()` (Angular/Client filtering)', () => {
     it('filters by name', () => {
-      const itemName = 'a';
+      const itemName = 'ch';
       const filteredItems = familyService.filterFamilies(testFamilies, { name: itemName });
       // There should be two families with an 'a' in their
-      // name: richards, baudelaires
+      // name: richards, krosschells
       expect(filteredItems.length).toBe(2);
       // Every returned user's name should contain an 'a'.
       filteredItems.forEach(item => {
-        expect(item.name.indexOf(itemName)).toBeGreaterThanOrEqual(0);
+        expect(item.last_name.indexOf(itemName)).toBeGreaterThanOrEqual(0);
       });
     });
 
@@ -263,13 +375,13 @@ describe('FamilyService', () => {
       const gradeName = 'P';
       const filteredItems = familyService.filterFamilies(testFamilies, { grade: gradeName });
       // There should be two families with preschoolers
-      expect(filteredItems.length).toBe(2);
+      expect(filteredItems.length).toBe(1);
     });
 
     it('filters by school', () => {
-      const schoolName = 'MAES';
-      const filteredItems = familyService.filterFamilies(testFamilies, { school: schoolName });
-      //2 Families have students at MAES
+      let filteredItems = familyService.filterFamilies(testFamilies, { school: 'MAES' });
+      expect(filteredItems.length).toBe(3);
+      filteredItems = familyService.filterFamilies(testFamilies, { school: 'Hancock' });
       expect(filteredItems.length).toBe(2);
     });
 
@@ -288,7 +400,7 @@ describe('FamilyService', () => {
       const itemStudents = 2;
       const filteredItems = familyService.filterFamilies(testFamilies, { students: itemStudents });
       // Two of the provided items have at least 2 students.
-      expect(filteredItems.length).toBe(2);
+      expect(filteredItems.length).toBe(3);
       // Every returned item's stock should be >= 2
       filteredItems.forEach(item => {
         expect(item.students.length).toBeGreaterThanOrEqual(2);
@@ -296,15 +408,15 @@ describe('FamilyService', () => {
     });
 
     it('filters by time and students', () => {
-      const itemTime = '9:00am';
-      const itemStudents = 3;
+      const itemTime = '9:00pm';
+      const itemStudents = 4;
       const filters = { time: itemTime, students: itemStudents };
       const filteredItems = familyService.filterFamilies(testFamilies, filters);
       // There should be just one family with these properties.
       expect(filteredItems.length).toBe(1);
       // Every returned family should have _both_ these properties.
       filteredItems.forEach(item => {
-        expect(item.students.length).toBeGreaterThanOrEqual(3);
+        expect(item.students.length).toBeGreaterThanOrEqual(4);
         expect(item.time.indexOf(itemTime)).toBeGreaterThanOrEqual(0);
       });
     });
@@ -315,11 +427,11 @@ describe('FamilyService', () => {
     // Sorting should not change length.
     expect(filteredItems.length).toBe(3);
     // The first item should be from Tote #2
-    expect(filteredItems[0].name).toBe("Baudelaires");
+    expect(filteredItems[0].last_name).toBe("Krosschell");
     // The second item should be from Tote #3
-    expect(filteredItems[1].name).toBe("Richards");
+    expect(filteredItems[1].last_name).toBe("Richards");
     // The third item should be from Tote #4
-    expect(filteredItems[2].name).toBe("Smith");
+    expect(filteredItems[2].last_name).toBe("Tucker");
   });
 
   it('sorts by reverse name', () => {
@@ -327,11 +439,11 @@ describe('FamilyService', () => {
     // Sorting should not change length.
     expect(filteredItems.length).toBe(3);
     // The first item should be from Tote #2
-    expect(filteredItems[0].name).toBe("Smith");
+    expect(filteredItems[0].last_name).toBe("Tucker");
     // The second item should be from Tote #3
-    expect(filteredItems[1].name).toBe("Richards");
+    expect(filteredItems[1].last_name).toBe("Richards");
     // The third item should be from Tote #4
-    expect(filteredItems[2].name).toBe("Baudelaires");
+    expect(filteredItems[2].last_name).toBe("Krosschell");
   });
 
   it('sorts by students', () => {
@@ -339,11 +451,11 @@ describe('FamilyService', () => {
     // Sorting should not change length.
     expect(filteredItems.length).toBe(3);
     // The first item should have stock 0
-    expect(filteredItems[0].students.length).toBe(1);
+    expect(filteredItems[0].students.length).toBe(2);
     // The second item should have 2
-    expect(filteredItems[1].students.length).toBe(2);
+    expect(filteredItems[1].students.length).toBe(3);
     // The third item should have 6
-    expect(filteredItems[2].students.length).toBe(3);
+    expect(filteredItems[2].students.length).toBe(4);
   });
 
   it('sorts by reverse students', () => {
@@ -351,11 +463,11 @@ describe('FamilyService', () => {
     // Sorting should not change length.
     expect(filteredItems.length).toBe(3);
     // The first item should have stock 0
-    expect(filteredItems[0].students.length).toBe(3);
+    expect(filteredItems[0].students.length).toBe(4);
     // The second item should have 2
-    expect(filteredItems[1].students.length).toBe(2);
+    expect(filteredItems[1].students.length).toBe(3);
     // The third item should have 6
-    expect(filteredItems[2].students.length).toBe(1);
+    expect(filteredItems[2].students.length).toBe(2);
   });
 
   it('sorts by time', () => {
@@ -363,9 +475,9 @@ describe('FamilyService', () => {
     // Sorting should not change length.
     expect(filteredItems.length).toBe(3);
     // Sorts alphabetically, with numbers first.
-    expect(filteredItems[0].time).toBe("1:00pm");
-    expect(filteredItems[1].time).toBe("12:00pm");
-    expect(filteredItems[2].time).toBe("9:00am");
+    expect(filteredItems[0].time).toBe("12:00pm");
+    expect(filteredItems[1].time).toBe("7:00pm");
+    expect(filteredItems[2].time).toBe("9:00pm");
   });
 
   it('sorts by reverse time', () => {
@@ -373,9 +485,9 @@ describe('FamilyService', () => {
     // Sorting should not change length.
     expect(filteredItems.length).toBe(3);
     // Sorts alphabetically, with numbers first.
-    expect(filteredItems[2].time).toBe("1:00pm");
-    expect(filteredItems[1].time).toBe("12:00pm");
-    expect(filteredItems[0].time).toBe("9:00am");
+    expect(filteredItems[2].time).toBe("12:00pm");
+    expect(filteredItems[1].time).toBe("7:00pm");
+    expect(filteredItems[0].time).toBe("9:00pm");
   });
 
   describe('When deleteFamily() is called', () => {

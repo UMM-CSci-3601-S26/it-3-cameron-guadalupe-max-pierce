@@ -7,6 +7,7 @@ export class ItemListPage {
   private readonly profileButtonSelector = '[data-test=viewProfileButton]';
   private readonly addItemButtonSelector = '[data-test=addItemButton]';
   private readonly relocateSelectedButtonSelector = '[data-test=relocateSelectedButton]';
+  private readonly exportCSVButtonSelector = '[data-test=exportCSVButton]';
 
   navigateTo() {
     return cy.visit(this.baseUrl);
@@ -79,5 +80,9 @@ export class ItemListPage {
 
   relocateSelectedButton() {
     return cy.get(this.relocateSelectedButtonSelector);
+  }
+
+  exportCSVButton() {
+    return cy.get(this.exportCSVButtonSelector);
   }
 }

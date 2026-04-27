@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
+import {MatExpansionModule} from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -21,7 +22,7 @@ import { School } from '../grade_list/school';
 import { FamilyService } from './family.service';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatToolbar } from '@angular/material/toolbar';
+//import { MatToolbar } from '@angular/material/toolbar';
 
 /**
  * A component that displays a list of users, either as a grid
@@ -40,6 +41,7 @@ import { MatToolbar } from '@angular/material/toolbar';
   providers: [],
   imports: [
     MatCardModule,
+    MatExpansionModule,
     MatFormFieldModule,
     MatInputModule,
     FormsModule,
@@ -48,7 +50,7 @@ import { MatToolbar } from '@angular/material/toolbar';
     MatOptionModule,
     MatRadioModule,
     MatCheckboxModule,
-    MatToolbar,
+    //MatToolbar,
     // MatTableModule,
     //InventoryCardComponent,
     MatListModule,
@@ -60,7 +62,7 @@ import { MatToolbar } from '@angular/material/toolbar';
 })
 
 export class FamilyListComponent {
-  private familyService = inject(FamilyService);
+  public familyService = inject(FamilyService);
   // snackBar the `MatSnackBar` used to display feedback
   private snackBar = inject(MatSnackBar);
 
@@ -167,7 +169,7 @@ export class FamilyListComponent {
 
   gradeFilteredFamilies = computed(() => {
     const currentItems = this.serverFilteredItems();
-    const typedArray: { header: string, grade_total: number, families: Family[] }[] = [];
+    const typedArray: { header: string, grade_total: number, value: string, families: Family[] }[] = [];
     let matchingFamilies = [];
     let totalStudents = 0;
     for (let g = 0; g < this.familyService.gradeOptions.length; g++) {
@@ -195,6 +197,7 @@ export class FamilyListComponent {
       if (matchingFamilies.length > 0) {
         typedArray.push({
           header: this.familyService.gradeOptions[g].label,
+          value: this.familyService.gradeOptions[g].value,
           grade_total: totalStudents,
           families: matchingFamilies
         })
@@ -205,7 +208,7 @@ export class FamilyListComponent {
 
   schoolFilteredFamilies = computed(() => {
     const currentItems = this.serverFilteredItems();
-    const typedArray: { header: string, school_total: number, families: Family[] }[] = [];
+    const typedArray: { header: string, school_total: number, value: string, families: Family[] }[] = [];
     let matchingFamilies = [];
     let totalStudents = 0;
     for (let i = 0; i < this.serverFilteredSchools().length; i++) {
@@ -231,6 +234,7 @@ export class FamilyListComponent {
       //Only sections that have matching items are shown.
       if (matchingFamilies.length > 0) {
         typedArray.push({
+          value: this.serverFilteredSchools()[i].label,
           header: this.serverFilteredSchools()[i].value,
           school_total: totalStudents,
           families: matchingFamilies
@@ -241,11 +245,15 @@ export class FamilyListComponent {
   })
 
   gradeAndSchoolFilteredFamilies = computed(() => {
+    //Currently, if a family has students in multiple schools, they can get counted for grades from each school...
+    //Even when they actually have no matching students for that slot.
     const currentItems = this.serverFilteredItems();
     const schooledArray: {
           school_header: string,
           school_total:number,
+          school_value:string,
           grades: {
+            grade_value:string,
             grade_total:number,
             grade_header:string,
             families:Family[]
@@ -286,6 +294,7 @@ export class FamilyListComponent {
           schoolTotal += gradeTotal; //School total is the sum of all grades.
           matchingGrades.push({
             grade_header: this.familyService.gradeOptions[g].label,
+            grade_value: this.familyService.gradeOptions[g].value,
             grade_total: gradeTotal,
             families: matchingFamilies
           })
@@ -296,7 +305,8 @@ export class FamilyListComponent {
         schooledArray.push({
           school_header: this.serverFilteredSchools()[s].value,
           school_total: schoolTotal,
-          grades: matchingGrades
+          grades: matchingGrades,
+          school_value: this.serverFilteredSchools()[s].label
         })
       }
     }
@@ -316,7 +326,7 @@ export class FamilyListComponent {
   resetStudents() {
     const warning = confirm("This will delete ALL families. Are you sure?");
     if (warning == true) {
-      this.familyService.deleteAll(this.filteredFamilies());
+      this.familyService.deleteAll(this.serverFilteredItems());
       this.snackBar.open(
         `Family List reset. Please wait for page to reload...`,
         'OK',
@@ -324,6 +334,27 @@ export class FamilyListComponent {
       );
       this.familyService.reloadPage();
     }
+  }
+  exportToCSV() {
+    const header = ['First Name', 'Last Name', 'Time', 'Students'];
+    const rows = this.serverFilteredItems().map(family => [
+      family.first_name,
+      family.last_name,
+      family.time,
+      family.students.map(s => `${s.first_name} (${s.grade} at ${s.school})`).join('; ')
+    ]);
+
+    const csvContent = [header, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "families.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+
   }
 
   //Not relevant for families? Will still want a clear all families button.

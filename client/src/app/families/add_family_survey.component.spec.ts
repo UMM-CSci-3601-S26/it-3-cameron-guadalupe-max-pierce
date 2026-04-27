@@ -4,6 +4,7 @@ import { of, throwError } from 'rxjs';
 import { FamilyService } from './family.service';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+//import { MockFamilyService } from 'src/testing/family.service.mock';
 
 describe('AddFamilySurveyComponent', () => {
   let component: AddFamilySurveyComponent;
@@ -12,11 +13,12 @@ describe('AddFamilySurveyComponent', () => {
   let snackBarSpy: jasmine.SpyObj<MatSnackBar>;
 
   beforeEach(() => {
-    familyServiceSpy = jasmine.createSpyObj('FamilyService', ['addFamily', 'getSchools']);
+    familyServiceSpy = jasmine.createSpyObj('FamilyService', ['addFamily', 'getSchools', 'getTimes']);
     routerSpy = jasmine.createSpyObj('Router', ['navigate']);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     familyServiceSpy.getSchools.and.returnValue(of([]));
+    familyServiceSpy.getTimes.and.returnValue(of([]));
 
     TestBed.configureTestingModule({
       imports: [AddFamilySurveyComponent],
@@ -48,11 +50,13 @@ describe('AddFamilySurveyComponent', () => {
   });
 
   it('should reset survey', () => {
+    component.surveyFamilyFirstName = 'John';
     component.surveyFamilyLastName = 'Smith';
     component.surveyParentEmail = 'test@test.com';
 
     component.resetSurvey();
 
+    expect(component.surveyFamilyFirstName).toBe('');
     expect(component.surveyFamilyLastName).toBe('');
     expect(component.surveyChildren.length).toBe(1);
   });
@@ -71,14 +75,20 @@ describe('AddFamilySurveyComponent', () => {
   });
 
   it('should submit successfully', fakeAsync(() => {
+    component.surveyFamilyFirstName = 'John';
     component.surveyFamilyLastName = 'Smith';
+    component.surveyFamilyTime = '9:00am';
+    component.surveyFamilyFirstNameAlt = '';
+    component.surveyFamilyLastNameAlt = '';
     component.surveyParentEmail = 'test@test.com';
     component.surveyChildren[0] = {
-      firstName: 'John',
-      lastName: 'Doe',
+      first_name: 'John',
+      last_name: 'Doe',
       school: 'School',
       grade: '3',
-      backpackNeeded: 'yes'
+      teacher: 'Mrs.Oaks',
+      backpack: true,
+      headphones: true,
     };
 
     familyServiceSpy.addFamily.and.returnValue(of('abc123'));
@@ -89,18 +99,21 @@ describe('AddFamilySurveyComponent', () => {
     expect(familyServiceSpy.addFamily).toHaveBeenCalled();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const submittedPayload: any = familyServiceSpy.addFamily.calls.mostRecent().args[0];
-    expect(submittedPayload.name).toBe('Smith');
+    expect(submittedPayload.first_name).toBe('John');
+    expect(submittedPayload.last_name).toBe('Smith');
     expect(submittedPayload.email).toBe('test@test.com');
     expect(submittedPayload.students[0]).toEqual(jasmine.objectContaining({
-      firstName: 'John',
-      lastName: 'Doe',
+      first_name: 'John',
+      last_name: 'Doe',
       school: 'School',
       grade: '3',
-      backpack: true
+      backpack: true,
+      teacher: 'Mrs.Oaks',
+      headphones: true,
     }));
     expect(routerSpy.navigate).toHaveBeenCalledWith(['/families']);
     expect(snackBarSpy.open).toHaveBeenCalledWith(
-      'Family added successfully!',
+      'Survey submitted successfully!',
       'OK',
       { duration: 5000 }
     );
@@ -110,11 +123,13 @@ describe('AddFamilySurveyComponent', () => {
     component.surveyFamilyLastName = 'Smith';
     component.surveyParentEmail = 'test@test.com';
     component.surveyChildren[0] = {
-      firstName: 'John',
-      lastName: 'Doe',
+      first_name: 'John',
+      last_name: 'Doe',
       school: 'School',
       grade: '3',
-      backpackNeeded: 'yes'
+      backpack: true,
+      teacher: 'Mrs.Oaks',
+      headphones: true,
     };
 
     familyServiceSpy.addFamily.and.returnValue(
@@ -125,7 +140,7 @@ describe('AddFamilySurveyComponent', () => {
     tick();
 
     expect(snackBarSpy.open).toHaveBeenCalledWith(
-      'Error adding family: fail',
+      'Please fill in all required fields',
       'OK',
       { duration: 5000 }
     );
