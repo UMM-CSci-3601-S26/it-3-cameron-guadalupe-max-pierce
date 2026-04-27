@@ -29,6 +29,8 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
+import umm3601.settings.Settings;
+import umm3601.settings.SettingsController;
 
 /**
  * Controller that manages requests for info about required items.
@@ -47,6 +49,7 @@ public class RequiredItemController implements Controller {
 
   private final JacksonMongoCollection<RequiredItem> listCollection;
   private final JacksonMongoCollection<School> schoolCollection;
+  private final JacksonMongoCollection<Settings> settingsCollection;
 
   /**
    * Construct a controller for users.
@@ -65,6 +68,11 @@ public class RequiredItemController implements Controller {
         "schools",
         School.class,
         UuidRepresentation.STANDARD);
+    settingsCollection = JacksonMongoCollection.builder().build(
+      database,
+      "settings",
+      Settings.class,
+      UuidRepresentation.STANDARD);
   }
 
 
@@ -119,6 +127,25 @@ public class RequiredItemController implements Controller {
    * @param ctx a Javalin HTTP context
    */
   public void getSchools(Context ctx) {
+    Settings settings = settingsCollection.find(eq("_id", SettingsController.SETTINGS_ID)).first();
+    if (settings != null && settings.schools != null && !settings.schools.isEmpty()) {
+      ArrayList<School> mappedSchools = new ArrayList<>();
+      for (Settings.SchoolInfo schoolInfo : settings.schools) {
+        School school = new School();
+        school._id = (schoolInfo.abbreviation != null && !schoolInfo.abbreviation.isBlank())
+          ? schoolInfo.abbreviation
+          : schoolInfo.name;
+        school.value = schoolInfo.name;
+        school.label = (schoolInfo.abbreviation != null && !schoolInfo.abbreviation.isBlank())
+          ? schoolInfo.abbreviation
+          : schoolInfo.name;
+        mappedSchools.add(school);
+      }
+
+      ctx.json(mappedSchools);
+      ctx.status(HttpStatus.OK);
+      return;
+    }
 
     ArrayList<School> matchingItems = schoolCollection
       .find() //No sorting required

@@ -47,9 +47,14 @@ class FamilySpec {
         assertTrue(family1.hashCode() == family2.hashCode());
     }
 
+    @Test
+    void nameBasedOnFirstName() {
+        assertTrue(family1.toString() == family1.first_name);
+    }
+
     @SuppressWarnings("unlikely-arg-type")
     @Test
-    void equalsReturnsFalseForDifferentType() {
+     void equalsReturnsFalseForDifferentType() {
         family1._id = FAKE_ID1;
         assertFalse(family1.equals("some string"));
     }

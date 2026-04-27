@@ -76,6 +76,12 @@ describe('Grade List', () => {
     expect(Array.isArray(items)).toBe(true);
   });
 
+  it('should initialize with filteredSchoolOptions available', () => {
+    const items = gradeList.filteredSchoolOptions();
+    expect(items).toBeDefined();
+    expect(Array.isArray(items)).toBe(true);
+  });
+
   it('should initialize with filteredItems available', () => {
     const items = gradeList.filteredItems();
     expect(items).toBeDefined();
@@ -130,7 +136,7 @@ describe('Grade List', () => {
     expect(gradeList.populateAllowed).toBeTrue();
     const reloadSpy = spyOn(inventoryService, 'reloadPage');
     inventoryService.addItemToInventory(testItems[1]); //Ensures at least one is a duplicate.
-    gradeList.populateInventory(testItems,"",""); //Adds all items.
+    gradeList.populateInventory(testItems,[],"",""); //Adds all items, ignores inventory reference for testing.
     expect(gradeList.populateAllowed).toBeFalse();
     expect(gradeList.snackBar).toBeTruthy();
     expect(reloadSpy).toHaveBeenCalled();

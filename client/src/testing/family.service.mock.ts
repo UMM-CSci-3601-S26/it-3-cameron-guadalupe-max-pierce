@@ -66,6 +66,7 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
       "last_name_alt":"",
       "time":"12:00pm",
       "email":"prcrichards@gmail.com",
+      "phone":"320-287-1867",
       "students":[
         {
           "first_name":"Ted",
@@ -95,6 +96,7 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
       "last_name_alt":"",
       "time":"9:00pm",
       "email":"gkross@gmail.com",
+      "phone":"320-287-1867",
       "students":[
         {
           "first_name":"Bob",
@@ -142,6 +144,7 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
       "last_name_alt":"Mahoney",
       "time":"7:00pm",
       "email":"ntucker@gmail.com",
+      "phone":"320-287-1867",
       "students":[
         {
           "first_name":"Thomas",

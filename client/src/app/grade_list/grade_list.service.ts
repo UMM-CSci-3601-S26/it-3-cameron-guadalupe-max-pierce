@@ -182,6 +182,10 @@ export class GradeListService {
       )
     );
 
+  serverFilteredSchools = signal(
+    this.gradeService.getSchools().pipe()
+  );
+
   reloadPage() { //Not really a good way to test this.
     setTimeout(() => {
       window.location.reload();

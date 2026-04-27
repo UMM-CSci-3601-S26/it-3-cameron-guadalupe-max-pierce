@@ -227,6 +227,10 @@ public class FamilyController implements Controller {
         "Family must have at least one student; body was " + body)
       .check(itm -> itm.time != "",
         "Family must have valid appointment time; body was " + body)
+      .check(itm -> itm.phone != "",
+        "Family must have valid phone number; body was " + body)
+      .check(itm -> itm.email != "",
+        "Family must have valid email; body was " + body)
       .get();
 
     // Add the new item to the database

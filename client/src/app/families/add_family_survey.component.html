@@ -72,6 +72,21 @@
               </mat-form-field>
 
               <mat-form-field>
+              <input matInput placeholder="Número de Teléfono" [(ngModel)]="surveyParentPhone" name="parentPhone" required #parentPhone="ngModel">
+              <mat-hint>Número de teléfono del padre/madre (###-###-####)</mat-hint>
+              @if (parentPhone.invalid && (parentPhone.dirty || parentPhone.touched)) {
+              <mat-error>
+                @if (parentPhone.errors?.required) {
+                  Se requiere el número de teléfono.
+                }
+                @if (parentPhone.errors?.email) {
+                  El número de teléfono no es válido.
+                }
+              </mat-error>
+              }
+            </mat-form-field>
+
+              <mat-form-field>
                 <input matInput placeholder="Email" [(ngModel)]="surveyParentEmail" name="parentEmail" required email #parentEmail="ngModel">
                 <mat-hint>Dirección de correo electrónico</mat-hint>
                 @if (parentEmail.invalid && (parentEmail.dirty || parentEmail.touched)) {
@@ -80,7 +95,7 @@
                     El correo electrónico es obligatorio.
                   }
                   @if (parentEmail.errors?.email) {
-                    Dirección de correo electrónico no válida
+                    El correo electrónico no es válido.
                   }
                 </mat-error>
                 }
@@ -89,7 +104,7 @@
               <mat-form-field>
                 <mat-label>Tiempo</mat-label>
                 <mat-select placeholder="Tiempo" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
-                  @for (time of filteredTimeOptions() | async; track time.value) {
+                  @for (time of filteredTimeOptions(); track time.value) {
                   <mat-option [value]="time.value">{{time.value}}</mat-option>
                   }
                 </mat-select>
@@ -117,7 +132,7 @@
                     <mat-form-field>
                       <mat-label>Escuela</mat-label>
                       <mat-select placeholder="Escuela" [(ngModel)]="child.school" name="school{{i}}">
-                        @for (school of filteredSchoolOptions() | async; track school.label) {
+                        @for (school of filteredSchoolOptions(); track school.label) {
                         <mat-option [value]="school.label">{{school.label}}</mat-option>
                         }
                       </mat-select>
@@ -205,6 +220,21 @@
             </mat-form-field>
 
             <mat-form-field>
+              <input matInput placeholder="Phone Number" [(ngModel)]="surveyParentPhone" name="parentPhone" required #parentPhone="ngModel">
+              <mat-hint>Guardian Phone number (###-###-####)</mat-hint>
+              @if (parentPhone.invalid && (parentPhone.dirty || parentPhone.touched)) {
+              <mat-error>
+                @if (parentPhone.errors?.required) {
+                  Guardian Phone number is required.
+                }
+                @if (parentPhone.errors?.email) {
+                  Invalid Phone Number
+                }
+              </mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field>
               <input matInput placeholder="Email" [(ngModel)]="surveyParentEmail" name="parentEmail" required email #parentEmail="ngModel">
               <mat-hint>Guardian Email address</mat-hint>
               @if (parentEmail.invalid && (parentEmail.dirty || parentEmail.touched)) {
@@ -222,7 +252,7 @@
             <mat-form-field>
               <mat-label>Time</mat-label>
               <mat-select placeholder="Time" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
-                @for (time of filteredTimeOptions() | async; track time.value) {
+                @for (time of filteredTimeOptions(); track time.value) {
                 <mat-option [value]="time.value">{{time.value}}</mat-option>
                 }
               </mat-select>
@@ -250,7 +280,7 @@
                   <mat-form-field>
                     <mat-label>School</mat-label>
                     <mat-select placeholder="School" [(ngModel)]="child.school" name="school{{i}}">
-                      @for (school of filteredSchoolOptions() | async; track school.label) {
+                      @for (school of filteredSchoolOptions(); track school.label) {
                       <mat-option [value]="school.label">{{school.label}}</mat-option>
                       }
                     </mat-select>

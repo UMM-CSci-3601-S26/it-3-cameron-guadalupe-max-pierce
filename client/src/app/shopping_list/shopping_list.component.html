@@ -1,0 +1,150 @@
+<div class="flex-row">
+  <div class="flex-1">
+    <mat-card class="search-card">
+      <mat-card-header>
+        <mat-card-title class="inventory-list-title"><strong>SHOPPING LIST</strong></mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+      <mat-card class="search-card">
+        <p>
+          Based on grade requirements and enrolled families, this page generates a list of required materials.
+          <br>The list can be sorted by various properties; by default, sorted by grade and school. Use the <strong>'Sort By'</strong> section to change the sorting method. Sorting is reflected in the exportable CSV file.
+          <br>While the <strong>'Subtract Inventory'</strong> option is enabled, any matching stock in inventory is subtracted from the shopping list.
+        </p>
+      </mat-card>
+
+        <div class="flex-row gap-8 flex-wrap">
+          <!-- Examples of filtering in Angular -->
+
+          <mat-form-field class="input-field">
+            <input matInput data-test="itemNameInput" placeholder="Name" [(ngModel)]="itemName">
+            <mat-hint>Search requirements by name</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>School</mat-label>
+            <mat-select data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
+              <mat-option value="">Any School</mat-option>
+              @for (school of filteredSchoolOptions(); track school.label) {
+              <mat-option [value]="school.label">{{school.label}}</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Search by School</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Grade</mat-label>
+            <mat-select data-test="itemGradeInput" [(ngModel)]="itemGrade">
+              <mat-option value="">All Grades</mat-option>
+              @for (grade of shoppingService.gradeService.gradeOptions; track grade) {
+                <mat-option [value]="grade.value">{{grade.label}}</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Search by grade</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field class="input-field">
+            <mat-label>Type</mat-label>
+            <input
+              matInput
+              placeholder="Any Type"
+              [ngModel]="itemType()"
+              (ngModelChange)="itemType.set($event)"
+              [matAutocomplete]="auto"
+              data-test="itemDescSelect"
+            >
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayTypeLabel">
+            <mat-option [value]="''">Any Type</mat-option>
+            @for (option of filteredTypeOptions(); track option.value) {
+              <mat-option [value]="option.value">{{ option.label }}</mat-option>
+            }
+            </mat-autocomplete>
+            <mat-hint>Search by type</mat-hint>
+          </mat-form-field>
+
+          <mat-radio-group aria-label="View type" [(ngModel)]="subtractInventory" data-test="subtractRadio">
+              <mat-radio-button [value]="true">Subtract Inventory</mat-radio-button>
+              <mat-radio-button [value]="false">Ignore Inventory</mat-radio-button>
+          </mat-radio-group>
+
+        </div>
+
+        <div class="flex-row gap-8 flex-wrap">
+
+          <mat-form-field [style.width.px]=760 class="input-field">
+            <input matInput data-test="itemDescInput" placeholder="Description" [(ngModel)]="itemDesc">
+            <mat-hint>Search descriptions</mat-hint>
+          </mat-form-field>
+
+          <mat-form-field [style.width.px]=250 class="input-field">
+            <!-- <mat-label>Desc</mat-label> -->
+            <mat-select placeholder="Sort by Name (A-Z)" [(ngModel)]="sortBy" data-test="sortBySelect">
+              <mat-option value="name">Sort by Name (A-Z)</mat-option> <!--Must be provided, otherwise reset won't work -->
+              <mat-option value="name_des">Sort by Name (Z-A)</mat-option>
+              <mat-option value="type">Sort by Type</mat-option>
+              <mat-option value="quantity">Sort by Required (1-9)</mat-option>
+              <mat-option value="quantity_des">Sort by Required (9-1)</mat-option>
+            </mat-select>
+            <mat-hint>Select Sort Order</mat-hint>
+          </mat-form-field>
+        </div>
+        <br>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+
+<div class="flex-row">
+  @if (shoppingListItems()) {
+  <div class="flex-1">
+    <!-- The actual grade requirement list -->
+    <div>
+          @if (sortBy() === "type") { <!-- Special sectioned list for type -->
+            <mat-nav-list class="item-nav-list" color="accent">
+              @for (collection of typeFilteredShoppingListItems(); track collection.items) {
+                <mat-card class = "section-card">
+                <mat-card-content>
+                <mat-toolbar color="primary">
+                <h2 matSubheader>{{ collection.header }}</h2>
+                </mat-toolbar>
+                <!--Sublist for each item type-->
+                @for (item of collection.items; track item._id) {
+                    <a mat-list-item class="item-list-item">
+                    <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
+                    <span matListItemLine class="item-list-desc"> {{item.desc}} @if (item.pack > 1) {~ Package of {{item.pack}} ct.}</span>
+                    </a>
+                }
+                </mat-card-content>
+                </mat-card>
+              }
+            </mat-nav-list>
+          }
+          @else { <!--Regular, untyped sorting-->
+            <!--Regular, untyped sorting-->
+            <mat-card>
+            <mat-card-content>
+            <mat-nav-list class="item-nav-list" color="accent">
+              @for (item of shoppingListItems(); track item._id) {
+                  <a mat-list-item class="item-list-item">
+                  <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.required}}</strong> ~ {{item.name}}</span>
+                  <span matListItemLine class="item-list-desc"> {{item.desc}} @if (item.pack > 1) {~ Package of {{item.pack}} ct.}</span>
+                  </a>
+              }
+            </mat-nav-list>
+          </mat-card-content>
+          </mat-card>
+          }
+    </div>
+  </div>
+  } @else {
+  <div class="flex-1" class="item-error">
+    <mat-error>
+      <strong>Loading items...</strong>
+    </mat-error>
+    <mat-error>
+      If items aren't loading, check your network and server.
+    </mat-error>
+  </div>
+  }
+
+</div>

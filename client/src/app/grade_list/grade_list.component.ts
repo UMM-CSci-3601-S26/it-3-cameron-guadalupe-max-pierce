@@ -58,7 +58,7 @@ import { MatToolbar } from '@angular/material/toolbar';
   ],
 })
 export class GradeListComponent {
-  private gradeListService = inject(GradeListService);
+  public gradeListService = inject(GradeListService);
   // snackBar the `MatSnackBar` used to display feedback
   public snackBar = inject(MatSnackBar);
 
@@ -157,6 +157,10 @@ export class GradeListComponent {
         })
       )
     );
+
+  filteredSchoolOptions = computed(() => {
+    return this.serverFilteredSchools();
+  });
 
 
   filteredItems = computed(() => {
@@ -298,7 +302,7 @@ export class GradeListComponent {
     }
   }
 
-  populateInventory(items: RequiredItem[], school_val: string, grade_val?: string ): number {
+  populateInventory(items: RequiredItem[], inventory:InventoryItem[], school_val: string, grade_val?: string ): number {
     let popArray: RequiredItem[] = [];
     let itemCount = 0;
     let duplicateCount = 0;
@@ -318,7 +322,7 @@ export class GradeListComponent {
         desc:popArray[i].desc,
       }
       //Check and Add each item. For some reason alreadyInInventory breaks shit.
-      if (this.gradeListService.alreadyInInventory(popArray[i],this.gradeListService.inventoryReference())) {
+      if (this.gradeListService.alreadyInInventory(popArray[i],inventory)) {
         duplicateCount ++;
       } else {
         this.gradeListService.addItemToInventory(newItem).subscribe({next: () => {}}); //Removed redundant error check

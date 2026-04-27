@@ -14,7 +14,7 @@ import { GradeListService } from 'src/app/grade_list/grade_list.service';
 @Injectable({
   providedIn: AppComponent
 })
-export class MockGradeListService implements Pick<GradeListService, 'getItems' | 'filterItems' | 'addItem' | 'addItemToInventory' | 'deleteItem'| 'updateSavedSearch'| 'modifyMass'|'getSchools'|'reloadPage'|'alreadyInInventory'|'deleteAll'> {
+export class MockGradeListService implements Pick<GradeListService, 'getItems' | 'filterItems' | 'addItem' | 'addItemToInventory' | 'deleteItem'| 'updateSavedSearch'| 'modifyMass'|'getSchools'|'reloadPage'|'alreadyInInventory'|'deleteAll' > {
   savedInventoryName = ''; //Per-session saved value for name search bar.
   savedInventoryGrade = ''; //Per-session saved value for location search bar.
   savedInventorySchool = ''; //Per-session saved value for location search bar.
@@ -230,16 +230,66 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
       this.deleteItem(oldItems[i]._id).subscribe();
     }
   }
+  //Required in full for shopping list testing...
+  filterItems(items: RequiredItem[], filters: { name?: string; required?: number; desc?: string; grade?: string; school?: string; type?: string; sortBy?: string;}): RequiredItem[] { // skipcq: JS-0105
+    let filteredItems = items; //.getValue();
+    // let filteredItems: InventoryItem[] = [];
 
-  filterItems(items: RequiredItem[], filters: {
-    name?: string;
-    grade?: string;
-    school?: string;
-    required?: number;
-    desc?: string;
-    location?: string;
-    type?: string;
-  }): RequiredItem[] {
-    return []
+    //TODO, write sorting logic here!
+    // Filter by name
+    if (filters.name) {
+      filters.name = filters.name.toLowerCase();
+      filteredItems = filteredItems.filter(item => item.name.toLowerCase().indexOf(filters.name) !== -1);
+    }
+
+    if (filters.desc) {
+      filters.desc = filters.desc.toLowerCase();
+      filteredItems = filteredItems.filter(item => item.desc.toLowerCase().indexOf(filters.desc) !== -1);
+    }
+
+    if (filters.grade) {
+      filters.grade = filters.grade.toLowerCase();
+      filteredItems = filteredItems.filter(item => item.grade.toLowerCase().indexOf(filters.grade) !== -1);
+    }
+
+    if (filters.school) {
+      filters.school = filters.school.toLowerCase();
+      filteredItems = filteredItems.filter(item => item.school.toLowerCase().indexOf(filters.school) !== -1);
+    }
+
+    if (filters.type) {
+      filters.type = filters.type.toLowerCase();
+      filteredItems = filteredItems.filter(item => item.type.toLowerCase().indexOf(filters.type) !== -1);
+    }
+
+    if (filters.required) {
+      //filters.stocked = filters.type.toLowerCase();
+      filteredItems = filteredItems.filter(item => item.required >= filters.required);
+    }
+
+    switch (filters.sortBy) {
+    case "quantity":
+      filteredItems = filteredItems.sort((i1,i2) => {
+        return i1.required - i2.required;
+      });
+      break;
+    case "quantity_des":
+      filteredItems = filteredItems.sort((i1,i2) => {
+        return i2.required - i1.required;
+      });
+      break;
+    case "name":
+      filteredItems = filteredItems.sort((i1,i2) => {
+        return i1.name.localeCompare(i2.name);
+      });
+      break;
+    case "name_des":
+      filteredItems = filteredItems.sort((i1,i2) => {
+        return i2.name.localeCompare(i1.name);
+      });
+      break;
+    }
+
+    return filteredItems;
   }
 }

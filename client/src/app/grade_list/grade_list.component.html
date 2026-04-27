@@ -23,9 +23,19 @@
             <mat-hint>Search requirements by name</mat-hint>
           </mat-form-field>
 
-          <mat-form-field class="input-field">
+          <!-- <mat-form-field class="input-field">
             <input matInput data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
             <mat-hint>Search by school</mat-hint>
+          </mat-form-field> -->
+          <mat-form-field>
+            <mat-label>School</mat-label>
+            <mat-select data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
+              <mat-option value="">Any School</mat-option>
+              @for (school of filteredSchoolOptions(); track school.label) {
+              <mat-option [value]="school.label">{{school.label}}</mat-option>
+              }
+            </mat-select>
+            <mat-hint>Search by School</mat-hint>
           </mat-form-field>
 
           <mat-form-field class="input-field">
@@ -116,7 +126,7 @@
                   [style.height.px]=30
                   [disabled]="!populateAllowed"
                   data-test="populateButtonSchool"
-                  (click)="populateInventory(serverFilteredItems(),school.school_val)"
+                  (click)="populateInventory(serverFilteredItems(),this.gradeListService.inventoryReference(),school.school_val)"
                 >
                 Add all requirements to Inventory
                 </button>
@@ -145,7 +155,7 @@
                         [style.height.px]=30
                         data-test="populateButton"
                         [disabled]="!populateAllowed"
-                        (click)="populateInventory(serverFilteredItems(),school.school_val, grade.grade_val)"
+                        (click)="populateInventory(serverFilteredItems(),this.gradeListService.inventoryReference(),school.school_val, grade.grade_val)"
                       >
                       Add {{grade.grade_header}} requirements to Inventory
                       </button>

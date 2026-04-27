@@ -31,7 +31,7 @@
               formControlName="school"
               [ngModel]="item().school">
                 @for (school of filteredSchoolOptions(); track school.label) {
-                <mat-option [value]="school.label">{{school.label}}</mat-option>
+                <mat-option [value]="school.label">{{school.value}} ({{school.label}})</mat-option>
                 }
               </mat-select>
             <mat-hint>School that requires this</mat-hint>

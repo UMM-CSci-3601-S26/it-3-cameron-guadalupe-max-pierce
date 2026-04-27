@@ -14,6 +14,7 @@ import { catchError } from 'rxjs/internal/operators/catchError';
 import { of } from 'rxjs';
 import { School } from '../grade_list/school';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { toSignal } from '@angular/core/rxjs-interop';
 //import { Family } from './family';
 import { Student } from './student';
 import { Time } from './time';
@@ -52,11 +53,12 @@ export class AddFamilySurveyComponent {
   surveyFamilyLastNameAlt = '';
   surveyFamilyFirstNameAlt = '';
   surveyParentEmail = '';
+  surveyParentPhone = '';
   surveyFamilyTime = '';
   espanol = false; //If true, spanish version is used.
 
 
-  serverFilteredSchools = signal(
+  schoolOptions = toSignal(
     this.familyService.getSchools().pipe(
       catchError((err) => {
         if (!(err.error instanceof ErrorEvent)) {
@@ -67,10 +69,11 @@ export class AddFamilySurveyComponent {
         this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
         return of<School[]>([]);
       })
-    )
+    ),
+    { initialValue: [] }
   );
 
-  serverFilteredTimes = signal(
+  serverFilteredTimes = toSignal(
     this.familyService.getTimes().pipe(
       catchError((err) => {
         if (!(err.error instanceof ErrorEvent)) {
@@ -81,7 +84,8 @@ export class AddFamilySurveyComponent {
         this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
         return of<Time[]>([]);
       })
-    )
+    ),
+    { initialValue: [] }
   );
 
   filteredTimeOptions = computed(() => {
@@ -89,7 +93,7 @@ export class AddFamilySurveyComponent {
   });
 
   filteredSchoolOptions = computed(() => {
-    return this.serverFilteredSchools();
+    return this.schoolOptions();
   });
 
   gradeOptions = this.familyService.gradeOptions;
@@ -131,6 +135,7 @@ export class AddFamilySurveyComponent {
     this.surveyFamilyLastNameAlt = '';
     this.surveyFamilyFirstNameAlt = '';
     this.surveyParentEmail = '';
+    this.surveyParentPhone = '';
     this.surveyFamilyTime = '';
     this.surveyChildren = [
       { first_name: '', last_name: '', school: '', grade: '', backpack: false, headphones: false, teacher: '' }
@@ -142,6 +147,13 @@ export class AddFamilySurveyComponent {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return Boolean(normalized && emailPattern.test(normalized));
   }
+
+  private isValidPhone(phone: string): boolean {
+    const normalized = phone?.trim();
+    const phonePattern =/^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}$/g
+    return Boolean(normalized && phonePattern.test(normalized));
+  }
+
   //We should really be using proper validators for this, but whatever...
   submitSurvey(): void {
     if (
@@ -149,19 +161,66 @@ export class AddFamilySurveyComponent {
       !this.surveyFamilyFirstName ||
       !this.surveyParentEmail ||
       !this.isValidEmail(this.surveyParentEmail) ||
+      !this.isValidPhone(this.surveyParentPhone) ||
       this.surveyChildren.some(
         c => !c.first_name || !c.last_name || !c.school || !c.grade
       )
     ) {
-      this.snackBar.open(
-        !this.surveyParentEmail || !this.isValidEmail(this.surveyParentEmail)
-          ? 'Please enter a valid parent email address'
-          : 'Please fill in all required fields',
-        'OK',
-        {
-          duration: 5000
+      if (!this.surveyParentEmail || !this.isValidEmail(this.surveyParentEmail)) {
+        if (this.espanol) {
+          this.snackBar.open(
+            'Por favor, introduce una dirección de correo electrónico válida',
+            'OK',
+            {
+              duration: 5000
+            }
+          );
+        } else {
+          this.snackBar.open(
+            'Please enter a valid email address',
+            'OK',
+            {
+              duration: 5000
+            }
+          );
         }
-      );
+      } else if (!this.surveyParentPhone || !this.isValidPhone(this.surveyParentPhone)) {
+        if (this.espanol) {
+          this.snackBar.open(
+            'Por favor, ingrese un número de teléfono válido.',
+            'OK',
+            {
+              duration: 5000
+            }
+          );
+        } else {
+          this.snackBar.open(
+            'Please enter a valid phone number',
+            'OK',
+            {
+              duration: 5000
+            }
+          );
+        }
+      } else {
+        if (this.espanol) {
+          this.snackBar.open(
+            'Por favor, complete toda la información requerida.',
+            'OK',
+            {
+              duration: 5000
+            }
+          );
+        } else {
+          this.snackBar.open(
+            'Please fill in all required fields',
+            'OK',
+            {
+              duration: 5000
+            }
+          );
+        }
+      }
       return;
     }
 
@@ -182,6 +241,7 @@ export class AddFamilySurveyComponent {
       last_name_alt: this.surveyFamilyLastNameAlt,
       time: this.surveyFamilyTime,
       email: this.surveyParentEmail,
+      phone: this.surveyParentPhone,
       students
     }).subscribe({
       next: () => {

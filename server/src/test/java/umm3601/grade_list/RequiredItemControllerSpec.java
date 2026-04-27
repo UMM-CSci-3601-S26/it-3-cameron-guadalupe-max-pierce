@@ -207,6 +207,33 @@ class RequiredItemControllerSpec {
     }
 
     @Test
+    void getSchoolsUsesSettingsWhenAvailable() throws IOException {
+      MongoCollection<Document> schools = testDatabase.getCollection("schools");
+      schools.drop();
+      schools.insertOne(new Document().append("value", "Legacy School").append("label", "LEG"));
+
+      MongoCollection<Document> settings = testDatabase.getCollection("settings");
+      settings.drop();
+      settings.insertOne(new Document()
+        .append("_id", "app-settings")
+        .append("schools", List.of(
+          new Document().append("name", "Morris Area High School").append("abbreviation", "MAHS"),
+          new Document().append("name", "Hancock Elementary School").append("abbreviation", "HES")
+        )));
+
+      requiredItemController.getSchools(ctx);
+
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<ArrayList<School>> schoolArrayCaptor = ArgumentCaptor.forClass(ArrayList.class);
+      verify(ctx).json(schoolArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+
+      assertEquals(2, schoolArrayCaptor.getValue().size());
+      assertEquals("MAHS", schoolArrayCaptor.getValue().get(0).label);
+      assertEquals("HES", schoolArrayCaptor.getValue().get(1).label);
+    }
+
+    @Test
     void getItemWithExistentId() throws IOException {
       String id = testItemId1.toHexString();
       when(ctx.pathParam("id")).thenReturn(id);

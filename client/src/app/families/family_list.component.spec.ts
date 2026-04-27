@@ -44,6 +44,12 @@ describe('Family list', () => {
     expect(Array.isArray(items)).toBe(true);
   });
 
+  it('should initialize with filteredSchoolOptions available', () => {
+    const items = familyList.filteredSchoolOptions();
+    expect(items).toBeDefined();
+    expect(Array.isArray(items)).toBe(true);
+  });
+
   it('should initialize with filteredFamilies available', () => {
     const items = familyList.filteredFamilies();
     expect(items).toBeDefined();

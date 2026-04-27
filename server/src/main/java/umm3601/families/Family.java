@@ -22,6 +22,7 @@ public class Family {
   public List<Student> students; //Parseable string of data
   public String time; //Time of appointment
   public String email;
+  public String phone; //Phone number
 
   @Override
   public boolean equals(Object obj) {

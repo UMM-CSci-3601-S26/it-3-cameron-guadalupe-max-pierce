@@ -72,7 +72,7 @@ export class InventoryListComponent implements AfterViewInit {
 
   @ViewChild(MatSort) sort!: MatSort;
 
-  displayedColumns: string[] = ['name', 'type', 'desc', 'location', 'stocked'];
+  displayedColumns: string[] = ['name', 'type', 'desc', 'location', 'stocked', 'buttons'];
   dataSource = new MatTableDataSource<InventoryItem>([]);
   viewMode = signal<'list' | 'grid'>('list');
 
@@ -94,7 +94,6 @@ export class InventoryListComponent implements AfterViewInit {
     }
   }
 
-  //dataSource = new MatTableDataSource<InventoryItem>([]);
   itemName = signal<string|undefined>(this.inventoryService.savedInventoryName);
   itemStock = signal<number|undefined>(this.inventoryService.savedInventoryStocked);
   itemDesc = signal<string|undefined>(this.inventoryService.savedInventoryDesc);

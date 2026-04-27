@@ -144,6 +144,10 @@ export class FamilyListComponent {
       )
     );
 
+  filteredSchoolOptions = computed(() => {
+    return this.serverFilteredSchools();
+  });
+
 
   filteredFamilies = computed(() => {
     const currentItems = this.serverFilteredItems();
@@ -356,23 +360,4 @@ export class FamilyListComponent {
 
 
   }
-
-  //Not relevant for families? Will still want a clear all families button.
-  // resetLocations() {
-  //   const tempItem: InventoryItem = {
-  //     _id:undefined,
-  //     location:"N/A",
-  //     stocked:undefined,
-  //     name:undefined,
-  //     type:undefined,
-  //     desc:undefined
-  //   }
-  //   this.familyService.modifyMass(tempItem,this.filteredItems());
-  //   //TODO, We need to update something, such that the page doesn't need manual reloading...
-  //   this.snackBar.open(
-  //     `Locations reset. Please reload this page to see your changes. `,
-  //     'OK',
-  //     { duration: 6000 }
-  //   );
-  // }
 }
