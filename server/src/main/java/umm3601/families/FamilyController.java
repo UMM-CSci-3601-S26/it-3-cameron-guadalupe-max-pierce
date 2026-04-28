@@ -8,6 +8,7 @@ import static com.mongodb.client.model.Filters.eq;
 // import java.security.MessageDigest;
 // import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 //import java.util.Objects;
@@ -20,6 +21,7 @@ import org.bson.types.ObjectId;
 import org.mongojack.JacksonMongoCollection;
 
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.DeleteResult;
 
@@ -50,6 +52,7 @@ public class FamilyController implements Controller {
   // static final String STOCKED_KEY = "stocked";
 
   private final JacksonMongoCollection<Family> familyCollection;
+  private final MongoCollection<Document> familyDocuments;
   private final JacksonMongoCollection<Settings> settingsCollection;
 
   /**
@@ -63,6 +66,7 @@ public class FamilyController implements Controller {
         "families",
         Family.class,
         UuidRepresentation.STANDARD);
+    familyDocuments = database.getCollection("families");
       settingsCollection = JacksonMongoCollection.builder().build(
         database,
         "settings",
@@ -81,7 +85,8 @@ public class FamilyController implements Controller {
     Family family;
 
     try {
-      family = familyCollection.find(eq("_id", new ObjectId(id))).first();
+      Document rawFamily = familyDocuments.find(eq("_id", new ObjectId(id))).first();
+      family = documentToFamily(rawFamily);
     } catch (IllegalArgumentException e) {
       throw new BadRequestResponse("The requested item id wasn't a legal Mongo Object ID.");
     }
@@ -103,10 +108,14 @@ public class FamilyController implements Controller {
     Bson combinedFilter = constructFilter(ctx);
     Bson sortingOrder = constructSortingOrder(ctx);
 
-    ArrayList<Family> matchingItems = familyCollection
+    ArrayList<Family> matchingItems = familyDocuments
       .find(combinedFilter)
       .sort(sortingOrder)
-      .into(new ArrayList<>());
+      .into(new ArrayList<>())
+      .stream()
+      .map(this::documentToFamily)
+      .filter(family -> family != null)
+      .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
 
     ctx.json(matchingItems);
 
@@ -219,6 +228,75 @@ public class FamilyController implements Controller {
     // String sortOrder = Objects.requireNonNullElse(ctx.queryParam("sortorder"), "asc");
     Bson sortingOrder = Sorts.descending();
     return sortingOrder;
+  }
+
+  private Family documentToFamily(Document document) {
+    if (document == null) {
+      return null;
+    }
+
+    Family family = new Family();
+    Object id = document.get("_id");
+    if (id instanceof ObjectId) {
+      family._id = ((ObjectId) id).toHexString();
+    } else if (id != null) {
+      family._id = id.toString();
+    }
+
+    family.first_name = stringValue(document.get("first_name"));
+    family.last_name = stringValue(document.get("last_name"));
+    family.first_name_alt = stringValue(document.get("first_name_alt"));
+    family.last_name_alt = stringValue(document.get("last_name_alt"));
+    family.time = stringValue(document.get("time"));
+    family.email = stringValue(document.get("email"));
+    family.phone = stringValue(document.get("phone"));
+    family.students = documentStudentsToList(document.get("students"));
+
+    return family;
+  }
+
+  private List<Student> documentStudentsToList(Object rawStudents) {
+    if (!(rawStudents instanceof List<?>)) {
+      return Collections.emptyList();
+    }
+
+    ArrayList<Student> students = new ArrayList<>();
+    for (Object rawStudent : (List<?>) rawStudents) {
+      if (!(rawStudent instanceof Document)) {
+        continue;
+      }
+      Document studentDocument = (Document) rawStudent;
+      Student student = new Student();
+      Object studentId = studentDocument.get("_id");
+      if (studentId instanceof ObjectId) {
+        student._id = ((ObjectId) studentId).toHexString();
+      } else if (studentId != null) {
+        student._id = studentId.toString();
+      }
+      student.first_name = stringValue(studentDocument.get("first_name"));
+      student.last_name = stringValue(studentDocument.get("last_name"));
+      student.backpack = booleanValue(studentDocument.get("backpack"));
+      student.headphones = booleanValue(studentDocument.get("headphones"));
+      student.teacher = stringValue(studentDocument.get("teacher"));
+      student.grade = stringValue(studentDocument.get("grade"));
+      student.school = stringValue(studentDocument.get("school"));
+      students.add(student);
+    }
+    return students;
+  }
+
+  private String stringValue(Object value) {
+    return value == null ? "" : value.toString();
+  }
+
+  private boolean booleanValue(Object value) {
+    if (value instanceof Boolean) {
+      return (Boolean) value;
+    }
+    if (value instanceof String) {
+      return Boolean.parseBoolean((String) value);
+    }
+    return false;
   }
 
   /**
