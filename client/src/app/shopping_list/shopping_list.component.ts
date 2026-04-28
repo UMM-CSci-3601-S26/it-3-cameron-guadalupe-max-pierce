@@ -11,7 +11,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+// import { RouterLink } from '@angular/router';
 import { combineLatest, switchMap, tap } from 'rxjs'; //catchError, of
 import { RequiredItem } from '../grade_list/required_item';
 import { InventoryItem } from '../inventory/inventory_item';
@@ -52,7 +52,7 @@ import { MatToolbar } from '@angular/material/toolbar';
     //MatTableModule,
     //InventoryCardComponent,
     MatListModule,
-    RouterLink,
+    // RouterLink,
     MatButtonModule,
     MatTooltipModule,
     MatIconModule
