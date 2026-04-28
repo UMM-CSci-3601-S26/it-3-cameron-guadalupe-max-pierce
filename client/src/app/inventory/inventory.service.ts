@@ -1,11 +1,11 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable, inject } from '@angular/core';
+import { Injectable, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Observable, forkJoin, of, BehaviorSubject } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { InventoryItem } from './inventory_item';
-//import { Company } from '../company-list/company';
-//import { Signal } from '@angular/core/rxjs-interop';
+import { SettingsService } from '../settings/settings.service';
 
 /**
  * Service that provides the interface for getting information
@@ -30,6 +30,7 @@ export class InventoryService {
   // make "real" HTTP calls to a server that might not exist or
   // might not be currently running.
   private httpClient = inject(HttpClient);
+  private settingsService = inject(SettingsService);
 
   // The URL for the users part of the server API.
   readonly inventoryUrl: string = `${environment.apiUrl}inventory`;
@@ -68,27 +69,13 @@ export class InventoryService {
   savedInventoryDesc = ''; //Per-session saved value for description search bar.
   savedInventorySortBy = ''; //Per-session saved value for sort-order search bar.
 
-  typeOptions = [
-    { value: 'pencils', label: 'Pencils' },
-    { value: 'colored_pencils', label: 'Colored Pencils' },
-    { value: 'sharpeners', label: 'Sharpeners' },
-    { value: 'markers', label: 'Markers' },
-    { value: 'highlighters', label: 'Highlighters' },
-    { value: 'dry_erase_markers', label: 'Dry-Erase Markers' },
-    { value: 'crayons', label: 'Crayons' },
-    { value: 'pens', label: 'Pens' },
-    { value: 'erasers', label: 'Erasers' },
-    { value: 'folders', label: 'Folders' },
-    { value: 'binders', label: 'Binders' },
-    { value: 'notebooks', label: 'Notebooks' },
-    { value: 'glue', label: 'Glue' },
-    { value: 'rulers', label: 'Rulers' },
-    { value: 'scissors', label: 'Scissors' },
-    { value: 'headphones', label: 'Headphones' },
-    { value: 'backpacks', label: 'Backpacks' },
-    { value: 'boxes', label: 'Boxes' },
-    { value: 'other', label: 'Other' }
-  ];
+  // Signal-based typeOptions fetched from settings; falls back to empty array if not yet loaded
+  private settingsSignal = toSignal(
+    this.settingsService.getSettings(),
+    { initialValue: { schools: [], timeAvailability: {} as any, itemTypes: [] } }
+  );
+
+  typeOptions = computed(() => this.settingsSignal().itemTypes ?? []);
 
   /**
    * @param fields a map that specifies which search terms to save
