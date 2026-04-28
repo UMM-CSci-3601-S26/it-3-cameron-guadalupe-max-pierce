@@ -112,7 +112,7 @@ export class ShoppingListComponent {
       //Not actually doing any filtering on the server, just need to get Items.
       combineLatest([this.itemSchool$]).pipe(
         switchMap(() =>
-           this.shoppingService.gradeListService.getSchools() //If we decide to filter on server, args go her
+          this.shoppingService.gradeListService.getSchools() //If we decide to filter on server, args go her
         ),
         catchError((err) => {
           if (!(err.error instanceof ErrorEvent)) {
@@ -161,7 +161,7 @@ export class ShoppingListComponent {
       //Not actually doing any filtering on the server, just need to get Items.
       combineLatest([this.itemName$,this.itemDesc$,this.itemGrade$,this.itemSchool$,this.itemType$]).pipe(
         switchMap(() =>
-           this.shoppingService.gradeListService.getItems({}) //If we decide to filter on server, args go her
+          this.shoppingService.gradeListService.getItems({}) //If we decide to filter on server, args go her
         ),
         catchError((err) => {
           if (!(err.error instanceof ErrorEvent)) {
@@ -289,7 +289,7 @@ export class ShoppingListComponent {
     for (let i = 0; i < this.shoppingService.gradeListService.typeOptions().length - 1; i++) {
       matchingItems = this.shoppingService.gradeListService.filterItems(currentItems, {
         name: this.itemName(),
-         type: this.shoppingService.gradeListService.typeOptions()[i].value,
+        type: this.shoppingService.gradeListService.typeOptions()[i].value,
         required: 0,
         desc: this.itemDesc(),
         grade: this.itemGrade(),

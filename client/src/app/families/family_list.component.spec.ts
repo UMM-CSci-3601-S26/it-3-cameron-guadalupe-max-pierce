@@ -39,7 +39,7 @@ describe('Family list', () => {
   });
 
   it('should initialize with serverFilteredFamilies available', () => {
-    const items = familyList.serverFilteredItems();
+    const items = familyList.filteredFamilies();
     expect(items).toBeDefined();
     expect(Array.isArray(items)).toBe(true);
   });
@@ -169,7 +169,7 @@ describe('Misbehaving Family List', () => {
   it("generates an error if we don't set up a FamilyListService", () => {
     // If the service fails, we expect the `serverFilteredUsers` signal to
     // be an empty array of users.
-    expect(familyList.serverFilteredItems())
+    expect(familyList.filteredFamilies())
       .withContext("service can't give values to the list if it's not there")
       .toEqual([]);
     // We also expect the `errMsg` signal to contain the "Problem contacting…"
