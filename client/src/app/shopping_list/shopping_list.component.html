@@ -36,7 +36,7 @@
             <mat-label>Grade</mat-label>
             <mat-select data-test="itemGradeInput" [(ngModel)]="itemGrade">
               <mat-option value="">All Grades</mat-option>
-              @for (grade of shoppingService.gradeService.gradeOptions; track grade) {
+               @for (grade of shoppingService.gradeListService.gradeOptions; track grade) {
                 <mat-option [value]="grade.value">{{grade.label}}</mat-option>
               }
             </mat-select>

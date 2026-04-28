@@ -1,5 +1,5 @@
 // import { HttpClient } from '@angular/common/http'; //HttpParams
-import { Injectable } from '@angular/core'; //inject
+import { Injectable, inject } from '@angular/core'; //inject
 // import { Observable } from 'rxjs'; //forkJoin, of
 // import { map, switchMap } from 'rxjs/operators';
 // import { environment } from '../../environments/environment';
@@ -22,6 +22,9 @@ import { GradeListService } from '../grade_list/grade_list.service';
   providedIn: 'root'
 })
 export class ShoppingListService {
+  inventoryService = inject(InventoryService);
+  familyService = inject(FamilyService);
+  gradeListService = inject(GradeListService);
 
   savedShoppingListName = ''; //Per-session saved value for name search bar.
   savedShoppingListGrade = ''; //Per-session saved value for grade search bar.
@@ -31,14 +34,18 @@ export class ShoppingListService {
   savedShoppingListSortBy = ''; //Per-session saved value for sort-order search bar.
   savedSubtractInventory = true;
 
-  inventoryService = new InventoryService;
-  typeOptions = this.inventoryService.typeOptions;
+  // Delegate to injected service instances
+  get typeOptions() {
+    return this.inventoryService.typeOptions;
+  }
 
-  familyService = new FamilyService
-  gradeOptions = this.familyService.gradeOptions;
-  schoolOptions = this.familyService.getSchools();
+  get gradeOptions() {
+    return this.familyService.gradeOptions;
+  }
 
-  gradeService = new GradeListService;
+  get schoolOptions() {
+    return this.familyService.getSchools();
+  }
 
   //Borrowed and lightly modified from grade list service.
   //Now returns an index instead of true or false. -1 is not found.
