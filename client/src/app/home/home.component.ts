@@ -51,7 +51,7 @@ export class HomeComponent implements OnInit {
   private loadData(): void {
 
 
-    this.inventoryService.getInventory().subscribe((items: InventoryItem[]) => {
+    this.inventoryService.loadItems().subscribe((items: InventoryItem[]) => {
       this.inventoryCount = items.length;
       this.lowStockItems = items.filter(i => i.stocked < 5);
       this.lowStockAlert = this.lowStockItems.length > 0;

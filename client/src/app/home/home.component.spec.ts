@@ -21,7 +21,7 @@ describe('HomeComponent', () => {
   let router: Router;
 
   const inventoryMock = {
-    inventory$: of([
+    getInventory: () => of([
       { stocked: 2 },
       { stocked: 10 }
     ])
@@ -126,9 +126,12 @@ describe('HomeComponent', () => {
 
   it('should have action buttons', () => {
     const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
-    expect(buttons.length).toBe(2);
+    expect(buttons.length).toBe(5);
     expect(buttons[0].nativeElement.textContent).toContain('View Inventory');
     expect(buttons[1].nativeElement.textContent).toContain('View Families');
+    expect(buttons[2].nativeElement.textContent).toContain(('View Shopping List'));
+    expect(buttons[3].nativeElement.textContent).toContain(('View Settings'));
+    expect(buttons[4].nativeElement.textContent).toContain(('View Grade Requirements'));
   });
 
   it('should navigate to inventory page when "View Inventory" button is clicked', () => {
@@ -148,6 +151,31 @@ describe('HomeComponent', () => {
 
     expect(spy).toHaveBeenCalledWith(['/families']);
   });
+
+  it('should navigate to shopping list page when "View Shopping List" button is clicked', () => {
+    const spy = spyOn(router, 'navigate');
+
+    const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
+    buttons[2].nativeElement.click();
+
+    expect(spy).toHaveBeenCalledWith(['/shopping_list']);
+  });
+
+  it('should navigate to settings page when "View Settings" button is clicked', () => {
+    const spy = spyOn(router, 'navigate');
+
+    const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
+    buttons[3].nativeElement.click();
+
+    expect(spy).toHaveBeenCalledWith(['/settings']);
+  });
+
+  it('should navigate to Grade Requirements page when "View Grade Requirements" button is clicked', () => {
+    const spy = spyOn(router, 'navigate');
+
+    const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
+    buttons[4].nativeElement.click();
+
+    expect(spy).toHaveBeenCalledWith(['/grade_list']);
+  });
 });
-
-
