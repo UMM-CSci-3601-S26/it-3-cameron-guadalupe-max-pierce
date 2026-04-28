@@ -67,17 +67,7 @@
               <mat-radio-button [value]="false">Ignore Inventory</mat-radio-button>
           </mat-radio-group>
 
-          <button
-            mat-raised-button
-            type="button"
-            color="primary"
-            type="back"
-            [style.height.px]=55
-            (click)="exportToCSV()"
-            data-test="exportCSVButton"
-            >
-            Export CSV
-          </button>
+
 
         </div>
 
@@ -99,6 +89,19 @@
             </mat-select>
             <mat-hint>Select Sort Order</mat-hint>
           </mat-form-field>
+
+          <button
+            mat-raised-button
+            type="button"
+            color="primary"
+            type="back"
+            [style.height.px]=55
+            (click)="exportToCSV()"
+            data-test="exportCSVButton"
+            >
+            Export CSV
+          </button>
+
         </div>
         <br>
       </mat-card-content>
