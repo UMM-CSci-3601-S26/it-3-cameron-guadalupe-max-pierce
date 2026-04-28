@@ -118,12 +118,21 @@ describe('Family list', () => {
   it('printing a PDF should fetch grade Reqs', () => {
     const reqSpy = spyOn(familyList, 'getStudentRequirements').and.callThrough();
     const filterSpy = spyOn(familyList.familyService, 'filterItems').and.callThrough();
-    familyList.exportPDF('richards_id');
+    familyList.exportPDF(['richards_id']);
     expect(reqSpy).toHaveBeenCalled();
     expect(filterSpy).toHaveBeenCalled();
     //...Admittedly not a lot of great tests we can do here for actual PDF contents.
   });
 
+
+  it('Mass printing a pdf should function similarly', () => {
+    const reqSpy = spyOn(familyList, 'getStudentRequirements').and.callThrough();
+    const filterSpy = spyOn(familyList.familyService, 'filterItems').and.callThrough();
+    familyList.exportPDF(['richards_id','krosschell_id']);
+    expect(reqSpy).toHaveBeenCalled();
+    expect(filterSpy).toHaveBeenCalled();
+    //...Admittedly not a lot of great tests we can do here for actual PDF contents.
+  });
   // it("correctly handles the 'Location Reset' button", () => {
   //   expect(familyList.resetVisible()).toEqual(false);
   //   familyList.revealReset();

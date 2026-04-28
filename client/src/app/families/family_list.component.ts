@@ -382,98 +382,123 @@ export class FamilyListComponent {
     }
   }
 
-  //Template courtesy of feawsted
-  exportPDF(family_id) {
-    this.familyService.getFamilyById(family_id).subscribe({
-      error: (err) => {
-        this.snackBar.open(`Failed to load checklist: ${err.message}`, 'OK', { duration: 6000 });
-      },
-      next: (family) => {
-        this.snackBar.open(`Generating ${family.last_name} checklist, please wait...`, 'OK', { duration: 4000 });
-        const doc = new jsPDF();
-        const pageWidth = doc.internal.pageSize.getWidth();
-        const margin = 14;
-        const stuMargin = 6; //Additional margin for student subsections.
-        const itemMargin = 6; //Additional margin for item sub-subsections.
-        const checkSize = 4;
-        const lineHeight = 6;
-        const startPos = 18;
-        this.line = 1;
+  //janky helper function for exporting everything as a PDF
+  getIds() {
+    const idArray: string[] = [];
+    for (let i = 0; i < this.filteredFamilies().length; i ++) {
+      idArray.push(this.filteredFamilies()[i]._id);
+    }
+    return idArray;
+  }
 
-        // Header block
-        doc.setFontSize(16);
-        doc.setFont('helvetica', 'bold');
-        doc.text(`${family.last_name} Checklist`, margin, startPos-3);
+  //Template courtesy of feawsted; now takes a string array
+  exportPDF(family_ids:string[]) {
+    if (family_ids.length == 1) {
+      this.snackBar.open(`Generating checklist, please wait...`, 'OK', { duration: 4000 });
+    } else {
+      this.snackBar.open(`Generating checklist for ${family_ids.length} families. Please wait...`, 'OK', { duration: 6000 });
+    }
 
-        //Line
-        doc.line(margin, startPos, pageWidth - margin, startPos);
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const margin = 14;
+    const stuMargin = 6; //Additional margin for student subsections.
+    const itemMargin = 6; //Additional margin for item sub-subsections.
+    const checkSize = 4;
+    const lineHeight = 6;
+    const startPos = 18;
 
-        //General family info
-        doc.setFontSize(11);
-        doc.setFont('helvetica', 'normal');
-        doc.text(`Primary Pickup Person - ${family.first_name} ${family.last_name}`, margin, startPos+lineHeight);
-        this.lineBreak(doc,lineHeight,startPos);
-        if (family.first_name_alt != '') {
-          doc.text(`Alternate Pickup Person - ${family.first_name_alt} ${family.last_name_alt}`, margin, startPos+(lineHeight*this.line));
-          this.lineBreak(doc,lineHeight,startPos);
-        }
-        doc.text(`Contact Info - ${family.phone} - ${family.email}`, margin, startPos+(lineHeight*this.line));
-        this.lineBreak(doc,lineHeight,startPos);
-        doc.text(`Pickup Time - ${family.time}`, margin, startPos+(lineHeight*this.line));
-        this.lineBreak(doc,lineHeight,startPos);
+    for (let f = 0; f < family_ids.length; f ++) {
+      this.familyService.getFamilyById(family_ids[f]).subscribe({
+        error: (err) => {
+          this.snackBar.open(`Failed to load checklist: ${err.message}`, 'OK', { duration: 6000 });
+        },
+        next: (family) => {
+          this.line = 1;
 
-        //Line #2
-        doc.line(margin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
-        this.lineBreak(doc,lineHeight,startPos);
-
-        //Student subsections
-        for (let s = 0; s < family.students.length; s ++) {
-          const studentReqs = this.getStudentRequirements(family.students[s]);
+          // Header block
+          doc.setFontSize(16);
           doc.setFont('helvetica', 'bold');
-          doc.text(`Student #${s+1} - ${family.students[s].first_name} ${family.students[s].last_name}`, margin + stuMargin, startPos+(lineHeight*this.line));
+          doc.text(`${family.last_name} Checklist`, margin, startPos-3);
+
+          //Line
+          doc.line(margin, startPos, pageWidth - margin, startPos);
+
+          //General family info
+          doc.setFontSize(11);
           doc.setFont('helvetica', 'normal');
+          doc.text(`Primary Pickup Person - ${family.first_name} ${family.last_name}`, margin, startPos+lineHeight);
           this.lineBreak(doc,lineHeight,startPos);
-          if ((family.students[s].teacher == '') || (family.students[s].teacher == undefined)) {
-            doc.text(`${family.students[s].school} - ${this.familyService.getGradeLabel(family.students[s].grade)} - ${studentReqs.length} items`, margin + stuMargin, startPos+(lineHeight*this.line));
-          } else {
-            doc.text(`${family.students[s].school} - ${family.students[s].teacher}'s ${this.familyService.getGradeLabel(family.students[s].grade)} class - ${studentReqs.length} items`, margin + stuMargin, startPos+(lineHeight*this.line));
-          }
-          this.lineBreak(doc,lineHeight,startPos);
-
-          //Requirements per student
-          doc.setFont('helvetica', 'italic');
-          for (let r = 0; r < studentReqs.length; r ++) {
-            //Checkbox
-            doc.rect(margin + stuMargin + itemMargin - (checkSize+1), startPos+(lineHeight*this.line) - checkSize + 1, checkSize, checkSize);
-            //Requirement
-            let itemString = '';
-            if (studentReqs[r].required > 1) {
-              itemString = itemString.concat(`x${studentReqs[r].required} ${studentReqs[r].name}`);
-            } else {
-              itemString = itemString.concat(`${studentReqs[r].name}`);
-            }
-
-            if (studentReqs[r].desc != '') {
-              itemString = itemString.concat(` - ${studentReqs[r].desc}`);
-            }
-
-            if (studentReqs[r].pack > 1) {
-              itemString = itemString.concat(` - ${studentReqs[r].pack} ct.`);
-            }
-
-            doc.text(itemString, margin + stuMargin + itemMargin, startPos+(lineHeight*this.line));
+          if (family.first_name_alt != '') {
+            doc.text(`Alternate Pickup Person - ${family.first_name_alt} ${family.last_name_alt}`, margin, startPos+(lineHeight*this.line));
             this.lineBreak(doc,lineHeight,startPos);
           }
-          doc.setFont('helvetica', 'normal');
-
-          //Student break
-          doc.line(margin + stuMargin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
+          doc.text(`Contact Info - ${family.phone} - ${family.email}`, margin, startPos+(lineHeight*this.line));
           this.lineBreak(doc,lineHeight,startPos);
+          doc.text(`Pickup Time - ${family.time}`, margin, startPos+(lineHeight*this.line));
+          this.lineBreak(doc,lineHeight,startPos);
+
+          //Line #2
+          doc.line(margin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
+          this.lineBreak(doc,lineHeight,startPos);
+
+          //Student subsections
+          for (let s = 0; s < family.students.length; s ++) {
+            const studentReqs = this.getStudentRequirements(family.students[s]);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`Student #${s+1} - ${family.students[s].first_name} ${family.students[s].last_name}`, margin + stuMargin, startPos+(lineHeight*this.line));
+            doc.setFont('helvetica', 'normal');
+            this.lineBreak(doc,lineHeight,startPos);
+            if ((family.students[s].teacher == '') || (family.students[s].teacher == undefined)) {
+              doc.text(`${family.students[s].school} - ${this.familyService.getGradeLabel(family.students[s].grade)} - ${studentReqs.length} items`, margin + stuMargin, startPos+(lineHeight*this.line));
+            } else {
+              doc.text(`${family.students[s].school} - ${family.students[s].teacher}'s ${this.familyService.getGradeLabel(family.students[s].grade)} class - ${studentReqs.length} items`, margin + stuMargin, startPos+(lineHeight*this.line));
+            }
+            this.lineBreak(doc,lineHeight,startPos);
+
+            //Requirements per student
+            doc.setFont('helvetica', 'italic');
+            for (let r = 0; r < studentReqs.length; r ++) {
+              //Checkbox
+              doc.rect(margin + stuMargin + itemMargin - (checkSize+1), startPos+(lineHeight*this.line) - checkSize + 1, checkSize, checkSize);
+              //Requirement
+              let itemString = '';
+              if (studentReqs[r].required > 1) {
+                itemString = itemString.concat(`x${studentReqs[r].required} ${studentReqs[r].name}`);
+              } else {
+                itemString = itemString.concat(`${studentReqs[r].name}`);
+              }
+
+              if (studentReqs[r].desc != '') {
+                itemString = itemString.concat(` - ${studentReqs[r].desc}`);
+              }
+
+              if (studentReqs[r].pack > 1) {
+                itemString = itemString.concat(` - ${studentReqs[r].pack} ct.`);
+              }
+
+              doc.text(itemString, margin + stuMargin + itemMargin, startPos+(lineHeight*this.line));
+              this.lineBreak(doc,lineHeight,startPos);
+            }
+            doc.setFont('helvetica', 'normal');
+
+            //Student break
+            doc.line(margin + stuMargin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
+            this.lineBreak(doc,lineHeight,startPos);
+          }
+          //Save and export
+          if ((f+1) == family_ids.length) {
+            if (f == 0) {
+              doc.save(family.last_name.concat(' Checklist.pdf'));
+            } else {
+              doc.save(family.last_name.concat('Checklist.pdf'));
+            }
+          } else {
+            doc.addPage(); //Start next family on a new page.
+          }
         }
-        //Save and export
-        doc.save(family.last_name.concat(' Checklist.pdf'));
-      }
-    });
+      });
+    }
   }
 
   getStudentRequirements(student:Student) {
