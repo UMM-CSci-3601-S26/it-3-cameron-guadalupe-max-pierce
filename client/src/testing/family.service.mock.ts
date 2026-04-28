@@ -3,7 +3,9 @@ import { Observable, of } from 'rxjs';
 import { AppComponent } from 'src/app/app.component';
 import { Family } from '../app/families/family';
 import { Time } from '../app/families/time';
+import { Student } from '../app/families/student';
 import { School } from '../app/grade_list/school';
+import { RequiredItem } from '../app/grade_list/required_item';
 import { FamilyService } from 'src/app/families/family.service';
 
 /**
@@ -16,7 +18,7 @@ import { FamilyService } from 'src/app/families/family.service';
 })
 
 //'modifyMass'
-export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'getFamilyById' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'|'getSchools' | 'deleteAll'|'getGradeLabel'|'familyCount' | 'getTimes' > {
+export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'getItems' | 'filterItems' | 'getFamilyById' | 'filterFamilies' | 'addFamily' | 'deleteFamily'| 'updateSavedSearch'|'getSchools' | 'deleteAll'|'getGradeLabel'|'familyCount' | 'getTimes' > {
   savedFamilyName = ''; //Per-session saved value for name search bar.
   savedFamilySchool = '';
   savedFamilyGrade = '';
@@ -57,7 +59,7 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
     }
   ];
 
-  static testItems: Family[] = [
+  static testFamilies: Family[] = [
     {
       "_id": "richards_id",
       "first_name": "Steve",
@@ -188,6 +190,49 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
     students: [],
   }
 
+  static testItems: RequiredItem[] = [
+    {
+      _id: 'pencil_id',
+      name: 'Yellow Pencils',
+      type: 'pencil',
+      grade:'P',
+      school:'MAES',
+      required: 6,
+      desc: 'yellow Ticonderoga pencils',
+      pack:1
+    },
+    {
+      _id: 'eraser_id',
+      name: '2-inch Eraser',
+      type: 'eraser',
+      grade:'3',
+      school:'MAES',
+      required: 2,
+      desc: '2-inch rubber eraser',
+      pack:1
+    },
+    {
+      _id: '1',
+      name: 'Red Plastic Folder',
+      type: 'folder',
+      grade:'3',
+      school:'Hancock',
+      required: 0,
+      desc: 'standard size red plastic folder.',
+      pack:1
+    }
+  ];
+  static emptyItem: RequiredItem = {
+    _id: '',
+    name: '',
+    type: '',
+    grade: '',
+    school: '',
+    required: 0,
+    desc: '',
+    pack:1
+  }
+
   //Probably terrible form, but best way I could figure to get the tests working.
   realService = new FamilyService;
   gradeOptions = this.realService.gradeOptions;
@@ -229,7 +274,11 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
   // It's OK that the `_filters` argument isn't used here, so we'll disable
   // this warning for just his function.
   /* eslint-disable @typescript-eslint/no-unused-vars */
-  getFamilies(_filters: { name?: string; stocked?: number; desc?: string; location?: string; type?: string;}): Observable<Family[]> {
+  getFamilies(filters?: { name?: string; grade?: string; school?: string; students?: number; time?: string; }): Observable<Family[]> {
+    return of(MockFamilyService.testFamilies);
+  }
+
+  getItems(): Observable<RequiredItem[]> {
     return of(MockFamilyService.testItems);
   }
 
@@ -248,10 +297,10 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
     // return that user, otherwise return `null` so
     // we can test illegal user requests.
     // If you need more, just add those in too.
-    if (id === MockFamilyService.testItems[0]._id) {
-      return of(MockFamilyService.testItems[0]);
-    } else if (id === MockFamilyService.testItems[1]._id) {
-      return of(MockFamilyService.testItems[1]);
+    if (id === MockFamilyService.testFamilies[0]._id) {
+      return of(MockFamilyService.testFamilies[0]);
+    } else if (id === MockFamilyService.testFamilies[1]._id) {
+      return of(MockFamilyService.testFamilies[1]);
     } else {
       return of(null);
     }
@@ -281,6 +330,15 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
   //   //Doesn't return anything; just modifies database.
   // }
 
+  filterItems(items: RequiredItem[], student:Student): RequiredItem[] { // skipcq: JS-0105
+    let filteredItems = items;
+
+    filteredItems = filteredItems.filter(item => item.grade.toLowerCase().indexOf(student.grade.toLowerCase()) !== -1);
+    filteredItems = filteredItems.filter(item => item.school.toLowerCase().indexOf(student.school.toLowerCase()) !== -1);
+
+    return filteredItems;
+  }
+
   filterFamilies(items: Family[], filters: {
     name?: string;
     grade?: string;
@@ -288,6 +346,6 @@ export class MockFamilyService implements Pick<FamilyService, 'getFamilies' | 'g
     location?: string;
     type?: string;
   }): Family[] {
-    return MockFamilyService.testItems;
+    return MockFamilyService.testFamilies;
   }
 }
