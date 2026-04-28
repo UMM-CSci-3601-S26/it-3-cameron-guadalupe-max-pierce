@@ -28,6 +28,7 @@ export class AddRequirementPage {
 
   selectMatSelectValue(select: Cypress.Chainable, value: string) {
     select.click();
+    cy.wait(100);
     return cy.get('mat-option').contains(value).click();
   }
 
