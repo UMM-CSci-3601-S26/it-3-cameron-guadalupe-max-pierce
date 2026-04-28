@@ -75,8 +75,9 @@ export class GradeListComponent {
 
   filteredTypeOptions = computed(() => {
     const input = (this.itemType() || '').toLowerCase();
-    if (!input) return this.gradeListService.typeOptions;
-    return this.gradeListService.typeOptions.filter(option =>
+    const typeOptions = this.gradeListService.typeOptions();
+    if (!input) return typeOptions;
+    return typeOptions.filter(option =>
       option.label.toLowerCase().includes(input) || option.value.toLowerCase().includes(input)
     );
   });
@@ -191,11 +192,12 @@ export class GradeListComponent {
   typeFilteredItems = computed(() => {
     const currentItems = this.serverFilteredItems();
     const typedArray: { header: string, items: RequiredItem[] }[] = [];
+    const typeOptions = this.gradeListService.typeOptions();
     let matchingItems = [];
-    for (let i = 0; i < this.gradeListService.typeOptions.length - 1; i++) {
+    for (let i = 0; i < typeOptions.length - 1; i++) {
       matchingItems = this.gradeListService.filterItems(currentItems, {
         name: this.itemName(),
-        type: this.gradeListService.typeOptions[i].value,
+        type: typeOptions[i].value,
         required: this.itemRequired(),
         desc: this.itemDesc(),
         grade: this.itemGrade(),
@@ -205,7 +207,7 @@ export class GradeListComponent {
       //Only sections that have matching items are shown.
       if (matchingItems.length > 0) {
         typedArray.push({
-          header: this.gradeListService.typeOptions[i].label,
+          header: typeOptions[i].label,
           items: matchingItems
         })
       }
