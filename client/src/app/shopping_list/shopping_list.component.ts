@@ -139,7 +139,7 @@ export class ShoppingListComponent {
     // Define CSV headers
 
 
-    const headers = ['Name', 'Type', 'Description', 'Location', 'Stocked', 'Pack Size'];
+    const headers = ['Name', 'Type', 'Description', 'Stocked', 'Pack Size'];
 
 
     // Convert items to CSV rows
@@ -147,8 +147,8 @@ export class ShoppingListComponent {
       this.escapeCsvValue(item.name),
       this.escapeCsvValue(item.type),
       this.escapeCsvValue(item.desc),
-      this.escapeCsvValue(item.grade),
-      this.escapeCsvValue(item.pack.toString())
+      this.escapeCsvValue(item.pack.toString()),
+      this.escapeCsvValue(item.required.toString())
     ]);
     // Combine headers and rows
     const csvContent = [
