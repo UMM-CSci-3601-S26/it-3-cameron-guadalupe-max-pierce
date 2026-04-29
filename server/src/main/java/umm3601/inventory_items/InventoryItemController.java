@@ -139,10 +139,8 @@ public class InventoryItemController implements Controller {
     //   filters.add(eq(ROLE_KEY, role));
     // }
 
-    // Combine the list of filters into a single filtering document.
-    Bson combinedFilter = filters.isEmpty() ? new Document() : and(filters);
-
-    return combinedFilter;
+    // No inventory filters are currently active, so this always returns all items.
+    return new Document();
   }
 
   /**

@@ -227,6 +227,47 @@ class RequiredItemControllerSpec {
     }
 
     @Test
+    void getSchoolsReturnsEmptyWhenSettingsHasNoSchools() throws IOException {
+      MongoCollection<Document> settings = testDatabase.getCollection("settings");
+      settings.drop();
+      settings.insertOne(new Document()
+        .append("_id", "app-settings"));
+
+      requiredItemController.getSchools(ctx);
+
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<ArrayList<School>> schoolArrayCaptor = ArgumentCaptor.forClass(ArrayList.class);
+      verify(ctx).json(schoolArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+      assertEquals(0, schoolArrayCaptor.getValue().size());
+    }
+
+    @Test
+    void getSchoolsUsesNameWhenAbbreviationMissing() throws IOException {
+      MongoCollection<Document> settings = testDatabase.getCollection("settings");
+      settings.drop();
+      settings.insertOne(new Document()
+        .append("_id", "app-settings")
+        .append("schools", List.of(
+          new Document().append("name", "Fallback School").append("abbreviation", ""),
+          new Document().append("name", "Null School").append("abbreviation", null)
+        )));
+
+      requiredItemController.getSchools(ctx);
+
+      @SuppressWarnings("unchecked")
+      ArgumentCaptor<ArrayList<School>> schoolArrayCaptor = ArgumentCaptor.forClass(ArrayList.class);
+      verify(ctx).json(schoolArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+
+      assertEquals(2, schoolArrayCaptor.getValue().size());
+      assertEquals("Fallback School", schoolArrayCaptor.getValue().get(0).label);
+      assertEquals("Fallback School", schoolArrayCaptor.getValue().get(0)._id);
+      assertEquals("Null School", schoolArrayCaptor.getValue().get(1).label);
+      assertEquals("Null School", schoolArrayCaptor.getValue().get(1)._id);
+    }
+
+    @Test
     void getSchoolsUsesSettingsWhenAvailable() throws IOException {
       MongoCollection<Document> settings = testDatabase.getCollection("settings");
       settings.drop();
@@ -377,6 +418,31 @@ class RequiredItemControllerSpec {
 
     assertTrue(exceptionMessage.contains("This is not a number!"));
   }
+
+    @Test
+    void addInvalidRequiredItem() throws IOException {
+      String newItemJson = """
+      {
+        "name": "This is a Test",
+        "required": -1,
+        "desc": "This should fail!",
+        "school": "Over there",
+        "type": "test",
+        "grade": "2"
+      }
+      """;
+
+      when(ctx.body()).thenReturn(newItemJson);
+      when(ctx.bodyValidator(RequiredItem.class))
+        .thenReturn(new BodyValidator<RequiredItem>(newItemJson, RequiredItem.class,
+                      () -> javalinJackson.fromJsonString(newItemJson, RequiredItem.class)));
+      ValidationException exception = assertThrows(ValidationException.class, () -> {
+        requiredItemController.addNewItem(ctx);
+      });
+      String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+      assertTrue(exceptionMessage.contains("greater than or equal to zero"));
+    }
 
   @Test
   void addInvalidTypeItem() throws IOException {
