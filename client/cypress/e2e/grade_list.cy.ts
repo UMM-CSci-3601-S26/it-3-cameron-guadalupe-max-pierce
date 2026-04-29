@@ -2,7 +2,7 @@ import { GradeListPage } from '../support/grade_list.po';
 
 const page = new GradeListPage();
 
-describe('Item list', () => {
+describe('Grade Req list', () => {
 
   before(() => {
     cy.task('seed:database');

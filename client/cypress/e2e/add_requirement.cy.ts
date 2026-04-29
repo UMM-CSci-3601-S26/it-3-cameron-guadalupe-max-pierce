@@ -1,7 +1,7 @@
 import { RequiredItem } from '../../src/app/grade_list/required_item';
 import { AddRequirementPage } from '../support/add_requirement.po';
 
-describe('Add item', () => {
+describe('Add requirement', () => {
   const page = new AddRequirementPage();
 
   beforeEach(() => {
