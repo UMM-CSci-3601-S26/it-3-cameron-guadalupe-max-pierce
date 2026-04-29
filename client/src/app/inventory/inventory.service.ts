@@ -72,7 +72,7 @@ export class InventoryService {
   // Signal-based typeOptions fetched from settings; falls back to empty array if not yet loaded
   private settingsSignal = toSignal(
     this.settingsService.getSettings(),
-    { initialValue: { schools: [], timeAvailability: {} as any, itemTypes: [] } }
+    { initialValue: { schools: [], timeAvailability: { earlyMorning: '', lateMorning: '', earlyAfternoon: '', lateAfternoon: '' }, itemTypes: [] } }
   );
 
   typeOptions = computed(() => this.settingsSignal().itemTypes ?? []);
