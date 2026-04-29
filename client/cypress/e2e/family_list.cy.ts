@@ -30,7 +30,6 @@ describe('Family list', () => {
 
   it('Should select something in the school filter and return correct items', () => {
     page.selectMatSelectValue(cy.get('[data-test=familySchoolInput]'),'MAES');
-    //cy.get('[data-test=familySchoolInput]').type('MAES');
 
     page.getItemListItems().should('have.length', 8);
   });
