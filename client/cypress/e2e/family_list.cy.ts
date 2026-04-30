@@ -79,4 +79,3 @@ describe('Family list', () => {
     //cy.contains('Families exported successfully', { timeout: 5000 }).should('be.visible');
   });
 });
-
