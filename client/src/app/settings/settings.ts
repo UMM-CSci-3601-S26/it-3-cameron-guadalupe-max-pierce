@@ -3,6 +3,11 @@ export interface SchoolInfo {
   abbreviation?: string;
 }
 
+export interface ItemType {
+  value: string;        // e.g. "pencils"
+  label: string;        // e.g. "Pencils"
+}
+
 /**
  * Maps each availability slot key to an operator-defined clock time string.
  * Family documents store boolean flags against these same keys to record
@@ -19,4 +24,5 @@ export interface AppSettings {
   _id?: string;
   schools: SchoolInfo[];
   timeAvailability: TimeAvailabilityLabels;
+  itemTypes?: ItemType[];
 }

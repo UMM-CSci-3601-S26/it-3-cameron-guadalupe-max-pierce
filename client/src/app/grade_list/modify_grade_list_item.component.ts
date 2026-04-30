@@ -29,6 +29,10 @@ export class ModifyRequirementComponent {
   private router = inject(Router);
   private finished = false;
 
+  private readonly typePattern = `^(${this.gradeService.typeOptions()
+    .flatMap(option => [option.value, option.value.replace(/s$/, '')])
+    .join('|')})$`;
+
   typeInput = signal<string>('');
   gradeInput = signal<string>('');
 
@@ -39,8 +43,9 @@ export class ModifyRequirementComponent {
 
   filteredTypeOptions = computed(() => {
     const input = (this.typeInput() || '').toLowerCase();
-    if (!input) return this.gradeService.typeOptions;
-    return this.gradeService.typeOptions.filter(option =>
+    const typeOptions = this.gradeService.typeOptions();
+    if (!input) return typeOptions;
+    return typeOptions.filter(option =>
       option.label.toLowerCase().includes(input) || option.value.toLowerCase().includes(input)
     );
   });
@@ -103,7 +108,7 @@ export class ModifyRequirementComponent {
 
   displayTypeLabel = (value: string | null): string => {
     if (!value) return '';
-    const match = this.gradeService.typeOptions.find(option => option.value === value);
+    const match = this.gradeService.typeOptions().find(option => option.value === value);
     return match ? match.label : value;
   };
 
@@ -164,7 +169,7 @@ export class ModifyRequirementComponent {
 
     type: new FormControl('', Validators.compose([
       Validators.required,
-      Validators.pattern(this.gradeService.typeOptions.map(option => option.value).join('|'))
+      Validators.pattern(this.typePattern)
     ])),
 
     grade: new FormControl('', Validators.compose([

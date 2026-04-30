@@ -4,6 +4,7 @@ import { TestBed, waitForAsync } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { InventoryItem } from './inventory_item';
 import { InventoryService } from './inventory.service';
+import { SettingsService } from '../settings/settings.service';
 //import { Company } from '../company-list/company';
 
 describe('InventoryService', () => {
@@ -56,6 +57,24 @@ describe('InventoryService', () => {
     httpClient = TestBed.inject(HttpClient);
     httpTestingController = TestBed.inject(HttpTestingController);
     inventoryService = TestBed.inject(InventoryService);
+
+    const settingsRequest = httpTestingController.expectOne(
+      TestBed.inject(SettingsService).settingsUrl
+    );
+    settingsRequest.flush({
+      schools: [{ name: 'Morris Area High School', abbreviation: 'MAHS' }],
+      timeAvailability: {
+        earlyMorning: '8:00 AM',
+        lateMorning: '10:00 AM',
+        earlyAfternoon: '12:00 PM',
+        lateAfternoon: '2:00 PM',
+      },
+      itemTypes: [
+        { value: 'pencils', label: 'Pencils' },
+        { value: 'erasers', label: 'Erasers' },
+        { value: 'folders', label: 'Folders' },
+      ]
+    });
   });
 
   afterEach(() => {

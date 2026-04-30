@@ -168,6 +168,8 @@ describe('Misbehaving Grade List', () => {
 
   let inventoryServiceStub: {
     getItems: () => Observable<RequiredItem[]>;
+    getSchools: () => Observable<unknown[]>;
+    typeOptions: () => { value: string; label: string }[];
     filterItems: () => RequiredItem[];
     updateSavedSearch: () => undefined;
   };
@@ -179,6 +181,11 @@ describe('Misbehaving Grade List', () => {
         new Observable((observer) => {
           observer.error('getItems() Observer generates an error');
         }),
+      getSchools: () => new Observable((observer) => {
+        observer.next([]);
+        observer.complete();
+      }),
+      typeOptions: () => [],
       filterItems: () => [],
       updateSavedSearch: () => undefined
     };
