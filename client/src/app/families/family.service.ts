@@ -4,10 +4,8 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { Family } from './family';
-import { Student } from './student';
 import { Time } from './time';
 import { School } from '../grade_list/school';
-import { RequiredItem } from '../grade_list/required_item';
 //import { Company } from '../company-list/company';
 //import { Signal } from '@angular/core/rxjs-interop';
 
@@ -19,13 +17,19 @@ import { RequiredItem } from '../grade_list/required_item';
   providedIn: 'root'
 })
 export class FamilyService {
+  // The private `HttpClient` is *injected* into the service
+  // by the Angular framework. This allows the system to create
+  // only one `HttpClient` and share that across all services
+  // that need it, and it allows us to inject a mock version
+  // of `HttpClient` in the unit tests so they don't have to
+  // make "real" HTTP calls to a server that might not exist or
+  // might not be currently running.
   private httpClient = inject(HttpClient);
 
   // The URL for the users part of the server API.
   readonly familyUrl: string = `${environment.apiUrl}families`;
   readonly schoolUrl: string = `${environment.apiUrl}schools`;
   readonly timeUrl: string = `${environment.apiUrl}times`;
-  readonly gradeListUrl: string = `${environment.apiUrl}student_reqs`;
   //readonly usersByCompanyUrl: string = `${environment.apiUrl}usersByCompany`;
 
   private readonly schoolKey = 'school'; //school filtering
@@ -97,29 +101,6 @@ export class FamilyService {
     this.savedFamilyTime = fields.time;
     this.savedFamilyStudents = fields.students;
     this.savedFamilySortBy = fields.sortby;
-  }
-
-  //Annoyingly necessary for per-student reqs.
-  // Cannot simply attatch a grade_list service because grade_list also needs to import family service to fetch schools and grade labels.
-  //...Though really, there's now no need for grade_list service to have its own getItems method.
-  //This has been simplified since we just need a student's school and grade.
-  getItems(): Observable<RequiredItem[]> {
-    // let httpParams: HttpParams = new HttpParams();
-    // httpParams = httpParams.set(this.gradeKey, student.grade);
-    // httpParams = httpParams.set(this.schoolKey, student.school);
-    // Send the HTTP GET request with the given URL and parameters.
-    // That will return the desired `Observable<InventoryItem[]>`.
-    return this.httpClient.get<RequiredItem[]>(this.gradeListUrl, {});
-  }
-
-  //See above.
-  filterItems(items: RequiredItem[], student:Student): RequiredItem[] { // skipcq: JS-0105
-    let filteredItems = items;
-
-    filteredItems = filteredItems.filter(item => item.grade.toLowerCase().indexOf(student.grade.toLowerCase()) !== -1);
-    filteredItems = filteredItems.filter(item => item.school.toLowerCase().indexOf(student.school.toLowerCase()) !== -1);
-
-    return filteredItems;
   }
 
   getFamilies(filters?: { name?: string; grade?: string; school?: string; students?: number; time?: string; }): Observable<Family[]> {

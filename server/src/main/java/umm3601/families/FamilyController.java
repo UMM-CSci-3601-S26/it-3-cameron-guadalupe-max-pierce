@@ -35,7 +35,6 @@ import umm3601.settings.Settings;
 import umm3601.settings.SettingsController;
 // import umm3601.families.Student;
 // import umm3601.inventory_items.InventoryItem;
-import umm3601.grade_list.RequiredItem;
 
 /**
  * Controller that manages requests for info about users.
@@ -45,7 +44,6 @@ public class FamilyController implements Controller {
 
   private static final String API_FAMILIES = "/api/families";
   private static final String API_TIMES = "/api/times";
-    private static final String API_ITEMS = "/api/student_reqs";
   private static final String API_FAMILY_BY_ID = "/api/families/{id}";
   // static final String NAME_KEY = "name";
   // static final String TYPE_KEY = "type";
@@ -99,23 +97,6 @@ public class FamilyController implements Controller {
       ctx.status(HttpStatus.OK);
     }
   }
-
-  //Annoyingly necessary for individual student requirements.
-  public void getItems(Context ctx) {
-    Bson combinedFilter = constructFilter(ctx);
-    Bson sortingOrder = constructSortingOrder(ctx);
-
-    ArrayList<RequiredItem> matchingItems = listCollection
-      .find(combinedFilter)
-      .sort(sortingOrder)
-      .into(new ArrayList<>());
-
-    ctx.json(matchingItems);
-
-    // Explicitly set the context status to OK
-    ctx.status(HttpStatus.OK);
-  }
-
 
   /**
    * Set the JSON body of the response to be a list of all the users returned from the database
@@ -421,8 +402,6 @@ public class FamilyController implements Controller {
     // List items, filtered using query parameters
     server.get(API_TIMES, this::getTimes);
 
-
-    server.get(API_ITEMS, this::getItems);
     // Get the users, possibly filtered, grouped by company
     // server.get("/api/usersByCompany", this::getUsersGroupedByCompany);
 
