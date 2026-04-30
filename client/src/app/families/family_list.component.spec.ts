@@ -127,6 +127,8 @@ describe('Misbehaving Family List', () => {
 
   let familyServiceStub: {
     getFamilies: () => Observable<Family[]>;
+    getSchools: () => Observable<unknown[]>;
+    getTimes: () => Observable<unknown[]>;
     filterFamilies: () => Family[];
     updateSavedSearch: () => undefined;
   };
@@ -138,6 +140,14 @@ describe('Misbehaving Family List', () => {
         new Observable((observer) => {
           observer.error('getFamilies() Observer generates an error');
         }),
+      getSchools: () => new Observable((observer) => {
+        observer.next([]);
+        observer.complete();
+      }),
+      getTimes: () => new Observable((observer) => {
+        observer.next([]);
+        observer.complete();
+      }),
       updateSavedSearch:  () => undefined,
       filterFamilies: () => []
     };
