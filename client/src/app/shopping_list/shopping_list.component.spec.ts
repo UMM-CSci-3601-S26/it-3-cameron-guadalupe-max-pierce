@@ -286,4 +286,9 @@ describe('Shopping List', () => {
     shoppingList.itemGrade.set('');
     expect(shoppingList.calculateShoppingList([], newReqs, [Richards], false).length).toEqual(2);
   });
+  it('correctly handles blank cells', () => {
+    expect(shoppingList['escapeCsvValue'](undefined)).toEqual('');
+    expect(shoppingList['escapeCsvValue']('This is fine')).toEqual('This is fine');
+    expect(shoppingList['escapeCsvValue']('He said "hello"')).toEqual('"He said ""hello"""');
+  });
 });

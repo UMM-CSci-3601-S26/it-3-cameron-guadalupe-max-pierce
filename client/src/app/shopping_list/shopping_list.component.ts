@@ -132,6 +132,61 @@ export class ShoppingListComponent {
   filteredSchoolOptions = computed(() => {
     return this.serverFilteredSchools();
   });
+  exportToCSV() {
+
+    const items = this.shoppingListItems();
+    if (!items || items.length === 0) {
+
+
+      this.snackBar.open('No items to export', 'OK', { duration: 3000 });
+
+
+      return;
+
+
+    }
+    // Define CSV headers
+
+
+    const headers = ['Name', 'Type', 'Description', 'Stocked', 'Pack Size'];
+
+
+    // Convert items to CSV rows
+    const rows = items.map(item => [
+      this.escapeCsvValue(item.name),
+      this.escapeCsvValue(item.type),
+      this.escapeCsvValue(item.desc),
+      this.escapeCsvValue(item.pack.toString()),
+      this.escapeCsvValue(item.required.toString())
+    ]);
+    // Combine headers and rows
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    // Create a blob and download
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `shopping_list_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    this.snackBar.open('Shopping List exported successfully', 'OK', { duration: 3000 });
+  }
+  private escapeCsvValue(value: string | undefined): string {
+    if (!value) return '';
+
+    // Escape quotes and wrap in quotes if value contains comma, newline, or quote
+    const escaped = value.replace(/"/g, '""');
+    if (escaped.includes(',') || escaped.includes('\n') || escaped.includes('"')) {
+      return `"${escaped}"`;
+    }
+    return escaped;
+  }
 
   serverFilteredInventory =
     toSignal(
