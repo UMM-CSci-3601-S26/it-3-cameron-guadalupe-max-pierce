@@ -244,4 +244,46 @@ describe('Shopping List', () => {
   it('should not show error message on successful load', () => {
     expect(shoppingList.errMsg()).toBeUndefined();
   });
+
+  it('displayTypeLabel returns empty string for null/empty value', () => {
+    expect(shoppingList.displayTypeLabel(null)).toBe('');
+    expect(shoppingList.displayTypeLabel('')).toBe('');
+  });
+
+  it('displayTypeLabel returns value itself when no match found', () => {
+    expect(shoppingList.displayTypeLabel('unknowntype')).toBe('unknowntype');
+  });
+
+  it('displayGradeLabel returns value itself when no match found', () => {
+    expect(shoppingList.displayGradeLabel('unknowngrade')).toBe('unknowngrade');
+  });
+
+  it('filteredTypeOptions returns all options when input is empty', () => {
+    shoppingList.itemType.set('');
+    const items = shoppingList.filteredTypeOptions();
+    expect(items.length).toBeGreaterThan(0);
+  });
+
+
+  it('should include backpack and headphones for students who need them', () => {
+    const BobWithGear: Student = {
+      first_name: 'Bob', last_name: 'Richards',
+      backpack: true, headphones: true,
+      teacher: 'Mr.Cannon', grade: '1', school: 'MAES'
+    };
+    const Richards: Family = {
+      _id: '1', first_name: 'Pierce', last_name: 'Richards',
+      first_name_alt: '', last_name_alt: '', time: '', email: '',
+      students: [BobWithGear]
+    };
+
+    const newReqs: RequiredItem[] = [
+      { _id: 'backpack_id', name: 'Backpack', type: 'backpacks', grade: '1', school: 'MAES', required: 1, desc: 'No wheels', pack: 1 },
+      { _id: 'headphone_id', name: 'Headphones', type: 'headphones', grade: '1', school: 'MAES', required: 1, desc: 'Over ear', pack: 1 }
+    ];
+
+    shoppingList.itemSchool.set('');
+    shoppingList.itemGrade.set('');
+    expect(shoppingList.calculateShoppingList([], newReqs, [Richards], false).length).toEqual(2);
+  });
 });

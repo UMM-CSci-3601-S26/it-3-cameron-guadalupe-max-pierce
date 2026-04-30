@@ -6,7 +6,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
@@ -223,8 +223,16 @@ describe('HomeComponent', () => {
   it('should reload data on NavigationEnd event', () => {
     const spy = spyOn(component as unknown as { loadData: () => void }, 'loadData');
     const navEnd = new NavigationEnd(1, '/home', '/home');
-    (router as unknown as { events: unknown }).events = of(navEnd);
+    spyOnProperty(router, 'events').and.returnValue(of(navEnd));
     component.ngOnInit();
     expect(spy).toHaveBeenCalled();
+  });
+
+  it('should not reload data on non-NavigationEnd router events', () => {
+    const navStart = new NavigationStart(1, '/home');
+    spyOnProperty(router, 'events').and.returnValue(of(navStart));
+    component.ngOnInit();
+    const spy = spyOn(component as unknown as { loadData: () => void }, 'loadData');
+    expect(spy).not.toHaveBeenCalled();
   });
 });
