@@ -5,6 +5,12 @@ import { TestBed } from '@angular/core/testing'; //waitForAsync
 import { InventoryItem } from '../inventory/inventory_item';
 import { RequiredItem } from '../grade_list/required_item';
 import { ShoppingListService } from './shopping_list.service';
+import { InventoryService } from '../inventory/inventory.service';
+import { FamilyService } from '../families/family.service';
+import { GradeListService } from '../grade_list/grade_list.service';
+import { MockInventoryService } from 'src/testing/inventory.service.mock';
+import { MockFamilyService } from 'src/testing/family.service.mock';
+import { MockGradeListService } from 'src/testing/grade_list.service.mock';
 //import { Company } from '../company-list/company';
 
 describe('ShoppingListService', () => {
@@ -21,7 +27,13 @@ describe('ShoppingListService', () => {
     // Set up the mock handling of the HTTP requests
     TestBed.configureTestingModule({
       imports: [],
-      providers: [provideHttpClient(), provideHttpClientTesting()]
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: InventoryService, useClass: MockInventoryService },
+        { provide: FamilyService, useClass: MockFamilyService },
+        { provide: GradeListService, useClass: MockGradeListService },
+      ]
     });
     // Construct an instance of the service with the mock
     // HTTP client.

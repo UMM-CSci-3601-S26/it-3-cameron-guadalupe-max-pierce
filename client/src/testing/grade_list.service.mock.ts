@@ -84,10 +84,27 @@ export class MockGradeListService implements Pick<GradeListService, 'getItems' |
     pack:1
   }
 
-  //Probably terrible form, but best way I could figure to get the tests working.
-  realService = new GradeListService;
-  typeOptions = this.realService.typeOptions;
-  gradeOptions = this.realService.gradeOptions;
+  typeOptions = () => [
+    { value: 'pencils', label: 'Pencils' },
+    { value: 'erasers', label: 'Erasers' },
+    { value: 'folders', label: 'Folders' },
+  ];
+  gradeOptions = [
+    { value: 'P', label: 'Pre-School', spanish: 'Preescolar' },
+    { value: 'K', label: 'Kindergarten', spanish: 'Kindergarten' },
+    { value: '1', label: '1st Grade', spanish: 'Primer Grado' },
+    { value: '2', label: '2nd Grade', spanish: 'Segundo Grado' },
+    { value: '3', label: '3rd Grade', spanish: 'Tercer Grado' },
+    { value: '4', label: '4th Grade', spanish: 'Cuarto Grado' },
+    { value: '5', label: '5th Grade', spanish: 'Quinto Grado' },
+    { value: '6', label: '6th Grade', spanish: 'Sexto Grado' },
+    { value: '7', label: '7th Grade', spanish: 'Séptimo Grado' },
+    { value: '8', label: '8th Grade', spanish: 'Octavo Grado' },
+    { value: '9', label: '9th Grade', spanish: 'Noveno Grado' },
+    { value: '10', label: '10th Grade', spanish: 'Décimo Grado' },
+    { value: '11', label: '11th Grade', spanish: 'Undécimo Grado' },
+    { value: '12', label: '12th Grade', spanish: 'Duodécimo Grado' },
+  ];
 
   //For testing purposes, this is identical to the actual service. (Otherwise linting is mad about not using fields.)
   updateSavedSearch(fields: {name: string; required: number; desc: string; grade: string; school: string; type: string; sortby: string;}) {

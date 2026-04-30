@@ -59,9 +59,11 @@ export class MockInventoryService implements Pick<InventoryService, 'getItems' |
     pack:1
   }
 
-  //Probably terrible form, but best way I could figure to get the tests working.
-  realService = new InventoryService;
-  typeOptions = this.realService.typeOptions;
+  typeOptions = () => [
+    { value: 'pencils', label: 'Pencils' },
+    { value: 'erasers', label: 'Erasers' },
+    { value: 'folders', label: 'Folders' },
+  ];
 
   //For testing purposes, this is identical to the actual service. (Otherwise linting is mad about not using fields.)
   updateSavedSearch(fields: {name: string; stocked: number; desc: string; location: string; type: string; sortby: string;}) {

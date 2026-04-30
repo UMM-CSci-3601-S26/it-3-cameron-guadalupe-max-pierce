@@ -44,15 +44,16 @@ export class ModifyItemComponent {
 
   filteredTypeOptions = computed(() => {
     const input = (this.typeInput() || '').toLowerCase();
-    if (!input) return this.inventoryService.typeOptions;
-    return this.inventoryService.typeOptions.filter(option =>
+    const typeOptions = this.inventoryService.typeOptions();
+    if (!input) return typeOptions;
+    return typeOptions.filter(option =>
       option.label.toLowerCase().includes(input) || option.value.toLowerCase().includes(input)
     );
   });
 
   displayTypeLabel = (value: string | null): string => {
     if (!value) return '';
-    const match = this.inventoryService.typeOptions.find(option => option.value === value);
+    const match = this.inventoryService.typeOptions().find(option => option.value === value);
     return match ? match.label : value;
   };
 
@@ -115,7 +116,7 @@ export class ModifyItemComponent {
 
     type: new FormControl('', Validators.compose([
       Validators.required,
-      Validators.pattern(this.inventoryService.typeOptions.map(option => option.value).join('|'))
+      Validators.pattern(this.inventoryService.typeOptions().map(option => option.value).join('|'))
     ])),
 
     location: new FormControl('', Validators.compose([

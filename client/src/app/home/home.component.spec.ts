@@ -6,12 +6,13 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Router } from '@angular/router';
+import { NavigationEnd, NavigationStart, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { InventoryService } from '../inventory/inventory.service';
 import { FamilyService } from '../families/family.service';
+import { SettingsService } from '../settings/settings.service';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -21,14 +22,32 @@ describe('HomeComponent', () => {
   let router: Router;
 
   const inventoryMock = {
-    inventory$: of([
+    loadItems: () => of([
       { stocked: 2 },
       { stocked: 10 }
     ])
   };
 
+  const settingsMock = {
+    getSettings: () => of({
+      schools: [
+        { name: 'School A' },
+        { name: 'School B' }
+      ],
+      timeAvailability: {
+        earlyMorning: '8:00 AM',
+        lateMorning: '10:00 AM',
+        earlyAfternoon: '12:00 PM',
+        lateAfternoon: '2:00 PM'
+      }
+    })
+  };
+
   const familyMock = {
-    getFamilies: () => of([{ _id: '1' }, { _id: '2' }])
+    getFamilies: () => of([
+      { _id: '1', students: [{ name: 'A'}, { name: 'B'}] },
+      { _id: '2', students: [{ name: 'C'}] }
+    ])
   };
 
   beforeEach(() => {
@@ -44,7 +63,8 @@ describe('HomeComponent', () => {
       ],
       providers: [
         { provide: InventoryService, useValue: inventoryMock },
-        { provide: FamilyService, useValue: familyMock }
+        { provide: FamilyService, useValue: familyMock },
+        { provide: SettingsService, useValue: settingsMock }
       ]
     }).compileComponents();
 
@@ -126,9 +146,12 @@ describe('HomeComponent', () => {
 
   it('should have action buttons', () => {
     const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
-    expect(buttons.length).toBe(2);
+    expect(buttons.length).toBe(5);
     expect(buttons[0].nativeElement.textContent).toContain('View Inventory');
     expect(buttons[1].nativeElement.textContent).toContain('View Families');
+    expect(buttons[2].nativeElement.textContent).toContain(('View Shopping List'));
+    expect(buttons[3].nativeElement.textContent).toContain(('View Settings'));
+    expect(buttons[4].nativeElement.textContent).toContain(('View Grade Requirements'));
   });
 
   it('should navigate to inventory page when "View Inventory" button is clicked', () => {
@@ -148,6 +171,68 @@ describe('HomeComponent', () => {
 
     expect(spy).toHaveBeenCalledWith(['/families']);
   });
+
+  it('should navigate to shopping list page when "View Shopping List" button is clicked', () => {
+    const spy = spyOn(router, 'navigate');
+
+    const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
+    buttons[2].nativeElement.click();
+
+    expect(spy).toHaveBeenCalledWith(['/shopping_list']);
+  });
+
+  it('should navigate to settings page when "View Settings" button is clicked', () => {
+    const spy = spyOn(router, 'navigate');
+
+    const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
+    buttons[3].nativeElement.click();
+
+    expect(spy).toHaveBeenCalledWith(['/settings']);
+  });
+
+  it('should navigate to Grade Requirements page when "View Grade Requirements" button is clicked', () => {
+    const spy = spyOn(router, 'navigate');
+
+    const buttons = fixture.debugElement.queryAll(By.css('button[mat-raised-button]'));
+    buttons[4].nativeElement.click();
+
+    expect(spy).toHaveBeenCalledWith(['/grade_list']);
+  });
+
+  it('should calculate studentCount and student count from all family students', () => {
+    fixture.detectChanges();
+    expect(component.studentCount).toBe(3);
+  });
+
+  it('should calculate stockCount from all inventory items', () => {
+    fixture.detectChanges();
+    expect(component.stockCount).toBe(12);
+  });
+
+  it('should set schoolCount from settings schools array', () => {
+    fixture.detectChanges();
+    expect(component.schoolCount).toBe(2);
+  });
+
+  it('should dismiss the alert when dismissAlert is called', () => {
+    component.lowStockAlert = true;
+    component.dismissAlert();
+    expect(component.lowStockAlert).toBeFalse();
+  });
+
+  it('should reload data on NavigationEnd event', () => {
+    const spy = spyOn(component as unknown as { loadData: () => void }, 'loadData');
+    const navEnd = new NavigationEnd(1, '/home', '/home');
+    spyOnProperty(router, 'events').and.returnValue(of(navEnd));
+    component.ngOnInit();
+    expect(spy).toHaveBeenCalled();
+  });
+
+  it('should not reload data on non-NavigationEnd router events', () => {
+    const navStart = new NavigationStart(1, '/home');
+    spyOnProperty(router, 'events').and.returnValue(of(navStart));
+    component.ngOnInit();
+    const spy = spyOn(component as unknown as { loadData: () => void }, 'loadData');
+    expect(spy).not.toHaveBeenCalled();
+  });
 });
-
-

@@ -8,6 +8,7 @@ import { InventoryItem } from '../inventory/inventory_item';
 import { School } from './school';
 import { InventoryService } from '../inventory/inventory.service';
 import { FamilyService } from '../families/family.service';
+import { SettingsService } from '../settings/settings.service';
 import { toSignal, toObservable} from '@angular/core/rxjs-interop';
 //import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -33,6 +34,9 @@ export class GradeListService {
   private httpClient = inject(HttpClient);
 
   private snackBar = inject(MatSnackBar);
+  private inventoryService = inject(InventoryService);
+  private familyService = inject(FamilyService);
+  private settingsService = inject(SettingsService);
   errMsg = signal<string | undefined>(undefined);
   // The URL for the users part of the server API.
   readonly inventoryUrl: string = `${environment.apiUrl}inventory`;
@@ -60,14 +64,19 @@ export class GradeListService {
   originSchool = ''; //Special value, records which school was associated with the 'add requirement' button, for prefill.
   originGrade = ''; //Special value, records which grade was associated with the 'add requirement' button, for prefill.
 
-  //TODO - is this the correct way to do this? Better than copying the type lists in multiple places?
-  inventoryService = new InventoryService;
-  typeOptions = this.inventoryService.typeOptions;
+  // Delegate to injected service instances
+  get typeOptions() {
+    return this.inventoryService.typeOptions;
+  }
 
-  gradeService = new FamilyService
-  gradeOptions = this.gradeService.gradeOptions;
-  //What are the odds this last one works?
-  //schoolOptions = this.httpClient.get<[School[]]>(this.schoolUrl);
+  get gradeOptions() {
+    return this.familyService.gradeOptions;
+  }
+
+  // For backward compatibility with code that accesses gradeService directly
+  get gradeService() {
+    return this.familyService;
+  }
 
 
   /**
@@ -183,7 +192,7 @@ export class GradeListService {
     );
 
   serverFilteredSchools = signal(
-    this.gradeService.getSchools().pipe()
+    this.getSchools().pipe()
   );
 
   reloadPage() { //Not really a good way to test this.
@@ -212,7 +221,15 @@ export class GradeListService {
 
   //Helper function
   getSchools(): Observable<School[]> {
-    return this.httpClient.get<School[]>(this.schoolUrl);
+    return this.settingsService.getSettings().pipe(
+      map((settings) =>
+        (settings.schools ?? []).map((school) => ({
+          _id: school.abbreviation || school.name,
+          value: school.name,
+          label: school.abbreviation || school.name,
+        }))
+      )
+    );
   }
 
   /**
