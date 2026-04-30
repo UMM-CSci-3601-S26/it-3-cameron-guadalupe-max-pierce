@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { filter } from 'rxjs/operators';
 import { MatButtonModule } from '@angular/material/button';
 import { NavigationEnd, Router } from '@angular/router';
 import { InventoryService} from '../inventory/inventory.service';
@@ -11,8 +12,9 @@ import { Family } from '../families/family';
 import { GradeListService } from '../grade_list/grade_list.service';
 import { ShoppingListService } from '../shopping_list/shopping_list.service';
 import { SettingsService } from '../settings/settings.service';
+import { AppSettings } from  '../settings/settings';
 
-import { filter } from 'rxjs/internal/operators/filter';@Component({
+@Component({
   selector: 'app-home-component',
   templateUrl: 'home.component.html',
   styleUrls: ['./home.component.scss'],
@@ -31,9 +33,12 @@ export class HomeComponent implements OnInit {
   private familyService = inject(FamilyService);
   private gradeListService = inject(GradeListService);
   private shoppingListService = inject(ShoppingListService);
-  private settingService = inject(SettingsService);
+  private settingsService = inject(SettingsService);
   familyCount = 0;
   inventoryCount = 0;
+  stockCount = 0;
+  studentCount =0;
+  schoolCount = 0;
 
   lowStockAlert = false;
   lowStockItems: InventoryItem[] = [];
@@ -53,11 +58,17 @@ export class HomeComponent implements OnInit {
 
     this.inventoryService.loadItems().subscribe((items: InventoryItem[]) => {
       this.inventoryCount = items.length;
+      this.stockCount = items.reduce((sum, i) => sum + (i.stocked || 0), 0);
       this.lowStockItems = items.filter(i => i.stocked < 5);
       this.lowStockAlert = this.lowStockItems.length > 0;
     });
     this.familyService.getFamilies().subscribe((families: Family[]) => {
       this.familyCount = families.length;
+      this.studentCount = families.reduce((sum, f) => sum + (f.students?.length || 0), 0);
+    });
+
+    this.settingsService.getSettings().subscribe((settings: AppSettings) => {
+      this.schoolCount = settings.schools.length;
     });
   }
 

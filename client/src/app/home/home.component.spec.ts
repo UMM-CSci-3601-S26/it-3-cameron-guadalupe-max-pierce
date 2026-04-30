@@ -12,6 +12,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
 import { InventoryService } from '../inventory/inventory.service';
 import { FamilyService } from '../families/family.service';
+import { SettingsService } from '../settings/settings.service';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
@@ -21,14 +22,32 @@ describe('HomeComponent', () => {
   let router: Router;
 
   const inventoryMock = {
-    getInventory: () => of([
+    loadItems: () => of([
       { stocked: 2 },
       { stocked: 10 }
     ])
   };
 
+  const settingsMock = {
+    getSettings: () => of({
+      schools: [
+        { name: 'School A' },
+        { name: 'School B' }
+      ],
+      timeAvailability: {
+        earlyMorning: '8:00 AM',
+        lateMorning: '10:00 AM',
+        earlyAfternoon: '12:00 PM',
+        lateAfternoon: '2:00 PM'
+      }
+    })
+  };
+
   const familyMock = {
-    getFamilies: () => of([{ _id: '1' }, { _id: '2' }])
+    getFamilies: () => of([
+      { _id: '1', students: [{ name: 'A'}, { name: 'B'}] },
+      { _id: '2', students: [{ name: 'C'}] }
+    ])
   };
 
   beforeEach(() => {
@@ -44,7 +63,8 @@ describe('HomeComponent', () => {
       ],
       providers: [
         { provide: InventoryService, useValue: inventoryMock },
-        { provide: FamilyService, useValue: familyMock }
+        { provide: FamilyService, useValue: familyMock },
+        { provide: SettingsService, useValue: settingsMock }
       ]
     }).compileComponents();
 
@@ -177,5 +197,20 @@ describe('HomeComponent', () => {
     buttons[4].nativeElement.click();
 
     expect(spy).toHaveBeenCalledWith(['/grade_list']);
+  });
+
+  it('should calculate studentCount and student count from all family students', () => {
+    fixture.detectChanges();
+    expect(component.studentCount).toBe(3);
+  });
+
+  it('should calculate stockCount from all inventory items', () => {
+    fixture.detectChanges();
+    expect(component.stockCount).toBe(12);
+  });
+
+  it('should set schoolCount from settings schools array', () => {
+    fixture.detectChanges();
+    expect(component.schoolCount).toBe(2);
   });
 });
