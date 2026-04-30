@@ -8,7 +8,7 @@ import static com.mongodb.client.model.Filters.eq;
 // import java.security.MessageDigest;
 // import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.List;
+//import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 //import java.util.regex.Pattern;
@@ -118,7 +118,7 @@ public class InventoryItemController implements Controller {
    *   to filter the database collection of users
    */
   private Bson constructFilter(Context ctx) {
-    List<Bson> filters = new ArrayList<>(); // start with an empty list of filters
+    //List<Bson> filters = new ArrayList<>(); // start with an empty list of filters
 
     // if (ctx.queryParamMap().containsKey(AGE_KEY)) {
     //   int targetAge = ctx.queryParamAsClass(AGE_KEY, Integer.class)

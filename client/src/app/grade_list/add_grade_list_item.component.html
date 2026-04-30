@@ -39,15 +39,10 @@
 
             <mat-form-field>
               <mat-label>Grade</mat-label>
-              <mat-select
-                placeholder="Grade"
-                formControlName="grade"
-                [(ngModel)]="gradeService.originGrade"
-                required>
-                @for (grade of filteredGradeOptions(); track grade.value) {
-                  <mat-option [value]="grade.value">{{grade.label}}</mat-option>
-                }
-              </mat-select>
+              <input matInput
+              formControlName="grade"
+              [(ngModel)]="gradeService.originGrade"
+              required>
               @if (formControlHasError('grade')) {
                 <mat-error data-test="gradeError">
                   {{getErrorMessage('grade')}}
