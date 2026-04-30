@@ -92,6 +92,48 @@
             </form>
           </div>
         </mat-tab>
+
+        <mat-tab label="Item Types">
+          <div class="tab-content">
+            <form [formGroup]="addItemTypeForm" (ngSubmit)="addItemType()">
+              <div class="add-school-row">
+                <mat-form-field>
+                  <mat-label>Item Type Value</mat-label>
+                  <input matInput formControlName="value" placeholder="e.g. pencils" required>
+                  <mat-error *ngIf="addItemTypeForm.get('value')?.hasError('required')">Value is required</mat-error>
+                  <mat-error *ngIf="addItemTypeForm.get('value')?.hasError('pattern')">Use lowercase letters and underscores only</mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                  <mat-label>Item Type Label</mat-label>
+                  <input matInput formControlName="label" placeholder="e.g. Pencils" required>
+                  <mat-error *ngIf="addItemTypeForm.get('label')?.hasError('required')">Label is required</mat-error>
+                  <mat-error *ngIf="addItemTypeForm.get('label')?.hasError('minlength')">Label must be at least 2 characters</mat-error>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="!addItemTypeForm.valid">
+                  Add Item Type
+                </button>
+              </div>
+            </form>
+            <mat-list>
+              @for (itemType of itemTypes; track $index; let i = $index) {
+                <mat-list-item>
+                  <span matListItemTitle>{{ itemType.value }} - {{ itemType.label }}</span>
+                  <button matListItemMeta mat-icon-button color="warn"
+                          (click)="removeItemType(i)"
+                          [attr.aria-label]="'Remove ' + itemType.label">
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </mat-list-item>
+              } @empty {
+                <mat-list-item>
+                  <span matListItemTitle>No item types added yet.</span>
+                </mat-list-item>
+              }
+            </mat-list>
+          </div>
+        </mat-tab>
       </mat-tab-group>
     </mat-card-content>
   </mat-card>

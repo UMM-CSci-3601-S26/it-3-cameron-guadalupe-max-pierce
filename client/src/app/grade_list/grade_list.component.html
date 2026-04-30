@@ -39,7 +39,13 @@
           </mat-form-field>
 
           <mat-form-field class="input-field">
-            <input matInput data-test="itemGradeInput" placeholder="Grade" [(ngModel)]="itemGrade">
+            <mat-label>Grade</mat-label>
+            <mat-select data-test="itemGradeInput" placeholder="Grade" [(ngModel)]="itemGrade">
+              <mat-option value="">Any Grade</mat-option>
+              @for (grade of filteredGradeOptions(); track grade.value) {
+                <mat-option [value]="grade.value">{{grade.label}}</mat-option>
+              }
+            </mat-select>
             <mat-hint>Search by grade</mat-hint>
           </mat-form-field>
 

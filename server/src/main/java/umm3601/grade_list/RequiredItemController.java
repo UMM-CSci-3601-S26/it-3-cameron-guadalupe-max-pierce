@@ -48,7 +48,6 @@ public class RequiredItemController implements Controller {
   static final String STOCKED_KEY = "stocked";
 
   private final JacksonMongoCollection<RequiredItem> listCollection;
-  private final JacksonMongoCollection<School> schoolCollection;
   private final JacksonMongoCollection<Settings> settingsCollection;
 
   /**
@@ -61,12 +60,6 @@ public class RequiredItemController implements Controller {
         database,
         "required_items",
         RequiredItem.class,
-        UuidRepresentation.STANDARD);
-    //And another one...
-    schoolCollection = JacksonMongoCollection.builder().build(
-        database,
-        "schools",
-        School.class,
         UuidRepresentation.STANDARD);
     settingsCollection = JacksonMongoCollection.builder().build(
       database,
@@ -128,7 +121,7 @@ public class RequiredItemController implements Controller {
    */
   public void getSchools(Context ctx) {
     Settings settings = settingsCollection.find(eq("_id", SettingsController.SETTINGS_ID)).first();
-    if (settings != null && settings.schools != null && !settings.schools.isEmpty()) {
+    if (settings != null && settings.schools != null) {
       ArrayList<School> mappedSchools = new ArrayList<>();
       for (Settings.SchoolInfo schoolInfo : settings.schools) {
         School school = new School();
@@ -147,11 +140,7 @@ public class RequiredItemController implements Controller {
       return;
     }
 
-    ArrayList<School> matchingItems = schoolCollection
-      .find() //No sorting required
-      .into(new ArrayList<>());
-
-    ctx.json(matchingItems);
+    ctx.json(new ArrayList<School>());
 
     // Explicitly set the context status to OK
     ctx.status(HttpStatus.OK);

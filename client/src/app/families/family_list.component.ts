@@ -16,15 +16,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RouterLink } from '@angular/router';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { Family } from './family';
-import { Student } from './student';
 import { School } from '../grade_list/school';
-import { RequiredItem } from '../grade_list/required_item';
+import { Time } from './time';
 //import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 //import { InventoryCardComponent } from './inventory_card.component';
 import { FamilyService } from './family.service';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import jsPDF from 'jspdf';
 //import { MatToolbar } from '@angular/material/toolbar';
 
 /**
@@ -105,7 +103,7 @@ export class FamilyListComponent {
   private itemStudents$ = toObservable(this.itemStudents);
   private itemTime$ = toObservable(this.itemTime);
 
-  serverFilteredFamilies =
+  serverFilteredItems =
     toSignal(
       //Not actually doing any filtering on the server, just need to get Items.
       combineLatest([this.itemName$,this.itemGrade$,this.itemSchool$,this.itemStudents$,this.itemTime$]).pipe(
@@ -129,7 +127,7 @@ export class FamilyListComponent {
   serverFilteredSchools =
     toSignal(
       //Not actually doing any filtering on the server, just need to get Items.
-      combineLatest([this.itemName$,this.itemGrade$,this.itemSchool$,this.itemStudents$,this.itemTime$]).pipe(
+      combineLatest([this.itemSchool$]).pipe(
         switchMap(() =>
           this.familyService.getSchools() //If we decide to filter on server, args go her
         ),
@@ -147,21 +145,20 @@ export class FamilyListComponent {
       )
     );
 
-  serverFilteredItems =
+  serverFilteredTimes =
     toSignal(
-      //Not actually doing any filtering on the server, just need to get Items.
-      combineLatest([this.itemName$,this.itemGrade$,this.itemSchool$,this.itemStudents$,this.itemTime$]).pipe(
+      combineLatest([this.itemTime$]).pipe(
         switchMap(() =>
-          this.familyService.getItems() //If we decide to filter on server, args go her
+          this.familyService.getTimes()
         ),
         catchError((err) => {
           if (!(err.error instanceof ErrorEvent)) {
             this.errMsg.set(
-              `Problem contacting the server – Error Code: ${err.status}\nMessage: ${err.message}`
+              `Problem contacting the server - Error Code: ${err.status}\nMessage: ${err.message}`
             );
           }
           this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
-          return of<RequiredItem[]>([]);
+          return of<Time[]>([]);
         }),
         tap(() => {
         })
@@ -172,13 +169,13 @@ export class FamilyListComponent {
     return this.serverFilteredSchools();
   });
 
-  gradeReqs = computed(() => {
-    return this.serverFilteredItems();
-  })
+  filteredTimeOptions = computed(() => {
+    return this.serverFilteredTimes();
+  });
 
 
   filteredFamilies = computed(() => {
-    const currentItems = this.serverFilteredFamilies();
+    const currentItems = this.serverFilteredItems();
     //Whenever we sort, we also update saved search.
     //Since this is through service, should be saved between pages.
     this.familyService.updateSavedSearch({
@@ -200,7 +197,7 @@ export class FamilyListComponent {
   });
 
   gradeFilteredFamilies = computed(() => {
-    const currentItems = this.serverFilteredFamilies();
+    const currentItems = this.serverFilteredItems();
     const typedArray: { header: string, grade_total: number, value: string, families: Family[] }[] = [];
     let matchingFamilies = [];
     let totalStudents = 0;
@@ -239,7 +236,7 @@ export class FamilyListComponent {
   })
 
   schoolFilteredFamilies = computed(() => {
-    const currentItems = this.serverFilteredFamilies();
+    const currentItems = this.serverFilteredItems();
     const typedArray: { header: string, school_total: number, value: string, families: Family[] }[] = [];
     let matchingFamilies = [];
     let totalStudents = 0;
@@ -279,7 +276,7 @@ export class FamilyListComponent {
   gradeAndSchoolFilteredFamilies = computed(() => {
     //Currently, if a family has students in multiple schools, they can get counted for grades from each school...
     //Even when they actually have no matching students for that slot.
-    const currentItems = this.serverFilteredFamilies();
+    const currentItems = this.serverFilteredItems();
     const schooledArray: {
           school_header: string,
           school_total:number,
@@ -358,7 +355,7 @@ export class FamilyListComponent {
   resetStudents() {
     const warning = confirm("This will delete ALL families. Are you sure?");
     if (warning == true) {
-      this.familyService.deleteAll(this.serverFilteredFamilies());
+      this.familyService.deleteAll(this.serverFilteredItems());
       this.snackBar.open(
         `Family List reset. Please wait for page to reload...`,
         'OK',
@@ -367,167 +364,9 @@ export class FamilyListComponent {
       this.familyService.reloadPage();
     }
   }
-  //Line variable, tracks current PDF position, resets when called.
-  public line = 0;
-
-  //Helper function to determine when to do page breaks
-  lineBreak(document: jsPDF, line_height: number, start_pos:number) {
-    if ((this.line*line_height) + start_pos >= document.internal.pageSize.getHeight() - 14) {
-      document.addPage();
-      this.line = 1;
-      return true;
-    } else {
-      this.line ++;
-      return false;
-    }
-  }
-
-  //janky helper function for exporting everything as a PDF
-  getIds() {
-    const idArray: string[] = [];
-    for (let i = 0; i < this.filteredFamilies().length; i ++) {
-      idArray.push(this.filteredFamilies()[i]._id);
-    }
-    return idArray;
-  }
-
-  //Template courtesy of feawsted; now takes a string array
-  exportPDF(family_ids:string[]) {
-    if (family_ids.length == 1) {
-      this.snackBar.open(`Generating checklist, please wait...`, 'OK', { duration: 4000 });
-    } else {
-      this.snackBar.open(`Generating checklist for ${family_ids.length} families. Please wait...`, 'OK', { duration: 6000 });
-    }
-
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const margin = 14;
-    const stuMargin = 6; //Additional margin for student subsections.
-    const itemMargin = 6; //Additional margin for item sub-subsections.
-    const checkSize = 4;
-    const lineHeight = 6;
-    const startPos = 18;
-
-    for (let f = 0; f < family_ids.length; f ++) {
-      this.familyService.getFamilyById(family_ids[f]).subscribe({
-        error: (err) => {
-          this.snackBar.open(`Failed to load checklist: ${err.message}`, 'OK', { duration: 6000 });
-        },
-        next: (family) => {
-          this.line = 1;
-
-          // Header block
-          doc.setFontSize(16);
-          doc.setFont('helvetica', 'bold');
-          doc.text(`${family.last_name} Checklist`, margin, startPos-3);
-
-          //Line
-          doc.line(margin, startPos, pageWidth - margin, startPos);
-
-          //General family info
-          doc.setFontSize(11);
-          doc.setFont('helvetica', 'normal');
-          doc.text(`Primary Pickup Person - ${family.first_name} ${family.last_name}`, margin, startPos+lineHeight);
-          this.lineBreak(doc,lineHeight,startPos);
-          if (family.first_name_alt != '') {
-            doc.text(`Alternate Pickup Person - ${family.first_name_alt} ${family.last_name_alt}`, margin, startPos+(lineHeight*this.line));
-            this.lineBreak(doc,lineHeight,startPos);
-          }
-          doc.text(`Contact Info - ${family.phone} - ${family.email}`, margin, startPos+(lineHeight*this.line));
-          this.lineBreak(doc,lineHeight,startPos);
-          doc.text(`Pickup Time - ${family.time}`, margin, startPos+(lineHeight*this.line));
-          this.lineBreak(doc,lineHeight,startPos);
-
-          //Line #2
-          doc.line(margin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
-          this.lineBreak(doc,lineHeight,startPos);
-
-          //Student subsections
-          for (let s = 0; s < family.students.length; s ++) {
-            const studentReqs = this.getStudentRequirements(family.students[s]);
-            doc.setFont('helvetica', 'bold');
-            doc.text(`Student #${s+1} - ${family.students[s].first_name} ${family.students[s].last_name}`, margin + stuMargin, startPos+(lineHeight*this.line));
-            doc.setFont('helvetica', 'normal');
-            this.lineBreak(doc,lineHeight,startPos);
-            if ((family.students[s].teacher == '') || (family.students[s].teacher == undefined)) {
-              doc.text(`${family.students[s].school} - ${this.familyService.getGradeLabel(family.students[s].grade)} - ${studentReqs.length} items`, margin + stuMargin, startPos+(lineHeight*this.line));
-            } else {
-              doc.text(`${family.students[s].school} - ${family.students[s].teacher}'s ${this.familyService.getGradeLabel(family.students[s].grade)} class - ${studentReqs.length} items`, margin + stuMargin, startPos+(lineHeight*this.line));
-            }
-            this.lineBreak(doc,lineHeight,startPos);
-
-            //Requirements per student
-            doc.setFont('helvetica', 'italic');
-            for (let r = 0; r < studentReqs.length; r ++) {
-              //Checkbox
-              doc.rect(margin + stuMargin + itemMargin - (checkSize+1), startPos+(lineHeight*this.line) - checkSize + 1, checkSize, checkSize);
-              //Requirement
-              let itemString = '';
-              if (studentReqs[r].required > 1) {
-                itemString = itemString.concat(`x${studentReqs[r].required} ${studentReqs[r].name}`);
-              } else {
-                itemString = itemString.concat(`${studentReqs[r].name}`);
-              }
-
-              if (studentReqs[r].desc != '') {
-                itemString = itemString.concat(` - ${studentReqs[r].desc}`);
-              }
-
-              if (studentReqs[r].pack > 1) {
-                itemString = itemString.concat(` - ${studentReqs[r].pack} ct.`);
-              }
-
-              doc.text(itemString, margin + stuMargin + itemMargin, startPos+(lineHeight*this.line));
-              this.lineBreak(doc,lineHeight,startPos);
-            }
-            doc.setFont('helvetica', 'normal');
-
-            //Student break
-            doc.line(margin + stuMargin, startPos+(lineHeight*this.line), pageWidth - margin, startPos+(lineHeight*this.line));
-            this.lineBreak(doc,lineHeight,startPos);
-          }
-          //Save and export
-          if ((f+1) == family_ids.length) {
-            if (f == 0) {
-              doc.save(family.last_name.concat(' Checklist.pdf'));
-            } else {
-              doc.save(family.last_name.concat('Checklist.pdf'));
-            }
-          } else {
-            doc.addPage(); //Start next family on a new page.
-          }
-        }
-      });
-    }
-  }
-
-  getStudentRequirements(student:Student) {
-    //Get all required items for the current student, based on grade and school.
-    const gradeReqs = this.familyService.filterItems(this.gradeReqs(),student);
-    const runningTotal: RequiredItem[] = [];
-    //For every requirement of every student...
-    for (let r = 0; r < gradeReqs.length; r ++) {
-      if (((gradeReqs[r].type !== "backpacks") || (student.backpack))
-      && ((gradeReqs[r].type !== "headphones") || (student.headphones))) {
-        //Backpacks and headphones are only counted if the current student requires one.
-        runningTotal.push({ //We need to CREATE a new required item, otherwise successive calls update the same set of items.
-          name: gradeReqs[r].name,
-          type: gradeReqs[r].type,
-          desc: gradeReqs[r].desc,
-          grade:'', //No longer relevant
-          school:'',
-          required: gradeReqs[r].required,
-          pack: gradeReqs[r].pack,
-          _id:undefined,
-        });
-      }
-    }
-    return runningTotal;
-  }
-
   exportToCSV() {
     const header = ['First Name', 'Last Name', 'Time', 'Students'];
-    const rows = this.serverFilteredFamilies().map(family => [
+    const rows = this.serverFilteredItems().map(family => [
       family.first_name,
       family.last_name,
       family.time,

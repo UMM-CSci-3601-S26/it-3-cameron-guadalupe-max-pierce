@@ -105,8 +105,9 @@ export class InventoryListComponent implements AfterViewInit {
 
   filteredTypeOptions = computed(() => {
     const input = (this.itemType() || '').toLowerCase();
-    if (!input) return this.inventoryService.typeOptions;
-    return this.inventoryService.typeOptions.filter(option =>
+    const typeOptions = this.inventoryService.typeOptions();
+    if (!input) return typeOptions;
+    return typeOptions.filter(option =>
       option.label.toLowerCase().includes(input) || option.value.toLowerCase().includes(input)
     );
   });
@@ -177,11 +178,12 @@ export class InventoryListComponent implements AfterViewInit {
   typeFilteredItems = computed(() => {
     const currentItems = this.serverFilteredItems() ?? [];
     const typedArray: { header: string, items: InventoryItem[] }[] = [];
+    const typeOptions = this.inventoryService.typeOptions();
     let matchingItems = [];
-    for (let i = 0; i < this.inventoryService.typeOptions.length; i++) {
+    for (let i = 0; i < typeOptions.length; i++) {
       matchingItems = this.inventoryService.filterItems(currentItems, {
         name: this.itemName(),
-        type: this.inventoryService.typeOptions[i].value,
+        type: typeOptions[i].value,
         stocked: this.itemStock(),
         desc: this.itemDesc(),
         location: this.itemLocation(),
@@ -190,7 +192,7 @@ export class InventoryListComponent implements AfterViewInit {
       //Only sections that have matching items are shown.
       if (matchingItems.length > 0) {
         typedArray.push({
-          header: this.inventoryService.typeOptions[i].label,
+          header: typeOptions[i].label,
           items: matchingItems
         })
       }

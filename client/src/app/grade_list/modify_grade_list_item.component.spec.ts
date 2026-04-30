@@ -71,7 +71,7 @@ describe('ModifyRequirementComponent', () => {
   // Confirms that an initial, empty form is *not* valid, so
   // people can't submit an empty form.
   it('form should be valid when prefilled', () => {
-    expect(modifyItemForm.valid).toBeFalsy();
+    expect(modifyItemForm.valid).toBeTruthy();
   });
 
   describe('The name field', () => {

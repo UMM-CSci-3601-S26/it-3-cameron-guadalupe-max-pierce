@@ -220,7 +220,7 @@ describe('Misbehaving Item List', () => {
     getItems: () => Observable<InventoryItem[]>;
     filterItems: () => InventoryItem[];
     updateSavedSearch: () => undefined;
-    typeOptions: { value: string; label: string }[];
+    typeOptions: () => { value: string; label: string }[];
     modifyMass: () => Observable<void>;
   };
 
@@ -233,7 +233,7 @@ describe('Misbehaving Item List', () => {
         }),
       filterItems: () => [],
       updateSavedSearch: () => undefined,
-      typeOptions: [],
+      typeOptions: () => [],
       modifyMass: () => of(void 0)
     };
   });
