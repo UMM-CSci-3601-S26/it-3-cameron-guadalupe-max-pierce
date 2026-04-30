@@ -17,6 +17,7 @@ import { RouterLink } from '@angular/router';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { Family } from './family';
 import { Student } from './student';
+import { Time } from './time';
 import { School } from '../grade_list/school';
 import { RequiredItem } from '../grade_list/required_item';
 //import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -27,16 +28,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import jsPDF from 'jspdf';
 //import { MatToolbar } from '@angular/material/toolbar';
 
-/**
- * A component that displays a list of users, either as a grid
- * of cards or as a vertical list.
- *
- * The component supports local filtering by name and/or company,
- * and remote filtering (i.e., filtering by the server) by
- * role and/or age. These choices are fairly arbitrary here,
- * but in "real" projects you want to think about where it
- * makes the most sense to do the filtering.
- */
 @Component({
   selector: 'app-family-list-component',
   templateUrl: 'family_list.component.html',
@@ -129,7 +120,7 @@ export class FamilyListComponent {
   serverFilteredSchools =
     toSignal(
       //Not actually doing any filtering on the server, just need to get Items.
-      combineLatest([this.itemName$,this.itemGrade$,this.itemSchool$,this.itemStudents$,this.itemTime$]).pipe(
+      combineLatest([this.itemSchool$]).pipe(
         switchMap(() =>
           this.familyService.getSchools() //If we decide to filter on server, args go her
         ),
@@ -146,6 +137,34 @@ export class FamilyListComponent {
         })
       )
     );
+
+  filteredSchoolOptions = computed(() => {
+    return this.serverFilteredSchools();
+  });
+
+  serverFilteredTimes =
+    toSignal(
+      combineLatest([this.itemTime$]).pipe(
+        switchMap(() =>
+          this.familyService.getTimes()
+        ),
+        catchError((err) => {
+          if (!(err.error instanceof ErrorEvent)) {
+            this.errMsg.set(
+              `Problem contacting the server - Error Code: ${err.status}\nMessage: ${err.message}`
+            );
+          }
+          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
+          return of<Time[]>([]);
+        }),
+        tap(() => {
+        })
+      )
+    );
+
+  filteredTimeOptions = computed(() => {
+    return this.serverFilteredTimes();
+  });
 
   serverFilteredItems =
     toSignal(
@@ -167,10 +186,6 @@ export class FamilyListComponent {
         })
       )
     );
-
-  filteredSchoolOptions = computed(() => {
-    return this.serverFilteredSchools();
-  });
 
   gradeReqs = computed(() => {
     return this.serverFilteredItems();

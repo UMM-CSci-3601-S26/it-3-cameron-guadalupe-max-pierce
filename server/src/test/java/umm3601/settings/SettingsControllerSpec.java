@@ -188,4 +188,45 @@ class SettingsControllerSpec {
     assertNotNull(returned.supplyOrder);
     assertEquals(0, returned.supplyOrder.size());
   }
+
+  @Test
+  void getSettingsLeavesExistingItemTypesAndSupplyOrderIntact() {
+    db.getCollection("settings").insertOne(new Document("_id", SettingsController.SETTINGS_ID)
+        .append("schools", List.of())
+        .append("timeAvailability", new Document())
+        .append("itemTypes", List.of(new Document("value", "folder").append("label", "Folder")))
+        .append("supplyOrder", List.of(new Document("itemTerm", "folder").append("status", "unstaged"))));
+
+    settingsController.getSettings(ctx);
+
+    ArgumentCaptor<Settings> settingsCaptor = ArgumentCaptor.forClass(Settings.class);
+    verify(ctx).json(settingsCaptor.capture());
+
+    Settings returned = settingsCaptor.getValue();
+    assertNotNull(returned.itemTypes);
+    assertEquals(1, returned.itemTypes.size());
+    assertEquals("folder", returned.itemTypes.get(0).value);
+    assertEquals("Folder", returned.itemTypes.get(0).label);
+    assertNotNull(returned.supplyOrder);
+    assertEquals(1, returned.supplyOrder.size());
+    assertEquals("folder", returned.supplyOrder.get(0).itemTerm);
+    assertEquals("unstaged", returned.supplyOrder.get(0).status);
+  }
+
+  @Test
+  void updateItemTypesThrowsOnMissingItemTypes() {
+    Settings body = new Settings();
+    body.itemTypes = null;
+    when(ctx.bodyAsClass(Settings.class)).thenReturn(body);
+
+    boolean threw = false;
+    try {
+      settingsController.updateItemTypes(ctx);
+    } catch (io.javalin.http.BadRequestResponse e) {
+      threw = true;
+      assertEquals("Request body must include an 'itemTypes' array.", e.getMessage());
+    }
+
+    assertTrue(threw);
+  }
 }
