@@ -13,6 +13,7 @@ import org.mongojack.Id;
  * Contains operator-configurable values used across the application:
  *  - schools: list of supported schools shown in the Add Family form
  *  - timeAvailability: human-readable time labels for each availability slot
+ *  - itemTypes: list of supply item types shown in dropdowns throughout the app
  *
  * Only one document ever exists, identified by _id = "app-settings".
  */
@@ -28,6 +29,9 @@ public class Settings {
 
   // Time labels for each availability slot (operator-configurable)
   public TimeAvailabilityLabels timeAvailability;
+
+  // List of supply item types (e.g., "pencils", "notebooks")
+  public List<ItemType> itemTypes;
 
   // Ordered list of supply item statuses used to sort/filter checklists on drive day
   public List<SupplyItemOrder> supplyOrder;
@@ -48,6 +52,14 @@ public class Settings {
     public String lateMorning;
     public String earlyAfternoon;
     public String lateAfternoon;
+  }
+
+  /**
+   * Represents a single item type entry.
+   */
+  public static class ItemType {
+    public String value;       // e.g. "pencils"
+    public String label;       // e.g. "Pencils"
   }
 
   /**

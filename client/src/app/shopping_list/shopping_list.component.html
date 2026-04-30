@@ -36,7 +36,7 @@
             <mat-label>Grade</mat-label>
             <mat-select data-test="itemGradeInput" [(ngModel)]="itemGrade">
               <mat-option value="">All Grades</mat-option>
-              @for (grade of shoppingService.gradeService.gradeOptions; track grade) {
+               @for (grade of shoppingService.gradeListService.gradeOptions; track grade) {
                 <mat-option [value]="grade.value">{{grade.label}}</mat-option>
               }
             </mat-select>
@@ -124,7 +124,7 @@
                 </mat-toolbar>
                 <!--Sublist for each item type-->
                 @for (item of collection.items; track item._id) {
-                    <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
+                    <a mat-list-item class="item-list-item">
                     <span matListItemTitle mat-line class="item-list-name"> x<strong>{{item.required}}</strong> ~ {{item.name}}</span>
                     <span matListItemLine class="item-list-desc"> {{item.desc}} @if (item.pack > 1) {~ Package of {{item.pack}} ct.}</span>
                     </a>
@@ -140,7 +140,7 @@
             <mat-card-content>
             <mat-nav-list class="item-nav-list" color="accent">
               @for (item of shoppingListItems(); track item._id) {
-                  <a mat-list-item [routerLink]="['/grade_list', item._id]" class="item-list-item">
+                  <a mat-list-item class="item-list-item">
                   <span matListItemTitle mat-line class="item-list-name"> <strong>x{{item.required}}</strong> ~ {{item.name}}</span>
                   <span matListItemLine class="item-list-desc"> {{item.desc}} @if (item.pack > 1) {~ Package of {{item.pack}} ct.}</span>
                   </a>

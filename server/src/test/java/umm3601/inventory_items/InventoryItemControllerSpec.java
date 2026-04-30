@@ -307,6 +307,31 @@ class InventoryItemControllerSpec {
   }
 
   @Test
+  void addNullNameItem() throws IOException {
+    String newItemJson = """
+      {
+        "name": null,
+        "stocked": 25,
+        "desc": "This should fail!",
+        "location": "Over there",
+        "type": "test"
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty name"));
+  }
+
+  @Test
   void addInvalidStockItem() throws IOException {
     String newItemJson = """
       {
@@ -328,6 +353,31 @@ class InventoryItemControllerSpec {
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
 
     assertTrue(exceptionMessage.contains("This is not a number!"));
+  }
+
+  @Test
+  void addNegativeStockItem() throws IOException {
+    String newItemJson = """
+      {
+        "name": "This is a Test",
+        "stocked": -1,
+        "desc": "This should fail!",
+        "location": "Over there",
+        "type": "test"
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("greater than or equal to zero"));
   }
 
   @Test
@@ -353,6 +403,81 @@ class InventoryItemControllerSpec {
     String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
 
     assertTrue(exceptionMessage.contains("non-empty type"));
+  }
+
+  @Test
+  void addNullTypeItem() throws IOException {
+    String newItemJson = """
+      {
+        "name": "This is a Test",
+        "stocked": 10,
+        "desc": "This should fail!",
+        "location": "Over there",
+        "type": null
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty type"));
+  }
+
+  @Test
+  void addInvalidLocationItem() throws IOException {
+    String newItemJson = """
+      {
+        "name": "This is a Test",
+        "stocked": 10,
+        "desc": "This should fail!",
+        "location": "",
+        "type": "test"
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty location"));
+  }
+
+  @Test
+  void addNullLocationItem() throws IOException {
+    String newItemJson = """
+      {
+        "name": "This is a Test",
+        "stocked": 10,
+        "desc": "This should fail!",
+        "location": null,
+        "type": "test"
+      }
+      """;
+
+    when(ctx.body()).thenReturn(newItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(newItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(newItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.addNewItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty location"));
   }
 
   @Test
@@ -446,6 +571,195 @@ class InventoryItemControllerSpec {
   }
 
   @Test
+  void updateItemWithNullName() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = null;
+    updatedItem.type = "marker";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty name"));
+  }
+
+  @Test
+  void updateItemWithShortName() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "No";
+    updatedItem.type = "marker";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty name"));
+  }
+
+  @Test
+  void updateItemWithNullTypeBranch() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = null;
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty type"));
+  }
+
+  @Test
+  void updateItemWithEmptyType() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = "";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty type"));
+  }
+
+  @Test
+  void updateItemWithNegativeStock() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = "marker";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = -1;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("greater than or equal to zero"));
+  }
+
+  @Test
+  void updateItemWithNullType() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = null;
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "Aisle 9, Shelf Z";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty type"));
+  }
+
+  @Test
+  void updateItemWithNullLocation() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = "marker";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = null;
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty location"));
+  }
+
+  @Test
   void updateItemWithNonexistentId() throws IOException {
     String testID = "588935f5c668650dc77df581";
     when(ctx.pathParam("id")).thenReturn(testID);
@@ -469,5 +783,32 @@ class InventoryItemControllerSpec {
     });
 
     verify(ctx).status(HttpStatus.NOT_FOUND);
+  }
+
+  @Test
+  void updateItemWithInvalidLocation() throws IOException {
+    String testID = testItemId1.toHexString();
+    when(ctx.pathParam("id")).thenReturn(testID);
+
+    InventoryItem updatedItem = new InventoryItem();
+    updatedItem.name = "Updated Marker";
+    updatedItem.type = "marker";
+    updatedItem.desc = "Updated description";
+    updatedItem.location = "";
+    updatedItem.stocked = 77;
+    updatedItem.pack = 1;
+
+    String updatedItemJson = javalinJackson.toJsonString(updatedItem, InventoryItem.class);
+    when(ctx.body()).thenReturn(updatedItemJson);
+    when(ctx.bodyValidator(InventoryItem.class))
+      .thenReturn(new BodyValidator<InventoryItem>(updatedItemJson, InventoryItem.class,
+                    () -> javalinJackson.fromJsonString(updatedItemJson, InventoryItem.class)));
+
+    ValidationException exception = assertThrows(ValidationException.class, () -> {
+      inventoryItemController.updateItem(ctx);
+    });
+    String exceptionMessage = exception.getErrors().get("REQUEST_BODY").get(0).toString();
+
+    assertTrue(exceptionMessage.contains("non-empty location"));
   }
 }

@@ -32,6 +32,7 @@ export class MockShoppingListService implements Pick<ShoppingListService, 'updat
   schoolOptions = this.familyService.getSchools();
 
   gradeService = new MockGradeListService;
+  gradeListService = this.gradeService;
 
   //Identical
   alreadyInReqs( newItem: RequiredItem, inventory: RequiredItem[]): number {

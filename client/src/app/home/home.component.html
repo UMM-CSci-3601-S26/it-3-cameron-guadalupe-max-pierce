@@ -36,6 +36,15 @@
           </div>
         </div>
 
+        <div class ="info-tile students">
+          <mat-icon>person</mat-icon>
+          <div class = "tile-content">
+            <span class="label">Students Registered</span>
+            <span class="value">{{ studentCount }}</span>
+          </div>
+        </div>
+
+
         <div class="info-tile inventory">
           <mat-icon>inventory</mat-icon>
           <div class="tile-content">
@@ -44,6 +53,22 @@
           </div>
         </div>
 
+        <div class = "info-tile total inventory">
+          <mat-icon>inventory_2</mat-icon>
+          <div class = "tile-content">
+            <span class = "label">Total Inventory</span>
+            <span class ="value">{{ stockCount }}</span>
+          </div>
+        </div>
+
+        <!-- Shows stats for Schools-->
+        <div class="info-tile">
+          <mat-icon>school</mat-icon>
+          <div class="tile-content">
+            <span class="label">Schools</span>
+            <span class="value">{{ schoolCount }}</span>
+          </div>
+        </div>
 
         <!-- Shows status for stock -->
         <div class="info-tile">
@@ -68,6 +93,9 @@
       <mat-card-actions align="end">
         <button mat-raised-button color="primary" (click)="viewInventory()">View Inventory</button>
         <button mat-raised-button color="accent" (click)="viewFamilies()">View Families</button>
+        <button mat-raised-button color="accent" (click)="viewShoppingList()">View Shopping List</button>
+        <button mat-raised-button color="accent" (click)="viewSettings()">View Settings</button>
+        <button mat-raised-button color="accent" (click)="viewGradeReq()">View Grade Requirements</button>
       </mat-card-actions>
     </mat-card>
   </div>
