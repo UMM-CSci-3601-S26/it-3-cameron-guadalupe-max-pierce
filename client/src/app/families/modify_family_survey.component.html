@@ -69,6 +69,21 @@
           </mat-form-field>
 
           <mat-form-field>
+              <input matInput placeholder="Phone Number" [(ngModel)]="surveyParentPhone" name="parentPhone" required #parentPhone="ngModel">
+              <mat-hint>Guardian Phone number (###-###-####)</mat-hint>
+              @if (parentPhone.invalid && (parentPhone.dirty || parentPhone.touched)) {
+              <mat-error>
+                @if (parentPhone.errors?.required) {
+                  Guardian Phone number is required.
+                }
+                @if (parentPhone.errors?.email) {
+                  Invalid Phone Number
+                }
+              </mat-error>
+              }
+            </mat-form-field>
+
+          <mat-form-field>
             <mat-label>Time</mat-label>
             <mat-select placeholder="Time" [(ngModel)]="surveyFamilyTime" name="timeSelect" required>
               @for (time of filteredTimeOptions(); track time.value) {
