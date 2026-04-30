@@ -27,16 +27,6 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import jsPDF from 'jspdf';
 //import { MatToolbar } from '@angular/material/toolbar';
 
-/**
- * A component that displays a list of users, either as a grid
- * of cards or as a vertical list.
- *
- * The component supports local filtering by name and/or company,
- * and remote filtering (i.e., filtering by the server) by
- * role and/or age. These choices are fairly arbitrary here,
- * but in "real" projects you want to think about where it
- * makes the most sense to do the filtering.
- */
 @Component({
   selector: 'app-family-list-component',
   templateUrl: 'family_list.component.html',
