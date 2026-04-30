@@ -46,6 +46,7 @@ public class SettingsController implements Controller {
   private static final String API_SETTINGS = "/api/settings";
   private static final String API_SETTINGS_SCHOOLS = "/api/settings/schools";
   private static final String API_SETTINGS_TIME = "/api/settings/timeAvailability";
+  private static final String API_SETTINGS_ITEM_TYPES = "/api/settings/itemTypes";
   private static final String API_SETTINGS_SUPPLY_ORDER = "/api/settings/supplyOrder";
 
   private final JacksonMongoCollection<Settings> settingsCollection;
@@ -69,9 +70,15 @@ public class SettingsController implements Controller {
       settings._id = SETTINGS_ID;
       settings.schools = new ArrayList<>();
       settings.timeAvailability = new Settings.TimeAvailabilityLabels();
+      settings.itemTypes = new ArrayList<>();
       settings.supplyOrder = new ArrayList<>();
-    } else if (settings.supplyOrder == null) {
-      settings.supplyOrder = new ArrayList<>();
+    } else {
+      if (settings.itemTypes == null) {
+        settings.itemTypes = new ArrayList<>();
+      }
+      if (settings.supplyOrder == null) {
+        settings.supplyOrder = new ArrayList<>();
+      }
     }
     ctx.json(settings);
     ctx.status(HttpStatus.OK);
@@ -150,11 +157,35 @@ public class SettingsController implements Controller {
     ctx.status(HttpStatus.OK);
   }
 
+  /**
+   * PATCH /api/settings/itemTypes
+   * Replaces the item types list. Body: { "itemTypes": [{ "value": "...", "label": "..." }] }
+   */
+  public void updateItemTypes(Context ctx) {
+    Settings body = ctx.bodyAsClass(Settings.class);
+    if (body.itemTypes == null) {
+      throw new BadRequestResponse("Request body must include an 'itemTypes' array.");
+    }
+
+    // Convert to plain BSON Documents
+    List<Document> itemTypeDocs = body.itemTypes.stream()
+        .map(it -> new Document("value", it.value).append("label", it.label))
+        .collect(Collectors.toList());
+
+    settingsCollection.updateOne(
+        eq("_id", SETTINGS_ID),
+        new Document("$set", new Document("itemTypes", itemTypeDocs)),
+        new UpdateOptions().upsert(true));
+
+    ctx.status(HttpStatus.OK);
+  }
+
   @Override
   public void addRoutes(Javalin server) {
     server.get(API_SETTINGS, this::getSettings);
     server.patch(API_SETTINGS_SCHOOLS, this::updateSchools);
     server.patch(API_SETTINGS_TIME, this::updateTimeAvailability);
+    server.patch(API_SETTINGS_ITEM_TYPES, this::updateItemTypes);
     server.patch(API_SETTINGS_SUPPLY_ORDER, this::updateSupplyOrder);
   }
 }

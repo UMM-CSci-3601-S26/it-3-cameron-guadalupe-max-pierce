@@ -206,15 +206,38 @@ class FamilyControllerSpec {
     }
 
     @Test
-    void canGetTimes() throws IOException {
-        when(ctx.queryParamMap()).thenReturn(Collections.emptyMap());
-        familyController.getTimes(ctx);
-        verify(ctx).json(timeArrayCaptor.capture());
-        verify(ctx).status(HttpStatus.OK);
+    void canGetTimesFromSettings() throws IOException {
+      MongoCollection<Document> settings = testDatabase.getCollection("settings");
+      settings.drop();
+      settings.insertOne(new Document()
+        .append("_id", "app-settings")
+        .append("timeAvailability", new Document()
+          .append("earlyMorning", "8:00-9:00 AM")
+          .append("lateMorning", "9:00-10:00 AM")
+          .append("earlyAfternoon", "12:00-1:00 PM")
+          .append("lateAfternoon", "1:00-2:00 PM")));
 
-        assertEquals(
-            testDatabase.getCollection("times").countDocuments(),
-            timeArrayCaptor.getValue().size());
+      familyController.getTimes(ctx);
+      verify(ctx).json(timeArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+
+      assertEquals(4, timeArrayCaptor.getValue().size());
+      assertEquals("8:00-9:00 AM", timeArrayCaptor.getValue().get(0).value);
+      assertEquals("9:00-10:00 AM", timeArrayCaptor.getValue().get(1).value);
+      assertEquals("12:00-1:00 PM", timeArrayCaptor.getValue().get(2).value);
+      assertEquals("1:00-2:00 PM", timeArrayCaptor.getValue().get(3).value);
+    }
+
+    @Test
+    void canGetEmptyTimesWhenSettingsMissing() throws IOException {
+      MongoCollection<Document> settings = testDatabase.getCollection("settings");
+      settings.drop();
+
+      familyController.getTimes(ctx);
+      verify(ctx).json(timeArrayCaptor.capture());
+      verify(ctx).status(HttpStatus.OK);
+
+      assertEquals(0, timeArrayCaptor.getValue().size());
     }
 
     // @Test

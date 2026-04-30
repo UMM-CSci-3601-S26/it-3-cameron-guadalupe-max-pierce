@@ -152,6 +152,25 @@ describe('Shopping List', () => {
     expect(typedItems.length).toBe(0); //Test items returns an empty array.
   });
 
+  it('displayTypeLabel returns a readable label for a known type', () => {
+    expect(shoppingList.displayTypeLabel('pencils')).toBe('Pencils');
+  });
+
+  it('displayGradeLabel returns a readable label for a known grade', () => {
+    expect(shoppingList.displayGradeLabel('K')).toBe('Kindergarten');
+  });
+
+  it('filteredTypeOptions filters when a type query is present', () => {
+    shoppingList.itemType.set('pen');
+
+    const items = shoppingList.filteredTypeOptions();
+
+    expect(items.length).toBeGreaterThan(0);
+    expect(items.every(option =>
+      option.label.toLowerCase().includes('pen') || option.value.toLowerCase().includes('pen')
+    )).toBeTrue();
+  });
+
   it('should call updateSavedSearch() when itemName signal changes', () => {
     //const spy = spyOn(shoppingService, 'getItems').and.callThrough();
     const spy = spyOn(shoppingService, 'updateSavedSearch').and.callThrough();
