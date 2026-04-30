@@ -308,10 +308,10 @@ describe('GradeListService', () => {
   });
 
   describe('When getSchools() is called with no parameters', () => {
-    it('calls `api/schools`', waitForAsync(() => {
+    it('calls `api/settings` through the settings service', waitForAsync(() => {
       // Mock the `httpClient.get()` method, so that instead of making an HTTP request,
       // it just returns our test data.
-      const mockedMethod = spyOn(httpClient, 'get').and.returnValue(of(testSchools));
+      const mockedMethod = spyOn(httpClient, 'get').and.returnValue(of({ schools: testSchools }));
 
       gradeService.getSchools().subscribe(() => {
         // The mocked method (`httpClient.get()`) should have been called
@@ -321,7 +321,7 @@ describe('GradeListService', () => {
           .toHaveBeenCalledTimes(1);
         expect(mockedMethod)
           .withContext('talks to the correct endpoint')
-          .toHaveBeenCalledWith(gradeService.schoolUrl);
+          .toHaveBeenCalledWith('/api/settings');
       });
     }));
   });

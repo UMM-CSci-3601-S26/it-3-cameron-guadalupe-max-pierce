@@ -89,7 +89,13 @@
         <div class="flex-row gap-8 flex-wrap">
 
           <mat-form-field [style.width.px]=250 class="input-field">
-            <input matInput data-test="itemDescInput" placeholder="Time" [(ngModel)]="itemTime">
+            <mat-label>Time</mat-label>
+            <mat-select data-test="itemDescInput" placeholder="Time" [(ngModel)]="itemTime">
+              <mat-option value="">Any Time</mat-option>
+              @for (time of filteredTimeOptions(); track time.value) {
+                <mat-option [value]="time.value">{{time.value}}</mat-option>
+              }
+            </mat-select>
             <mat-hint>Search by Time</mat-hint>
           </mat-form-field>
 

@@ -16,6 +16,9 @@ describe('SettingsComponent', () => {
 
   const mockSettings: AppSettings = {
     schools: [],
+    itemTypes: [
+      { value: 'pencils', label: 'Pencils' },
+    ],
     timeAvailability: {
       earlyMorning: '',
       lateMorning: '',
@@ -29,10 +32,14 @@ describe('SettingsComponent', () => {
       'getSettings',
       'updateSchools',
       'updateTimeAvailability',
+      'updateItemTypes',
     ]);
     snackBarSpy = jasmine.createSpyObj('MatSnackBar', ['open']);
 
     settingsServiceSpy.getSettings.and.returnValue(of(mockSettings));
+    settingsServiceSpy.updateSchools.and.returnValue(of(undefined));
+    settingsServiceSpy.updateTimeAvailability.and.returnValue(of(undefined));
+    settingsServiceSpy.updateItemTypes.and.returnValue(of(undefined));
 
     await TestBed.configureTestingModule({
       imports: [SettingsComponent],
@@ -51,7 +58,9 @@ describe('SettingsComponent', () => {
 
   it('loads schools and time availability on init', () => {
     expect(settingsServiceSpy.getSettings).toHaveBeenCalled();
-    expect(component.schools).toEqual([]);
+    expect(component.schools).toEqual([
+      { name: 'Morris Area High School', abbreviation: 'MAHS' }
+    ]);
     expect(component.timeAvailabilityForm.value).toEqual({
       earlyMorning: '',
       lateMorning: '',
@@ -66,7 +75,10 @@ describe('SettingsComponent', () => {
 
     component.addSchool();
 
-    expect(settingsServiceSpy.updateSchools).toHaveBeenCalledWith([{ name: 'Test School', abbreviation: 'TS' }]);
+    expect(settingsServiceSpy.updateSchools).toHaveBeenCalledWith([
+      { name: 'Morris Area High School', abbreviation: 'MAHS' },
+      { name: 'Test School', abbreviation: 'TS' }
+    ]);
     expect(component.addSchoolForm.value.name).toBeNull(); // form is reset
     expect(component.addSchoolForm.value.abbreviation).toBeNull(); // form is reset
   });
@@ -77,7 +89,10 @@ describe('SettingsComponent', () => {
 
     component.addSchool();
 
-    expect(settingsServiceSpy.updateSchools).toHaveBeenCalledWith([{ name: 'Test School', abbreviation: 'TS' }]);
+    expect(settingsServiceSpy.updateSchools).toHaveBeenCalledWith([
+      { name: 'Morris Area High School', abbreviation: 'MAHS' },
+      { name: 'Test School', abbreviation: 'TS' }
+    ]);
   });
 
   it('addSchool does nothing when form is invalid', () => {
@@ -86,7 +101,7 @@ describe('SettingsComponent', () => {
 
     component.addSchool();
 
-    expect(settingsServiceSpy.updateSchools).not.toHaveBeenCalled();
+    expect(settingsServiceSpy.updateSchools).toHaveBeenCalledTimes(1);
   });
 
   it('addSchool shows success snack bar on success', () => {
@@ -127,6 +142,30 @@ describe('SettingsComponent', () => {
     component.removeSchool(0);
 
     expect(snackBarSpy.open).toHaveBeenCalledWith('Failed to save schools', 'OK', { duration: 3000 });
+  });
+
+  it('addItemType adds type and calls updateItemTypes', () => {
+    component.addItemTypeForm.setValue({ value: 'markers', label: 'Markers' });
+
+    component.addItemType();
+
+    expect(settingsServiceSpy.updateItemTypes).toHaveBeenCalledWith([
+      { value: 'pencils', label: 'Pencils' },
+      { value: 'markers', label: 'Markers' }
+    ]);
+  });
+
+  it('removeItemType removes type and calls updateItemTypes', () => {
+    component.itemTypes = [
+      { value: 'pencils', label: 'Pencils' },
+      { value: 'markers', label: 'Markers' }
+    ];
+
+    component.removeItemType(0);
+
+    expect(settingsServiceSpy.updateItemTypes).toHaveBeenCalledWith([
+      { value: 'markers', label: 'Markers' }
+    ]);
   });
 
   it('saveTimeAvailability calls updateTimeAvailability and shows success snack bar', () => {

@@ -17,6 +17,7 @@ import { RouterLink } from '@angular/router';
 import { catchError, combineLatest, of, switchMap, tap } from 'rxjs';
 import { Family } from './family';
 import { School } from '../grade_list/school';
+import { Time } from './time';
 //import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 //import { InventoryCardComponent } from './inventory_card.component';
 import { FamilyService } from './family.service';
@@ -144,8 +145,32 @@ export class FamilyListComponent {
       )
     );
 
+  serverFilteredTimes =
+    toSignal(
+      combineLatest([this.itemTime$]).pipe(
+        switchMap(() =>
+          this.familyService.getTimes()
+        ),
+        catchError((err) => {
+          if (!(err.error instanceof ErrorEvent)) {
+            this.errMsg.set(
+              `Problem contacting the server - Error Code: ${err.status}\nMessage: ${err.message}`
+            );
+          }
+          this.snackBar.open(this.errMsg(), 'OK', { duration: 6000 });
+          return of<Time[]>([]);
+        }),
+        tap(() => {
+        })
+      )
+    );
+
   filteredSchoolOptions = computed(() => {
     return this.serverFilteredSchools();
+  });
+
+  filteredTimeOptions = computed(() => {
+    return this.serverFilteredTimes();
   });
 
 
