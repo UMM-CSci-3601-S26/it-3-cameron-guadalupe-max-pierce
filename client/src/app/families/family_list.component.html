@@ -26,9 +26,9 @@
             <input matInput data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
             <mat-hint>Search by school</mat-hint>
           </mat-form-field> -->
-          <mat-form-field class="input-field">
+          <mat-form-field>
             <mat-label>School</mat-label>
-            <mat-select data-test="familySchoolInput" placeholder="School" [(ngModel)]="itemSchool">
+            <mat-select data-test="itemSchoolInput" placeholder="School" [(ngModel)]="itemSchool">
               <mat-option value="">Any School</mat-option>
               @for (school of filteredSchoolOptions(); track school.label) {
               <mat-option [value]="school.label">{{school.label}}</mat-option>
@@ -52,7 +52,7 @@
               [ngModel]="itemGrade()"
               (ngModelChange)="itemGrade.set($event)"
               [matAutocomplete]="auto"
-              data-test="familyGradeInput"
+              data-test="itemDescSelect"
             >
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayTypeLabel">
             <mat-option [value]="''">Any Grade</mat-option>
@@ -79,9 +79,18 @@
             color="primary"
             type="back"
             [style.height.px]=55
+            (click)="exportPDF(this.getIds())"
+            data-test="exportPDFButton">
+            Export PDF
+          </button>
+          <button
+            mat-raised-button
+            type="button"
+            color="primary"
+            type="back"
+            [style.height.px]=55
             (click)="exportToCSV()"
-            data-test="exportCSVButton"
-            >
+            data-test="exportCSVButton">
             Export CSV
           </button>
         </div>
@@ -144,7 +153,7 @@
                         <mat-expansion-panel class="sub-sub-section-card">
                           <!-- [routerLink]="['/families', family._id]" -->
                           <mat-expansion-panel-header>
-                          <mat-panel-title class=family-name> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                          <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
                           <mat-panel-description>  ✉ {{family.email}}  -  ☎ {{family.phone}}  -  {{family.time}} Pickup</mat-panel-description>
                           <button mat-raised-button type="button" color="primary" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
                           <button mat-raised-button type="button" color="accent" class="export-button" data-test="exportFamilyButton" (click)="exportPDF([family._id])">⬇</button>
@@ -177,13 +186,14 @@
                 @for (family of grade.families; track family._id) {
                   <mat-expansion-panel class="sub-sub-section-card">
                     <mat-expansion-panel-header>
-                    <mat-panel-title class=family-name> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                    <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
                     <mat-panel-description> x{{this.familyService.familyCount(family,grade.value,undefined)}} Children Enrolled
                       @if (family.students.length !== this.familyService.familyCount(family,grade.value,undefined)) {
                         , x{{family.students.length}} Total
                       }
-                       - {{family.email}}  -  {{family.time}} Pickup </mat-panel-description>
-                    <button mat-raised-button type="button" color="accent" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
+                       - ✉ {{family.email}}  - ☎ {{family.phone}}  -  {{family.time}} Pickup </mat-panel-description>
+                       <button mat-raised-button type="button" color="primary" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
+                       <button mat-raised-button type="button" color="accent" class="export-button" data-test="exportFamilyButton" (click)="exportPDF([family._id])">⬇</button>
                     </mat-expansion-panel-header>
                     @for (student of family.students; track student.first_name) {
                         @if (student.grade === grade.value) {
@@ -213,13 +223,14 @@
                 @for (family of school.families; track family._id) {
                   <mat-expansion-panel class="sub-sub-section-card">
                     <mat-expansion-panel-header>
-                    <mat-panel-title class=family-name> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                    <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
                     <mat-panel-description> x{{this.familyService.familyCount(family,undefined,school.value)}} Children Enrolled
                       @if (family.students.length !== this.familyService.familyCount(family,undefined,school.value)) {
                         , x{{family.students.length}} Total
                       }
-                       - {{family.email}}  -  {{family.time}} Pickup </mat-panel-description>
-                   <button mat-raised-button type="button" color="accent" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
+                       - ✉ {{family.email}}  -  ☎ {{family.phone}}  -  {{family.time}} Pickup </mat-panel-description>
+                        <button mat-raised-button type="button" color="primary" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
+                        <button mat-raised-button type="button" color="accent" class="export-button" data-test="exportFamilyButton" (click)="exportPDF([family._id])">⬇</button>
                     </mat-expansion-panel-header>
                     @for (student of family.students; track student.first_name) {
                       @if (student.school === school.value) {
@@ -242,7 +253,7 @@
               @for (family of filteredFamilies(); track family._id) {
                   <mat-expansion-panel class="sub-sub-section-card">
                     <mat-expansion-panel-header>
-                    <mat-panel-title class=family-name> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
+                    <mat-panel-title> <p><strong>{{family.first_name}} {{family.last_name}}</strong></p></mat-panel-title>
                     <mat-panel-description> x{{this.familyService.familyCount(family,undefined,undefined)}} Children - ✉ {{family.email}}  -  ☎ {{family.phone}}  -  {{family.time}} Pickup</mat-panel-description>
                     <button mat-raised-button type="button" color="primary" class="edit-button" data-test="modifyFamilyButton" [routerLink]="['/families', family._id]">✎</button>
                     <button mat-raised-button type="button" color="accent" class="export-button" data-test="exportFamilyButton" (click)="exportPDF([family._id])">⬇</button>

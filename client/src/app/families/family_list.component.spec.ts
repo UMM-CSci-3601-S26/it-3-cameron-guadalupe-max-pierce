@@ -7,6 +7,7 @@ import { FamilyListComponent } from './family_list.component';
 import { FamilyService } from './family.service';
 import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
+import jsPDF from 'jspdf';
 
 describe('Family list', () => {
   let familyList: FamilyListComponent;
@@ -39,13 +40,19 @@ describe('Family list', () => {
   });
 
   it('should initialize with serverFilteredFamilies available', () => {
-    const items = familyList.filteredFamilies();
+    const items = familyList.serverFilteredItems();
     expect(items).toBeDefined();
     expect(Array.isArray(items)).toBe(true);
   });
 
   it('should initialize with filteredSchoolOptions available', () => {
     const items = familyList.filteredSchoolOptions();
+    expect(items).toBeDefined();
+    expect(Array.isArray(items)).toBe(true);
+  });
+
+  it('should initialize with gradeReqs available', () => {
+    const items = familyList.gradeReqs();
     expect(items).toBeDefined();
     expect(Array.isArray(items)).toBe(true);
   });
@@ -94,6 +101,38 @@ describe('Family list', () => {
     expect(familyList.errMsg()).toBeUndefined();
   });
 
+  it('should manage line breaks when generating a PDF', () => {
+    familyList.line = 0;
+    const doc = new jsPDF();
+    const lineHeight = 6;
+    const startPos = 18;
+    familyList.lineBreak(doc,lineHeight,startPos);
+    expect(familyList.line).toEqual(1);
+    for (let i = 0; i < 50; i++) {
+      familyList.lineBreak(doc,lineHeight,startPos);
+    }
+    expect(doc.getNumberOfPages() > 1).toBeTrue();
+
+  });
+
+  it('printing a PDF should fetch grade Reqs', () => {
+    const reqSpy = spyOn(familyList, 'getStudentRequirements').and.callThrough();
+    const filterSpy = spyOn(familyList.familyService, 'filterItems').and.callThrough();
+    familyList.exportPDF(['richards_id']);
+    expect(reqSpy).toHaveBeenCalled();
+    expect(filterSpy).toHaveBeenCalled();
+    //...Admittedly not a lot of great tests we can do here for actual PDF contents.
+  });
+
+
+  it('Mass printing a pdf should function similarly', () => {
+    const reqSpy = spyOn(familyList, 'getStudentRequirements').and.callThrough();
+    const filterSpy = spyOn(familyList.familyService, 'filterItems').and.callThrough();
+    familyList.exportPDF(['richards_id','krosschell_id']);
+    expect(reqSpy).toHaveBeenCalled();
+    expect(filterSpy).toHaveBeenCalled();
+    //...Admittedly not a lot of great tests we can do here for actual PDF contents.
+  });
   // it("correctly handles the 'Location Reset' button", () => {
   //   expect(familyList.resetVisible()).toEqual(false);
   //   familyList.revealReset();
@@ -127,8 +166,6 @@ describe('Misbehaving Family List', () => {
 
   let familyServiceStub: {
     getFamilies: () => Observable<Family[]>;
-    getSchools: () => Observable<unknown[]>;
-    getTimes: () => Observable<unknown[]>;
     filterFamilies: () => Family[];
     updateSavedSearch: () => undefined;
   };
@@ -140,14 +177,6 @@ describe('Misbehaving Family List', () => {
         new Observable((observer) => {
           observer.error('getFamilies() Observer generates an error');
         }),
-      getSchools: () => new Observable((observer) => {
-        observer.next([]);
-        observer.complete();
-      }),
-      getTimes: () => new Observable((observer) => {
-        observer.next([]);
-        observer.complete();
-      }),
       updateSavedSearch:  () => undefined,
       filterFamilies: () => []
     };
@@ -179,7 +208,7 @@ describe('Misbehaving Family List', () => {
   it("generates an error if we don't set up a FamilyListService", () => {
     // If the service fails, we expect the `serverFilteredUsers` signal to
     // be an empty array of users.
-    expect(familyList.filteredFamilies())
+    expect(familyList.serverFilteredItems())
       .withContext("service can't give values to the list if it's not there")
       .toEqual([]);
     // We also expect the `errMsg` signal to contain the "Problem contacting…"
