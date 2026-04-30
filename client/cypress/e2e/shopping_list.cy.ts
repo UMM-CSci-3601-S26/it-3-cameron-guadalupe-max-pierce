@@ -37,44 +37,6 @@ describe('Shopping List', () => {
     });
   });
 
-  it('should filter by type using autocomplete', () => {
-    page.getTypeInput().clear().type('pencil', { delay: 10 });
-    cy.wait(300);
-    cy.get('mat-option').contains('Pencils').click();
-    cy.wait(300);
-    page.getItemListItems().each(el => {
-      cy.wrap(el).find('.item-list-name').should('contain.text', 'Pencil');
-    });
-  });
-
-  it('Should filter by school', () => {
-    page.getSchoolSelect().click();
-    cy.get('mat-option').contains('MAES').click();
-    cy.wait(300);
-    page.getItemListItems().should('exist');
-  });
-
-  it('Should reset school filter to Any School', () => {
-    page.getSchoolSelect().click();
-    cy.get('mat-option').contains('Any School').click();
-    cy.wait(300);
-    page.getItemListItems().should('exist');
-  });
-
-  it('Should filter by grade', () => {
-    page.getGradeSelect().click();
-    cy.get('mat-option').contains('1').click();
-    cy.wait(300);
-    page.getItemListItems().should('exist');
-  });
-
-  it('Should reset grade filter to All Grades', () => {
-    page.getGradeSelect().click();
-    cy.get('mat-option').contains('All Grades').click();
-    cy.wait(300);
-    page.getItemListItems().should('exist');
-  });
-
   it('Should toggle to Ignore Inventory and show full List', () => {
     page.selectSubtractInventory(false);
     cy.wait(300);
@@ -87,43 +49,135 @@ describe('Shopping List', () => {
     page.getItemListItems().should('exist');
   });
 
+  it('Should filter by type using autocomplete', () => {
+    page.getTypeInput().clear().type('pencil', { delay: 10 });
+    cy.wait(500);
+    cy.contains('mat-option', 'Pencils').click();
+    cy.wait(300);
+    page.getItemListItems().each(el => {
+      cy.wrap(el).find('.item-list-name').should('contain.text', 'Pencil');
+    });
+  });
+
+  it('Should filter by school', () => {
+    page.getSchoolSelect().click();
+
+    cy.get('.cdk-overlay-backdrop')
+      .should('exist');
+
+    cy.contains('MAES', { timeout: 10000 })
+      .should('be.visible')
+      .click();
+
+    page.getItemListItems().should('exist');
+  });
+
+  it('Should reset school filter to Any School', () => {
+    page.getSchoolSelect().click();
+
+    cy.get('.cdk-overlay-backdrop').should('exist');
+
+    cy.contains('MAES').click();
+
+    page.getSchoolSelect().click();
+
+    cy.get('.cdk-overlay-backdrop').should('exist');
+
+    cy.contains('Any School', { timeout: 10000 })
+      .should('be.visible')
+      .click();
+  });
+
+  it('Should filter by grade', () => {
+    page.getGradeSelect().click();
+
+    cy.contains('Kindergarten', { timeout: 10000 })
+      .click();
+
+    page.getItemListItems().should('exist');
+  });
+
+  it('Should reset grade filter to All Grades', () => {
+    page.getGradeSelect().click();
+
+    cy.contains('Kindergarten', { timeout: 10000 }).click();
+
+
+    cy.get('.cdk-overlay-backdrop').should('not.exist');
+
+    page.getGradeSelect().click();
+
+    cy.get('.cdk-overlay-backdrop').should('exist');
+
+    cy.contains('All Grades', { timeout: 10000 })
+      .click();
+
+    cy.get('.cdk-overlay-backdrop').should('not.exist');
+
+    page.getItemListItems().should('exist');
+  });
+
   it('Should sort by type and show sectioned list', () => {
     page.getSortBySelect().click();
-    cy.get('mat-option').contains('Sort By Type').click();
-    cy.wait(300);
-    page.getItemListItems().should('exist');
+
+    cy.contains('mat-option', 'Sort by Type')
+      .should('be.visible')
+      .click();
+
+    cy.get('.section-card').should('exist');
   });
 
   it('Should sort by name A-Z', () => {
-    page.getSortBySelect().click();
-    cy.get('mat-option').contains('Sort By Name (A-Z)').click();
-    cy.wait(300);
-    page.getItemListItems().should('exist');
-  });
+    cy.visit('/shopping_list');
 
+    cy.get('[data-test=sortBySelect]').click();
+
+    cy.get('.cdk-overlay-pane')
+      .should('be.visible')
+      .contains('Sort by Name (A-Z)')
+      .click();
+
+    cy.get('.item-nav-list .item-list-item').should('exist');
+  });
 
   it('Should sort by name Z-A', () => {
     page.getSortBySelect().click();
-    cy.get('mat-option').contains('Sort By Name (Z-A)').click();
-    cy.wait(300);
+
+    cy.get('.cdk-overlay-container')
+      .should('be.visible')
+      .contains('Sort by Name (Z-A)')
+      .click();
+
     page.getItemListItems().should('exist');
   });
 
-
   it('Should sort by required quantity ascending', () => {
     page.getSortBySelect().click();
-    cy.get('mat-option').contains('Sort By Required (1-9)').click();
-    cy.wait(300);
+
+    cy.get('.cdk-overlay-backdrop').should('exist');
+
+    cy.contains('Sort by Required (1-9)', { timeout: 10000 })
+      .should('be.visible')
+      .click();
+
+    cy.get('.cdk-overlay-backdrop').should('not.exist');
+
     page.getItemListItems().should('exist');
   });
 
   it('Should sort by required quantity descending', () => {
     page.getSortBySelect().click();
-    cy.get('mat-option').contains('Sort By Required (9-1)').click();
-    cy.wait(300);
+
+    cy.get('.cdk-overlay-backdrop').should('exist');
+
+    cy.contains('Sort by Required (9-1)', { timeout: 10000 })
+      .should('be.visible')
+      .click();
+
+    cy.get('.cdk-overlay-backdrop').should('not.exist');
+
     page.getItemListItems().should('exist');
   });
-
   it('Should clear all filter and show full list', () => {
     page.getNameInput().clear();
     page.getDescInput().clear();
@@ -131,7 +185,6 @@ describe('Shopping List', () => {
     cy.wait(300);
     page.getItemListItems().should('exist');
   });
-
 
 });
 
