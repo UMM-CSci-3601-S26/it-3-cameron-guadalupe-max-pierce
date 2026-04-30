@@ -31,6 +31,7 @@ import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 import io.javalin.http.NotFoundResponse;
 import umm3601.Controller;
+import umm3601.grade_list.RequiredItem;
 import umm3601.settings.Settings;
 import umm3601.settings.SettingsController;
 // import umm3601.families.Student;
@@ -45,6 +46,7 @@ public class FamilyController implements Controller {
   private static final String API_FAMILIES = "/api/families";
   private static final String API_TIMES = "/api/times";
   private static final String API_FAMILY_BY_ID = "/api/families/{id}";
+  private static final String API_ITEMS = "/api/student_reqs";
   // static final String NAME_KEY = "name";
   // static final String TYPE_KEY = "type";
   // static final String DESC_KEY = "desc";
@@ -54,6 +56,7 @@ public class FamilyController implements Controller {
   private final JacksonMongoCollection<Family> familyCollection;
   private final MongoCollection<Document> familyDocuments;
   private final JacksonMongoCollection<Settings> settingsCollection;
+  private final JacksonMongoCollection<RequiredItem> listCollection;
 
   /**
    * Construct a controller for users.
@@ -67,12 +70,17 @@ public class FamilyController implements Controller {
         Family.class,
         UuidRepresentation.STANDARD);
     familyDocuments = database.getCollection("families");
-      settingsCollection = JacksonMongoCollection.builder().build(
+    settingsCollection = JacksonMongoCollection.builder().build(
+      database,
+      "settings",
+      Settings.class,
+      UuidRepresentation.STANDARD);
+    listCollection = JacksonMongoCollection.builder().build(
         database,
-        "settings",
-        Settings.class,
+        "required_items",
+        RequiredItem.class,
         UuidRepresentation.STANDARD);
-  }
+}
 
   /**
    * Set the JSON body of the response to be the single user
@@ -116,6 +124,21 @@ public class FamilyController implements Controller {
       .map(this::documentToFamily)
       .filter(family -> family != null)
       .collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+
+    ctx.json(matchingItems);
+
+    // Explicitly set the context status to OK
+    ctx.status(HttpStatus.OK);
+  }
+
+  public void getItems(Context ctx) {
+    Bson combinedFilter = constructFilter(ctx);
+    Bson sortingOrder = constructSortingOrder(ctx);
+
+    ArrayList<RequiredItem> matchingItems = listCollection
+      .find(combinedFilter)
+      .sort(sortingOrder)
+      .into(new ArrayList<>());
 
     ctx.json(matchingItems);
 
@@ -402,6 +425,8 @@ public class FamilyController implements Controller {
     // List items, filtered using query parameters
     server.get(API_TIMES, this::getTimes);
 
+
+    server.get(API_ITEMS, this::getItems);
     // Get the users, possibly filtered, grouped by company
     // server.get("/api/usersByCompany", this::getUsersGroupedByCompany);
 
