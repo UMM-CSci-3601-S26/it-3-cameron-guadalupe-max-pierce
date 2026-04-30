@@ -6,7 +6,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { of } from 'rxjs';
@@ -212,5 +212,19 @@ describe('HomeComponent', () => {
   it('should set schoolCount from settings schools array', () => {
     fixture.detectChanges();
     expect(component.schoolCount).toBe(2);
+  });
+
+  it('should dismiss the alert when dismissAlert is called', () => {
+    component.lowStockAlert = true;
+    component.dismissAlert();
+    expect(component.lowStockAlert).toBeFalse();
+  });
+
+  it('should reload data on NavigationEnd event', () => {
+    const spy = spyOn(component as unknown as { loadData: () => void }, 'loadData');
+    const navEnd = new NavigationEnd(1, '/home', '/home');
+    (router as unknown as { events: unknown }).events = of(navEnd);
+    component.ngOnInit();
+    expect(spy).toHaveBeenCalled();
   });
 });
