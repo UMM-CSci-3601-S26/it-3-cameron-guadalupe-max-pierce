@@ -39,8 +39,8 @@ export class InventoryService {
   private inventorySubject = new BehaviorSubject<InventoryItem[]>([]);
   inventory$ = this.inventorySubject.asObservable();
 
-  setInventory(items: InventoryItem[]) {
-    this.inventorySubject.next(items);
+  getInventory(): Observable<InventoryItem[]> {
+    return this.inventory$;
   }
 
   loadItems(filters?: InventoryFilters): Observable<InventoryItem[]> {
